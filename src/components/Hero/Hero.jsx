@@ -1,0 +1,23 @@
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Hero.css";
+
+const Hero = () => {
+    return (
+        <section className="hero">
+            <div className="hero-container">
+                <h1 className="hero-title">
+                    Extraordinarily talented, <br />skillfully sourced,<br />methodically placed.
+                </h1>
+                <p className="hero-subtitle">
+                    Well practiced in Western approaches and deployable in days; find out how we can provide you talent at 60% of the cost.
+                </p>
+                <Link to="/book-call" className="hero-cta">
+                    Book a strategy call
+                </Link>
+            </div>
+        </section>
+    );
+};
+
+export default Hero;

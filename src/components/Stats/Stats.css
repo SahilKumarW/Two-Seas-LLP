@@ -1,0 +1,28 @@
+.stats {
+  background-color: var(--primary);
+  color: white;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 2rem;
+}
+
+.stat-card h3 {
+  font-size: 3rem;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.stat-card p {
+  color: rgba(255,255,255,0.9);
+  font-size: 1.1rem;
+}

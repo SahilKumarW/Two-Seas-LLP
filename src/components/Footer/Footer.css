@@ -1,0 +1,51 @@
+.footer {
+    background-color: #e8f3f4;
+    height:160px ;
+}
+
+.footer-container {
+    padding: 20px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footer-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #0b0451;
+
+}
+
+.footer-text {
+    font-size: 1rem;
+    color: #0b0451;
+}
+
+.footer-link {
+    color: #0b0451;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.footer-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.linkedin-icon img {
+    width: 20px;
+    height: 20px;
+}
+
+.dot {
+    color: #0b0451;
+    margin: 0 5px;
+    font-weight: bold;
+}

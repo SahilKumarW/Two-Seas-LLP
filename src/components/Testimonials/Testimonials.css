@@ -1,0 +1,143 @@
+.testimonials-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  text-align: center;
+}
+
+.testimonials-title {
+  font-size: 2.5rem;
+  color: #0099b9;
+  margin-bottom: 3rem;
+}
+
+.testimonial-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  position: relative;
+}
+
+.testimonial-slide {
+  width: 80%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.testimonial-content {
+  background: white;
+  padding: 3rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.quote-icon {
+  font-size: 2rem;
+  color: #0099b9;
+  margin-bottom: 1.5rem;
+}
+
+.testimonial-text {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #4b5563;
+  margin-bottom: 2rem;
+  font-style: italic;
+}
+
+.testimonial-author {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+.author-name {
+  font-weight: 600;
+  color: #0099b9;
+  font-size: 1.1rem;
+}
+
+.author-company {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.company-logo {
+  height: 40px;
+  width: auto;
+  max-width: 150px;
+  margin-top: 1rem;
+  filter: grayscale(100%);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.company-logo:hover {
+  filter: grayscale(0);
+  opacity: 1;
+}
+
+.nav-arrow {
+  background: #f0f9fb;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0099b9;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.nav-arrow:hover {
+  background: #0099b9;
+  color: white;
+}
+
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: #0099b9;
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .testimonial-carousel {
+    gap: 1rem;
+  }
+  
+  .testimonial-slide {
+    width: 100%;
+  }
+  
+  .testimonial-content {
+    padding: 2rem;
+  }
+  
+  .nav-arrow {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+}

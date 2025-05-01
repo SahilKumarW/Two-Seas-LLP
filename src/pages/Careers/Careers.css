@@ -1,0 +1,668 @@
+/* Careers.css */
+:root {
+  --teal: #17c4cb;
+  --blue: #393c69;
+  --dark-blue: #2a2d4e;
+  --light-teal: rgba(23, 196, 203, 0.15);
+  --light-blue: rgba(57, 60, 105, 0.08);
+  --border: #e0e0e0;
+  --text: #333;
+  --text-light: #6c757d;
+}
+
+.careers-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Enhanced Header CSS */
+.careers-header {
+  background: linear-gradient(135deg, #393c69, #2a2d4e);
+  color: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 10px 30px rgba(57, 60, 105, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.careers-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(23, 196, 203, 0.1) 0%, transparent 70%);
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.title-container {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.header-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin: 0 0 1rem 0;
+  line-height: 1.2;
+}
+
+.header-subtext {
+  font-size: 1.05rem;
+  color: #e0e0e0;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.form-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--accent-color, #2a2d4e); /* Fallback to teal if no theme variable */
+  text-align: center;
+  margin-bottom: 0.5rem;
+  margin-top: 1.5rem;
+  line-height: 1.4;
+}
+
+.title-gradient {
+  background: linear-gradient(90deg, #ffffff, #a0e9ec);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  display: inline-block;
+  padding: 0 1rem;
+}
+
+.title-decoration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.decoration-line {
+  height: 2px;
+  width: 60px;
+  background: linear-gradient(90deg, transparent, #17c4cb, transparent);
+}
+
+.decoration-dot {
+  width: 8px;
+  height: 8px;
+  background: #17c4cb;
+  border-radius: 50%;
+  margin: 0 15px;
+}
+
+.contact-info {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 1rem;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contact-icon {
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+}
+
+.contact-details {
+  text-align: left;
+}
+
+.contact-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 0.2rem;
+}
+
+.contact-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 1.8rem;
+  }
+  
+  .contact-info {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .contact-item {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-title {
+    font-size: 1.5rem;
+    padding: 0 0.5rem;
+  }
+  
+  .title-decoration {
+    margin-top: 0.5rem;
+  }
+  
+  .decoration-line {
+    width: 40px;
+  }
+  
+  .decoration-dot {
+    margin: 0 10px;
+  }
+}
+
+/* Form */
+.application-form {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.05);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Input Fields - WHITE background */
+.form-input {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(23, 196, 203, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--text-light);
+  opacity: 0.7;
+}
+
+/* File Upload */
+.file-upload-container {
+  margin: 1.5rem 0;
+}
+
+.file-upload-label {
+  display: block;
+  cursor: pointer;
+}
+
+.file-upload-box {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.2s ease;
+  background: white;
+  position: relative;
+}
+
+.file-upload-box.has-file {
+  border-color: var(--teal);
+  background: rgba(23, 196, 203, 0.03);
+}
+
+.file-upload-label:hover .file-upload-box {
+  border-color: var(--teal);
+}
+
+.file-icon {
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--teal);
+}
+
+.file-name {
+  display: block;
+  margin-top: 0.5rem;
+  color: var(--blue);
+  font-weight: 500;
+  padding: 0 1.5rem;
+}
+
+.file-clear {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 0.2rem 0.5rem;
+}
+
+.file-clear:hover {
+  color: var(--blue);
+}
+
+.file-input {
+  display: none;
+}
+
+/* Submit Button */
+.submit-btn {
+  width: 100%;
+  padding: 1.1rem;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(57, 60, 105, 0.2);
+}
+
+.btn-arrow {
+  transition: transform 0.2s ease;
+}
+
+.submit-btn:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+/* Submission Message */
+.submission-message {
+  background: var(--light-teal);
+  padding: 1.2rem 1.5rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: fadeIn 0.3s ease;
+  border-left: 3px solid var(--teal);
+}
+
+.message-icon {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--dark-blue);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .contact-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .careers-container {
+    padding: 0 1rem;
+  }
+  
+  .careers-header {
+    padding: 1.5rem;
+  }
+  
+  .application-form {
+    padding: 1.5rem;
+  }
+}
+
+/* Benefits Section */
+.benefits-section {
+    margin: 3rem 0;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.benefit-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(57, 60, 105, 0.1);
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(57, 60, 105, 0.15);
+}
+
+.benefit-card.active {
+    background: linear-gradient(135deg, rgba(23, 196, 203, 0.05), rgba(57, 60, 105, 0.05));
+}
+
+.card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.benefit-card:hover .card-icon {
+    transform: scale(1.1);
+}
+
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 0.8rem;
+}
+
+.card-description {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+}
+
+.benefit-card:hover .card-description {
+    color: var(--text);
+}
+
+.card-highlight {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--teal), var(--blue));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.benefit-card:hover .card-highlight {
+    transform: scaleX(1);
+}
+
+.textarea-input {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .benefits-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .benefit-card {
+        padding: 1.5rem 1rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+    }
+    
+    .card-description {
+        font-size: 0.9rem;
+    }
+}
+
+/* Add these styles to your existing Careers.css */
+
+/* Job Openings Section */
+.openings-section {
+    margin: 3rem 0;
+    text-align: center;
+}
+
+.openings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.job-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(57, 60, 105, 0.1);
+    height: 120px;
+    transition: height 0.3s ease;
+}
+
+.job-card.active {
+    height: 220px;
+    box-shadow: 0 10px 25px rgba(57, 60, 105, 0.15);
+}
+
+.job-header {
+    margin-bottom: 1rem;
+}
+
+.job-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.job-meta {
+    display: flex;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+}
+
+.job-mode {
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.job-mode.remote {
+    background-color: rgba(23, 196, 203, 0.1);
+    color: var(--teal);
+}
+
+.job-mode.onsite {
+    background-color: rgba(57, 60, 105, 0.1);
+    color: var(--blue);
+}
+
+.job-location {
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+}
+
+.job-location::before {
+    content: "📍";
+    margin-right: 0.3rem;
+}
+
+.job-description {
+    opacity: 0;
+    max-height: 0;
+    transition: all 0.3s ease;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.job-card.active .job-description {
+    opacity: 1;
+    max-height: 200px;
+}
+
+.job-buttons {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s ease 0.1s;
+}
+
+.job-card.active .job-buttons {
+    opacity: 1;
+}
+
+.apply-btn {
+    flex: 1;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.apply-here {
+    background-color: var(--teal);
+    color: white;
+}
+
+.apply-here:hover {
+    background-color: #12a8ae;
+}
+
+.apply-linkedin {
+    background-color: white;
+    color: #0077b5;
+    border: 1px solid #0077b5;
+}
+
+.apply-linkedin:hover {
+    background-color: rgba(0, 119, 181, 0.05);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .job-card {
+        height: 110px;
+    }
+    
+    .job-card.active {
+        height: 240px;
+    }
+    
+    .job-buttons {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .job-title {
+        font-size: 1.1rem;
+    }
+    
+    .job-meta {
+        font-size: 0.8rem;
+    }
+}

@@ -1,0 +1,99 @@
+.table-row .table-cell:nth-child(1) {
+  color: #0099b9; /* Grey color for RETENTION column */
+}
+
+.talent-comparison {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.talent-comparison h2 {
+  font-size: 2.5rem;
+  text-align: left;
+  margin-bottom: 1rem;
+color: #0099b9;
+}
+
+.subtitle {
+  text-align: left;
+  font-size: 1.25rem;
+    color: #0099b9;
+  margin-bottom: 3rem;
+}
+
+.comparison-table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.table-row {
+  display: table-row;
+}
+
+.table-row.header {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+.table-cell {
+  display: table-cell;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.table-cell.empty {
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-cell.better {
+  background-color: #f9fafb;
+}
+
+.table-cell.better::before {
+  content: "✔";
+  color: #10b981;
+  margin-right: 0.5rem;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .comparison-table,
+  .table-row,
+  .table-cell {
+    display: block;
+  }
+  
+  .table-row {
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  
+  .table-cell {
+    border-bottom: none;
+  }
+  
+  .table-cell.empty {
+    display: none;
+  }
+  
+  .table-row.header .table-cell {
+    display: none;
+  }
+  
+  .table-row.header .table-cell:first-child {
+    display: block;
+    text-align: center;
+    padding: 1rem;
+    background-color: #f9fafb;
+  }
+}

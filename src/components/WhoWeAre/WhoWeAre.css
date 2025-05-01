@@ -1,0 +1,96 @@
+/* ===== WHO WE ARE SECTION ===== */
+.who-we-are {
+    padding: 4rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+}
+
+.who-we-are-container {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+    padding: 0 2rem;
+    gap: 4rem;
+}
+
+/* Left Image Styling */
+.who-we-are-image img {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    border-radius: 16px;
+    object-fit: cover;
+}
+
+/* Right Text Content */
+.who-we-are-text {
+    flex: 1;
+}
+
+.who-we-are-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0099b9;
+    margin-bottom: 1rem;
+}
+
+.who-we-are-highlight {
+    font-size: 1.25rem;
+    color: #0099b9;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.who-we-are-highlight span {
+    font-weight: 700;
+}
+
+.who-we-are-description {
+    font-size: 1rem;
+    color: #444;
+    line-height: 1.7;
+    max-width: 600px;
+    margin-bottom: 1.5rem;
+}
+
+.who-we-are-description span {
+    font-weight: 600;
+    color: #0099b9;
+}
+
+.who-we-are-button {
+    background-color: #0099b9;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.who-we-are-button:hover {
+    background-color: #007a96;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .who-we-are-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .who-we-are-image img {
+        max-width: 100%;
+    }
+
+    .who-we-are-text {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}

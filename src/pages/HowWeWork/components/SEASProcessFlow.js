@@ -1,0 +1,108 @@
+import React, { useState, useEffect } from 'react';
+import { FaBullhorn, FaFilter, FaUserFriends, FaDatabase, FaUsers } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const SEASProcessFlow = () => {
+    const [activeStep, setActiveStep] = useState(0);
+    const steps = [
+        { icon: <FaBullhorn />, label: "Advertising" },
+        { icon: <FaFilter />, label: "Screening" },
+        { icon: <FaUserFriends />, label: "Interview" },
+        { icon: <FaDatabase />, label: "Reference Data" },
+        { icon: <FaUsers />, label: "Talent Pool" }
+    ];
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setActiveStep(prev => (prev + 1) % steps.length);
+        }, 2500);
+        return () => clearInterval(timer);
+    }, []);
+
+    return (
+        <div className="seas-flow-container">
+            <div className="flow-header">
+                <h2>We Are Professionals</h2>
+                <p>With Minimum Bachelor's Degree & 1-2 Years of Experience</p>
+            </div>
+
+            <div className="process-track">
+                {steps.map((step, index) => (
+                    <React.Fragment key={index}>
+                        <div className="step-container">
+                            <motion.div
+                                className="step-icon"
+                                animate={{
+                                    scale: activeStep === index ? 1.1 : 1,
+                                    backgroundColor: activeStep === index ? '#06a3c2' : '#e6f7fa'
+                                }}
+                                transition={{
+                                    type: 'spring',
+                                    stiffness: 400,
+                                    damping: 15
+                                }}
+                                whileHover={{ scale: 1.05 }}
+                            >
+                                <motion.div
+                                    className="icon-wrapper"
+                                    animate={{
+                                        color: activeStep === index ? 'white' : '#06a3c2'
+                                    }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    {React.cloneElement(step.icon, { size: 28 })}
+                                </motion.div>
+                            </motion.div>
+
+                            <motion.div
+                                className="step-label"
+                                animate={{
+                                    color: activeStep === index ? '#06a3c2' : '#666',
+                                    fontWeight: activeStep === index ? '600' : '400'
+                                }}
+                            >
+                                {step.label}
+                            </motion.div>
+                        </div>
+
+                        {index < steps.length - 1 && (
+                            <motion.div
+                                className="connector"
+                                animate={{
+                                    opacity: activeStep > index ? 1 : 0.3,
+                                    backgroundColor: activeStep > index ? '#06a3c2' : '#e6f7fa'
+                                }}
+                            />
+                        )}
+                    </React.Fragment>
+                ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+                <motion.div
+                    key={activeStep}
+                    className="step-description"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                >
+                    {getStepDescription(activeStep)}
+                </motion.div>
+            </AnimatePresence>
+        </div>
+    );
+};
+
+function getStepDescription(step) {
+    const descriptions = [
+        "We advertise positions across multiple platforms to attract top talent.",
+        "Each candidate undergoes rigorous screening for qualifications.",
+        "Shortlisted candidates complete multiple interview rounds.",
+        "We verify all references and background information.",
+        "Successful candidates join our exclusive talent pool."
+    ];
+    return descriptions[step];
+}
+
+export default SEASProcessFlow;

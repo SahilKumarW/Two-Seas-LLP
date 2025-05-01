@@ -1,0 +1,112 @@
+.stories {
+    padding: 60px 5%;
+}
+
+.stories-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stories-header h2 {
+    font-size: 2rem;
+    color: #18c4cb;
+}
+
+.more-link {
+    font-size: 1rem;
+    color: #18c4cb;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.more-link:hover {
+    color: #007a99;
+}
+
+.stories-grid {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.story-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 32%;
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.story-card:hover {
+    transform: translateY(-5px);
+}
+
+.story-image {
+    width: 100%;
+    height: 200px; /* Fixed height to maintain consistency */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.story-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.story-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.story-content h3 {
+    font-size: 1.4rem;
+    color: #18c4cb;
+    margin-bottom: 5px;
+}
+
+.role {
+    color: #18c4cb;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.description {
+    font-size: 0.95rem;
+    color: #555;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    flex-grow: 1; /* Makes sure CTA button aligns at the bottom */
+}
+
+.cta--button {
+    background: #18c4cb;
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    text-decoration: none;
+    width: fit-content;
+    align-self: flex-start; /* Aligns button at the bottom */
+}
+
+.cta--button:hover {
+    background: #007a99;
+    transform: scale(1.05);
+}

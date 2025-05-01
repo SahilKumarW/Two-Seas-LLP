@@ -1,0 +1,161 @@
+/* Background Overlay */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(57, 60, 104, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Main Form Container */
+.form-container {
+    display: flex;
+    background: white;
+    max-width: 800px;
+    width: 90%;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Left Section (Logo) */
+.left-section {
+    width: 40%;
+    background: #11c4cb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px 0 0 10px;
+}
+
+.logo {
+    max-width: 80%;
+    height: auto;
+}
+
+/* Right Section (Form) */
+.right-section {
+    width: 60%;
+    padding: 40px;
+}
+
+.company-name {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #393c68;
+    margin-bottom: 10px;
+}
+
+.form-subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #393c68;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #11c4cb;
+    outline: none;
+    box-shadow: 0 0 5px rgba(17, 196, 203, 0.5);
+}
+
+/* Phone Input */
+.phone-container {
+    width: 100%;
+}
+
+.phone-input {
+    width: 100% !important;
+    border: 1px solid #ccc !important;
+    padding: 12px !important;
+    border-radius: 5px !important;
+    font-size: 16px !important;
+}
+
+.phone-input:focus {
+    border-color: #11c4cb !important;
+    box-shadow: 0 0 5px rgba(17, 196, 203, 0.5);
+}
+
+/* Submit Button */
+.submit-btn {
+    width: 100%;
+    background: #11c4cb;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    transition: background 0.3s ease, transform 0.2s;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background: #0fa8b0;
+    transform: scale(1.05);
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .form-container {
+        flex-direction: column;
+        max-width: 90%;
+    }
+
+    .left-section {
+        width: 100%;
+        border-radius: 10px 10px 0 0;
+        padding: 20px;
+    }
+
+    .right-section {
+        width: 100%;
+        padding: 30px;
+    }
+
+    .logo {
+        max-width: 50%;
+    }
+}

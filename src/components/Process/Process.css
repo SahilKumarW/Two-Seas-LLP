@@ -1,0 +1,125 @@
+.process-container {
+    text-align: center;
+    padding: 50px 10%;
+}
+
+.process-title {
+    font-size: 2rem;
+    color: #18c4cb;
+    margin-bottom: 40px;
+}
+
+.process-steps {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+}
+
+.process-step {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.process-number-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.process-number {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    border: 3px solid #ff4081;
+    color: #18c4cb;
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.vertical-line {
+    width: 2px;
+    height: 360%;
+    background: #ccc;
+    position: absolute;
+    top: 50px;
+}
+
+.process-step:last-child .vertical-line {
+    display: none;
+}
+
+.process-content {
+    background: #eef7fa;
+    padding: 20px;
+    flex-grow: 1;
+    margin-left: 20px;
+    border-radius: 5px;
+    text-align: left;
+}
+
+.process-content h3 {
+    color: #18c4cb;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+
+.underline {
+    width: 40px;
+    height: 2px;
+    background: #ff4081;
+    margin-bottom: 10px;
+}
+
+.process-content p {
+    color: #333;
+    font-size: 1rem;
+}
+
+.process-button {
+    background: #18c4cb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.process-button:hover {
+    background: #007c99;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .process-step {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .process-number-container {
+        align-items: center;
+    }
+
+    .vertical-line {
+        top: 60px;
+        height: 100px;
+    }
+
+    .process-content {
+        text-align: center;
+        width: 100%;
+        margin-left: 0;
+    }
+}

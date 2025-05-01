@@ -1,0 +1,188 @@
+/* ===== WHY US SECTION ===== */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+.why-us-section {
+  padding: 5rem 0 6rem; /* Reduced top padding */
+  background-color: #f9fbfd;
+  position: relative;
+}
+
+.why-us-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section-title {
+  font-size: 3rem; /* Slightly larger */
+  margin-bottom: 2rem; /* Reduced margin */
+  text-align: center;
+  position: relative;
+  top: -0.5rem; /* Moved up slightly */
+}
+
+.script-font {
+  font-family: 'Dancing Script', cursive;
+  color: #0099b9;
+  font-weight: 700;
+  font-size: 3.5rem;
+  display: inline-block;
+  transform: translateY(5px);
+}
+
+.title-slash {
+  color: #0099b9;
+  margin-right: 12px;
+  font-weight: 400;
+  font-size: 2.5rem;
+  display: inline-block;
+  transform: translateY(-5px);
+}
+
+/* Rest of your existing CSS remains the same */
+.process-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 4rem;
+  gap: 1rem;
+}
+
+.flow-section {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.flow-section h3 {
+  color: #0099b9;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.flow-section p {
+  color: #6b7c93;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.secondary-flow {
+  margin-top: 0.5rem;
+}
+
+.flow-arrow {
+  color: #0099b9;
+  font-weight: 700;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.benefit-card {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border-top: 4px solid #0099b9;
+  transition: all 0.3s ease;
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 153, 185, 0.15);
+}
+
+.benefit-card h3 {
+  color: #0099b9;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.benefit-card p {
+  color: #6b7c93;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.card-detail {
+  font-size: 0.95rem;
+  margin-top: 1rem;
+  color: #444;
+  font-style: italic;
+}
+
+.business-model {
+  font-weight: 600;
+  color: #0099b9;
+  margin-top: 1rem;
+}
+
+.highlight-card {
+  background: linear-gradient(135deg, #f0f8fa 0%, #e0f2f5 100%);
+  border-top-color: #00637a;
+}
+
+.why-us-section::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(0, 153, 185, 0.1) 0%, transparent 70%);
+}
+
+@media (max-width: 1200px) {
+  .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .why-us-section {
+    padding: 3rem 0 4rem;
+  }
+  
+  .section-title {
+    font-size: 2.5rem;
+  }
+  
+  .script-font {
+    font-size: 3rem;
+  }
+  
+  .flow-section {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .benefit-card {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .script-font {
+    font-size: 2.5rem;
+  }
+  
+  .flow-section h3,
+  .flow-section p {
+    font-size: 0.9rem;
+  }
+  
+  .flow-arrow {
+    transform: rotate(90deg);
+  }
+}

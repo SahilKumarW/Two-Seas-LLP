@@ -1,0 +1,30 @@
+.quality {
+  background-color: white;
+}
+
+.quality h2 {
+  text-align: center;
+}
+
+.quality p {
+  text-align: center;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.quality-content {
+  max-width: 800px;
+  margin: 3rem auto 0;
+}
+
+.quality-content h3 {
+  color: var(--primary);
+  margin-top: 2rem;
+}
+
+.divider {
+  height: 1px;
+  background-color: rgba(0,0,0,0.1);
+  margin: 2rem 0;
+}

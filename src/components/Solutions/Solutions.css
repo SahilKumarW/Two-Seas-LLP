@@ -1,0 +1,91 @@
+/* Container Styling */
+.solutions-container {
+    padding: 50px;
+    text-align: left;
+}
+
+.solutions-title {
+    font-size: 2rem;
+    color: #18c4cb;
+    margin-bottom: 20px;
+}
+
+/* Grid Layout */
+.solutions-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.solution-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 48%;
+    transition: transform 0.3s ease-in-out;
+}
+
+.solution-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Text Content */
+.solution-text {
+    max-width: 60%;
+}
+
+.solution-text h3 {
+    font-size: 1.5rem;
+    color: #18c4cb;
+    margin-bottom: 10px;
+}
+
+.solution-text p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Explore Button */
+.explore-button {
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.explore-button:hover {
+    opacity: 0.8;
+}
+
+/* Image Styling */
+.solution-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .solutions-grid {
+        flex-direction: column;
+    }
+    
+    .solution-card {
+        width: 100%;
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .solution-text {
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+}

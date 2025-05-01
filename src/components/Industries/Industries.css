@@ -1,0 +1,42 @@
+.industries-container {
+    text-align: center;
+    padding: 90px;
+}
+
+.industries-title {
+    font-size: 2rem;
+    color: #18c4cb;
+    margin-bottom: 30px;
+}
+
+.industries-row {
+    display: flex;
+    justify-content: center;
+    gap: 180px;
+}
+
+.industry-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.industry-item img {
+    width: 180px;
+    height: 180px;
+    margin-bottom: 10px;
+}
+
+.industry-item p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #18c4cb;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 768px) {
+    .industries-row {
+        flex-direction: column;
+        gap: 30px;
+    }
+}

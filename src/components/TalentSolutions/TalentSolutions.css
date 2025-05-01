@@ -1,0 +1,249 @@
+/* ===== TALENT SOLUTIONS SECTION ===== */
+.talent-solutions {
+  padding: 5rem 0 7rem;
+  background: linear-gradient(to bottom, #ffffff 0%, #f8fcff 100%);
+  position: relative;
+}
+
+.solutions-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.title-wrapper {
+  margin-bottom: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #0a2540;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title-line-1 {
+  color: #0099b9;
+  position: relative;
+  margin-bottom: 0.5rem;
+}
+
+.title-line-1::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: rgba(0, 153, 185, 0.15);
+  z-index: -1;
+  border-radius: 4px;
+}
+
+.title-line-2 {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.all-in-one-badge {
+  display: inline-block;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: white;
+  background: #0099b9;
+  padding: 0.7rem 2.5rem;
+  border-radius: 50px;
+  box-shadow: 0 6px 15px rgba(0, 153, 185, 0.25);
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: fit-content;
+}
+
+.all-in-one-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 153, 185, 0.35);
+}
+
+.solutions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 5rem;
+}
+
+.solution-row {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+}
+
+.solution-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.8rem 2.5rem;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+  min-width: 260px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  border-left: 5px solid #0099b9;
+}
+
+.solution-item:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 153, 185, 0.18);
+}
+
+.solution-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, #0099b9 0%, #007a96 100%);
+  color: white;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(0, 153, 185, 0.3);
+}
+
+.solution-text {
+  font-size: 1.3rem;
+  color: #0a2540;
+  font-weight: 600;
+}
+
+.compliance-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 153, 185, 0.1);
+}
+
+.logo-item {
+  height: 80px; /* Increased logo size */
+  display: flex;
+  align-items: center;
+  transition: all 0.4s ease;
+  filter: none; /* Removed grayscale filter */
+  opacity: 1; /* Full opacity */
+}
+
+.logo-item:hover {
+  transform: scale(1.3); /* Increased hover scale */
+}
+
+.logo-item img {
+  height: 100%;
+  width: auto;
+  max-width: 150px; /* Increased max width */
+  object-fit: contain;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .compliance-logos {
+    gap: 3rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .section-title {
+    font-size: 2.4rem;
+  }
+  
+  .solution-item {
+    min-width: 220px;
+    padding: 1.5rem 2rem;
+  }
+  
+  .compliance-logos {
+    gap: 2.5rem;
+  }
+  
+  .logo-item {
+    height: 70px; /* Adjusted for tablet */
+  }
+}
+
+@media (max-width: 768px) {
+  .talent-solutions {
+    padding: 4rem 0 6rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .all-in-one-badge {
+    font-size: 1.2rem;
+    padding: 0.6rem 2rem;
+  }
+  
+  .solution-row {
+    gap: 2rem;
+  }
+  
+  .solution-item {
+    min-width: 200px;
+    padding: 1.3rem 1.8rem;
+  }
+  
+  .solution-text {
+    font-size: 1.2rem;
+  }
+  
+  .compliance-logos {
+    gap: 2rem;
+    padding-top: 3rem;
+  }
+  
+  .logo-item {
+    height: 60px; /* Adjusted for mobile */
+  }
+  
+  .logo-item:hover {
+    transform: scale(1.2); /* Slightly reduced hover effect on mobile */
+  }
+}
+
+@media (max-width: 576px) {
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .solution-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .solution-item {
+    width: 100%;
+    max-width: 300px;
+    justify-content: flex-start;
+  }
+  
+  .compliance-logos {
+    gap: 1.5rem;
+  }
+  
+  .logo-item {
+    height: 50px; /* Smaller for mobile */
+  }
+}
