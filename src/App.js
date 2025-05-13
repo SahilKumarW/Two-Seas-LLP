@@ -18,17 +18,20 @@ import BookCall from './pages/BookCall/BookCall';
 import Contact from './components/Contact/Contact';
 import Careers from './pages/Careers/Careers.js';
 import HowWeWork from './pages/HowWeWork/HowWeWork.js';
+import AdminLogin from './components/AdminLogin/AdminLogin.jsx';
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard.jsx";
 import './App.css';
 
 function Layout() {
   const location = useLocation();
 
   const isBookCallPage = location.pathname === "/book-call";
-  const isContactPage = location.pathname === "/contact-us"; // Optional: if you want special handling for contact page
+  const isContactPage = location.pathname === "/contact-us";
+  const isAdminLoginPage = location.pathname === "/admin-login";
 
   return (
     <>
-      {!isBookCallPage && <Navbar />}
+      {!isBookCallPage && !isAdminLoginPage && <Navbar />}
 
       <Routes>
         <Route path="/" element={
@@ -51,9 +54,11 @@ function Layout() {
         <Route path="/contact-us" element={<Contact />} />
         <Route path="/careers" element={<Careers />} />
         <Route path="/how-we-work" element={<HowWeWork />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
       </Routes>
 
-      {!isBookCallPage && <Footer />}
+      {!isBookCallPage && !isAdminLoginPage && <Footer />}
     </>
   );
 }
