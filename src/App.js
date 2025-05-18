@@ -20,6 +20,7 @@ import Careers from './pages/Careers/Careers.js';
 import HowWeWork from './pages/HowWeWork/HowWeWork.js';
 import AdminLogin from './components/AdminLogin/AdminLogin.jsx';
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard.jsx";
+import ManagedServices from "./pages/Managed Services/ManagedServices.jsx";
 import './App.css';
 
 function Layout() {
@@ -56,6 +57,7 @@ function Layout() {
         <Route path="/how-we-work" element={<HowWeWork />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/managed-services" element={<ManagedServices />} />
       </Routes>
 
       {!isBookCallPage && !isAdminLoginPage && <Footer />}
