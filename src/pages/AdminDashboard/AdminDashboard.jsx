@@ -1,36 +1,35 @@
 import React, { useState } from 'react';
 import './AdminDashboard.css';
+import SideNav from '../AdminDashboard/components/SideNav';
+import adminImage from '../../assets/admin.jpg'
 
 const AdminDashboard = () => {
-  // State for profile section
   const [admin, setAdmin] = useState({
     name: 'Shaista',
     rate: 2,
     experience: '2 years',
     expertise: 'Technical Recruitment',
-    image: '/path-to-admin-image.jpg'
+    image: adminImage
   });
 
-  // State for time selection
   const [selectedTimes, setSelectedTimes] = useState({
     day: '',
     date: '',
     time: ''
   });
 
-  // State for UI interactions
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [interviewRequested, setInterviewRequested] = useState(false);
 
-  // Sample time slots data
   const timeSlots = [
     { day: 'Mon', date: 'Jun 5', time: '10:00 AM' },
     { day: 'Tue', date: 'Jun 6', time: '2:00 PM' },
-    { day: 'Wed', date: 'Jun 7', time: '4:30 PM' }
+    { day: 'Wed', date: 'Jun 7', time: '4:30 PM' },
+    { day: 'Thu', date: 'Jun 8', time: '11:00 AM' },
+    { day: 'Fri', date: 'Jun 9', time: '3:15 PM' }
   ];
 
-  // Event handlers
   const handleTimeSelect = (slot) => {
     setSelectedTimes({
       day: slot.day,
@@ -42,14 +41,11 @@ const AdminDashboard = () => {
 
   const handlePlayVideo = () => {
     setVideoPlaying(!videoPlaying);
-    // In a real app, you would trigger video playback here
   };
 
   const handleRequestInterview = () => {
     if (selectedTimes.day && selectedTimes.date && selectedTimes.time) {
       setInterviewRequested(true);
-      // In a real app, you would send this data to your backend
-      console.log('Interview requested for:', selectedTimes);
     } else {
       alert('Please select day, date and time first');
     }
@@ -57,157 +53,236 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard">
-      {/* Side Navigation */}
-      <div className="side-nav">
-        <h3>Sales & Marketing</h3>
-        <ul>
-          <li>Untitled Professionals</li>
-          <li>AI and Telecom</li>
-          <li>Contact Centre</li>
-          <li>Accounting & Finance</li>
-          <li>Insurance</li>
-          <li>Medical</li>
-          <li>Dental</li>
-        </ul>
-      </div>
+      <SideNav />
 
-      {/* Main Content */}
+      {/* Colorful Main Content */}
       <div className="main-content">
-        {/* Admin Profile Section */}
+        {/* Updated Profile Section with full-height image */}
         <div className="profile-section">
-          <div className="profile-pic">
-            <img src={admin.image} alt="Admin" />
-            <button className="edit-pic-btn">✎</button>
+          <div className="profile-image-container">
+            <img src={admin.image} alt={admin.name} className="profile-image" />
           </div>
-          <div className="profile-info">
-            <h2 contentEditable onBlur={(e) => setAdmin({ ...admin, name: e.target.textContent })}>
-              {admin.name}
-            </h2>
-            <div className="rate">
-              $<input
-                type="number"
-                value={admin.rate}
-                onChange={(e) => setAdmin({ ...admin, rate: e.target.value })}
-                min="0"
-                step="0.5"
-              />/hr
+
+          <div className="profile-content">
+            <div className="profile-header">
+              <h2>{admin.name}</h2>
+              <div className="rate-badge">${admin.rate}/hr</div>
             </div>
-            <div className="details">
-              <p>
-                <strong>Experience:</strong>
-                <select
-                  value={admin.experience}
-                  onChange={(e) => setAdmin({ ...admin, experience: e.target.value })}
-                >
-                  <option value="1 year">1 year</option>
-                  <option value="2 years">2 years</option>
-                  <option value="3+ years">3+ years</option>
-                </select>
-              </p>
-              <p>
-                <strong>Expertise:</strong>
-                <input
-                  type="text"
-                  value={admin.expertise}
-                  onChange={(e) => setAdmin({ ...admin, expertise: e.target.value })}
-                />
-              </p>
-              <button className="resume-btn" onClick={() => alert('Opening resume...')}>
-                Resume
-              </button>
+
+            <div className="profile-details">
+              <div className="detail-item">
+                <span className="detail-label">Experience</span>
+                <span className="detail-value">{admin.experience}</span>
+              </div>
+              <div className="detail-item">
+                <span className="detail-label">Expertise</span>
+                <span className="detail-value">{admin.expertise}</span>
+              </div>
             </div>
+
+            <button className="resume-btn">
+              <DownloadIcon /> Download Resume
+            </button>
           </div>
         </div>
 
         {/* Video Section */}
-        <div className="video-tile">
-          {videoPlaying ? (
-            <div className="video-player">
-              {/* Video player placeholder */}
-              <div className="video-placeholder"></div>
-              <button className="video-control" onClick={handlePlayVideo}>
-                ⏸️ Pause Video
-              </button>
-            </div>
-          ) : (
-            <button className="play-video-btn" onClick={handlePlayVideo}>
-              ▶ PLAY VIDEO
-            </button>
-          )}
-        </div>
-
-        {/* Request Interview Section */}
-        <div className="request-section">
-          <button
-            className={`request-btn ${interviewRequested ? 'requested' : ''}`}
-            onClick={handleRequestInterview}
-            disabled={interviewRequested}
-          >
-            {interviewRequested ? 'Interview Requested ✓' : 'Request Interview'}
-          </button>
-
-          <div className="time-selector">
-            <div className="time-labels">
-              <span className={selectedTimes.day ? 'selected' : ''}>
-                {selectedTimes.day || 'Day'}
-              </span>
-              <span className={selectedTimes.date ? 'selected' : ''}>
-                {selectedTimes.date || 'Date'}
-              </span>
-              <span className={selectedTimes.time ? 'selected' : ''}>
-                {selectedTimes.time || 'Time'}
-              </span>
-            </div>
-            <div
-              className={`dropdown-icon ${showTimeDropdown ? 'open' : ''}`}
-              onClick={() => setShowTimeDropdown(!showTimeDropdown)}
-            >
-              ↓
-            </div>
-
-            {showTimeDropdown && (
-              <div className="time-dropdown">
-                {timeSlots.map((slot, index) => (
-                  <div
-                    key={index}
-                    className="time-option"
-                    onClick={() => handleTimeSelect(slot)}
-                  >
-                    <span>{slot.day}</span>
-                    <span>{slot.date}</span>
-                    <span>{slot.time}</span>
+        <div className="video-section">
+          <h3 className="section-title">Introduction Video</h3>
+          <div className="video-container">
+            <div className="video-wrapper">
+              {/* Dummy video player */}
+              <div className="dummy-video">
+                <div className="video-thumbnail">
+                  <div className="play-overlay" onClick={handlePlayVideo}>
+                    <PlayIcon />
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                </div>
 
-          {/* Confirmation Flow - Only shows after request */}
-          {interviewRequested && (
-            <div className="confirmation-flow">
-              <div className="flow-item">
-                <div className="flow-icon">|</div>
-                <div className="flow-text">Land at my inbox</div>
-              </div>
-
-              <div className="flow-item">
-                <div className="flow-icon">↓</div>
-                <div className="flow-text">Auto email reply</div>
-              </div>
-
-              <div className="flow-item">
-                <div className="flow-icon">|</div>
-                <div className="flow-text">
-                  Sit back and relax, your interview request with {admin.name} has been submitted.
-                  Our team will contact {admin.name} to confirm and match availability.
+                {/* Video controls */}
+                <div className="video-controls">
+                  <button className="control-btn" onClick={handlePlayVideo}>
+                    {videoPlaying ? '❚❚' : '▶'}
+                  </button>
+                  <div className="progress-bar">
+                    <div className="progress" style={{ width: '35%' }}></div>
+                  </div>
+                  <div className="time">1:24 / 3:45</div>
+                  <button className="control-btn">🔊</button>
+                  <button className="control-btn">⛶</button>
                 </div>
               </div>
             </div>
-          )}
+          </div>
         </div>
+
+        {/* Time Selector with Separate Dropdowns */}
+        <div className="time-selector-container">
+          <h3 style={{ color: '#2A2D7C' }}>Request Interview</h3>
+
+          <div className="time-selector-grid">
+            {/* Day Dropdown */}
+            <div className="time-selector-group">
+              <div
+                className={`time-value ${selectedTimes.day ? 'selected' : ''}`}
+                onClick={() => setShowTimeDropdown(prev => prev === 'day' ? null : 'day')}
+              >
+                {selectedTimes.day || 'Day'}
+                <ChevronDown />
+              </div>
+              {showTimeDropdown === 'day' && (
+                <div className="time-dropdown">
+                  {[...new Set(timeSlots.map(slot => slot.day))].map((day, i) => (
+                    <div
+                      key={i}
+                      className="time-option"
+                      onClick={() => {
+                        setSelectedTimes(prev => ({ ...prev, day }));
+                        setShowTimeDropdown(null);
+                      }}
+                    >
+                      {day}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Date Dropdown */}
+            <div className="time-selector-group">
+              <div
+                className={`time-value ${selectedTimes.date ? 'selected' : ''}`}
+                onClick={() => setShowTimeDropdown(prev => prev === 'date' ? null : 'date')}
+              >
+                {selectedTimes.date || 'Date'}
+                <ChevronDown />
+              </div>
+              {showTimeDropdown === 'date' && (
+                <div className="time-dropdown">
+                  {[...new Set(timeSlots
+                    .filter(slot => !selectedTimes.day || slot.day === selectedTimes.day)
+                    .map(slot => slot.date))].map((date, i) => (
+                      <div
+                        key={i}
+                        className="time-option"
+                        onClick={() => {
+                          setSelectedTimes(prev => ({ ...prev, date }));
+                          setShowTimeDropdown(null);
+                        }}
+                      >
+                        {date}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+
+            {/* Time Dropdown */}
+            <div className="time-selector-group">
+              <div
+                className={`time-value ${selectedTimes.time ? 'selected' : ''}`}
+                onClick={() => setShowTimeDropdown(prev => prev === 'time' ? null : 'time')}
+              >
+                {selectedTimes.time || 'Time'}
+                <ChevronDown />
+              </div>
+              {showTimeDropdown === 'time' && (
+                <div className="time-dropdown">
+                  {timeSlots
+                    .filter(slot =>
+                      (!selectedTimes.day || slot.day === selectedTimes.day) &&
+                      (!selectedTimes.date || slot.date === selectedTimes.date)
+                    )
+                    .map((slot, i) => (
+                      <div
+                        key={i}
+                        className="time-option"
+                        onClick={() => {
+                          setSelectedTimes(prev => ({
+                            ...prev,
+                            time: slot.time,
+                            // Auto-fill day/date if not selected
+                            day: prev.day || slot.day,
+                            date: prev.date || slot.date
+                          }));
+                          setShowTimeDropdown(null);
+                        }}
+                      >
+                        {slot.time}
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <button
+            className="request-btn"
+            onClick={handleRequestInterview}
+            style={{
+              background: interviewRequested ? '#4CAF50' : '#2A2D7C'
+            }}
+          >
+            {interviewRequested ? 'Request Sent!' : 'Schedule Interview'}
+          </button>
+        </div>
+
+        {/* Colorful Confirmation Flow */}
+        {interviewRequested && (
+          <div className="confirmation-flow">
+            <div className="flow-item">
+              <div className="flow-icon" style={{ color: '#FF6B6B' }}>
+                <MailIcon />
+              </div>
+              <div className="flow-text">
+                <strong style={{ color: '#2A2D7C' }}>Land at my inbox</strong>
+                <p>Confirmation sent to your email</p>
+              </div>
+            </div>
+
+            <div className="flow-arrow">
+              <ArrowDown />
+            </div>
+
+            <div className="flow-item">
+              <div className="flow-icon" style={{ color: '#4CC9F0' }}>
+                <AutoReplyIcon />
+              </div>
+              <div className="flow-text">
+                <strong style={{ color: '#2A2D7C' }}>Auto response generated</strong>
+                <p>Shaista has been notified</p>
+              </div>
+            </div>
+
+            <div className="flow-arrow">
+              <ArrowDown />
+            </div>
+
+            <div className="flow-item">
+              <div className="flow-icon" style={{ color: '#4CAF50' }}>
+                <CheckCircle />
+              </div>
+              <div className="flow-text">
+                <strong style={{ color: '#2A2D7C' }}>All set!</strong>
+                <p>Sit back and relax, your interview request with Shaista has been submitted.
+                  Our team will contact Shaista to confirm and match availability.</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
+
+// Sample icon components (would import real icons in production)
+const PlayIcon = () => <span>▶</span>;
+const DownloadIcon = () => <span>⭳</span>;
+const EditIcon = () => <span>✎</span>;
+const ChevronDown = () => <span>⌄</span>;
+const MailIcon = () => <span>✉</span>;
+const AutoReplyIcon = () => <span>↻</span>;
+const CheckCircle = () => <span>✓</span>;
+const ArrowDown = () => <span style={{ color: '#4CC9F0' }}>↓</span>;
 
 export default AdminDashboard;
