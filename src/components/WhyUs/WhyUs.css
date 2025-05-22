@@ -1,4 +1,5 @@
 /* ===== WHY US SECTION ===== */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
 
 .why-us-section {
   padding: 5rem 0 6rem; /* Reduced top padding */
@@ -20,14 +21,14 @@
   top: -0.5rem; /* Moved up slightly */
 }
 
-.script-font {
+/* .script-font {
   font-family: 'Dancing Script', cursive;
   color: #0099b9;
   font-weight: 700;
   font-size: 3.5rem;
   display: inline-block;
   transform: translateY(5px);
-}
+} */
 
 .title-slash {
   color: #0099b9;
