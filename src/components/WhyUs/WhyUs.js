@@ -39,7 +39,7 @@ const WhyUs = () => {
                         <p>Our Ex-Military Officers oversee the workforce on ground to ensure transparency, availability, and best practices.</p>
                     </div>
 
-                    <div className="benefit-card highlight-card">
+                    <div className="benefit-card">
                         <h3>Help in Scaling and Expanding</h3>
                         <p>We help our clients expand their team over time finding the right talent gradually to ensure corporate level expansion.</p>
                         <p className="card-detail">Performance metrics such as KPI's and ROI's are constantly measured and delivered to our clients by our dedicated account managers.</p>
