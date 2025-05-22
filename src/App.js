@@ -21,6 +21,7 @@ import HowWeWork from './pages/HowWeWork/HowWeWork.js';
 import AdminLogin from './components/AdminLogin/AdminLogin.jsx';
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard.jsx";
 import ManagedServices from "./pages/Managed Services/ManagedServices.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
 import './App.css';
 
 function Layout() {
@@ -58,6 +59,7 @@ function Layout() {
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/managed-services" element={<ManagedServices />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
       </Routes>
 
       {!isBookCallPage && !isAdminLoginPage && <Footer />}

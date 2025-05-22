@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import './Careers.css';
+import { jobOpenings } from '../../jobsData';
 
 const Careers = () => {
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [activeCard, setActiveCard] = useState(null);
     const [activeJob, setActiveJob] = useState(null);
+    const [selectedJob, setSelectedJob] = useState(null);
+    const [showJobDetails, setShowJobDetails] = useState(false);
 
     const handleFileChange = (e) => {
         setSelectedFile(e.target.files?.[0] || null);
@@ -17,50 +20,10 @@ const Careers = () => {
         setTimeout(() => setIsSubmitted(false), 3000);
     };
 
-    const jobOpenings = [
-        {
-            title: "Sales Development Representative",
-            description: "Generate new business opportunities and qualify leads for our sales team.",
-            mode: "Remote",
-            location: "Pakistan",
-            type: "Full-time"
-        },
-        {
-            title: "Account Executive",
-            description: "Manage client relationships and drive sales growth in your assigned territory.",
-            mode: "Onsite",
-            location: "Pakistan",
-            type: "Full-time"
-        },
-        {
-            title: "Virtual Assistant",
-            description: "Provide administrative support to our teams across different time zones.",
-            mode: "Remote",
-            location: "Global",
-            type: "Part-time"
-        },
-        {
-            title: "Accounting Associate",
-            description: "Handle day-to-day accounting operations and financial reporting.",
-            mode: "Remote",
-            location: "Pakistan",
-            type: "Full-time"
-        },
-        {
-            title: "Account Executive",
-            description: "Manage client relationships and drive sales growth in your assigned territory.",
-            mode: "Remote",
-            location: "Pakistan",
-            type: "Full-time"
-        },
-        {
-            title: "React Developer",
-            description: "Build and maintain our web applications using modern React practices.",
-            mode: "Onsite",
-            location: "Pakistan",
-            type: "Full-time"
-        }
-    ];
+    const handleJobClick = (job) => {
+        setSelectedJob(job);
+        setShowJobDetails(true);
+    };
 
     const benefits = [
         {
@@ -96,7 +59,7 @@ const Careers = () => {
     ];
 
     return (
-        <div className="careers-container">
+        <div className="careers-root">
             {/* Enhanced Header Section */}
             <header className="careers-header">
                 <div className="header-content">
@@ -117,137 +80,115 @@ const Careers = () => {
                     </p>
                 </div>
             </header>
-
             {/* Job Openings Section */}
             <section className="openings-section">
-                <h2 className="section-title">OUR OPENINGS</h2>
-                <p className="section-subtitle">Explore current opportunities to join our growing team</p>
+                <div className="section-container">
+                    <h2 className="section-title">OUR OPENINGS</h2>
+                    <p className="section-subtitle">Explore current opportunities to join our growing team</p>
 
-                <div className="openings-grid">
-                    {jobOpenings.map((job, index) => (
-                        <div
-                            className={`job-card ${activeJob === index ? 'active' : ''}`}
-                            key={index}
-                            onMouseEnter={() => setActiveJob(index)}
-                            onMouseLeave={() => setActiveJob(null)}
-                        >
-                            <div className="job-header">
-                                <h3 className="job-title">{job.title}</h3>
-                                <div className="job-meta">
-                                    <span className={`job-mode ${job.mode.toLowerCase()}`}>{job.mode}</span>
-                                    <span className="job-location">{job.location}</span>
+                    {!showJobDetails ? (
+                        <div className="openings-grid">
+                            {jobOpenings.map((job) => (
+                                <div
+                                    className={`job-card ${activeJob === job.id ? 'active' : ''}`}
+                                    key={job.id}
+                                    onMouseEnter={() => setActiveJob(job.id)}
+                                    onMouseLeave={() => setActiveJob(null)}
+                                    onClick={() => handleJobClick(job)}
+                                >
+                                    <div className="job-header">
+                                        <h3 className="job-title">{job.title}</h3>
+                                        <div className="job-meta">
+                                            <span className={`job-mode ${job.mode.toLowerCase()}`}>{job.mode}</span>
+                                            <span className="job-location">{job.location}</span>
+                                        </div>
+                                    </div>
+                                    <div className="job-description">
+                                        <p>{job.description}</p>
+                                        <div className="job-buttons">
+                                            <button className="apply-btn apply-here">
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="job-details-container">
+                            <div className="job-details-header">
+                                <h2 className="job-details-title">{selectedJob.title}</h2>
+                                <div className="job-details-meta">
+                                    <span className={`job-mode ${selectedJob.mode.toLowerCase()} text-white`}>
+                                        {selectedJob.mode}
+                                    </span>
+                                    <span className="job-location text-white">
+                                        {selectedJob.location}
+                                    </span>
+                                    <span className="job-type">
+                                        {selectedJob.type}
+                                    </span>
                                 </div>
                             </div>
 
-                            <div className="job-description">
-                                <p>{job.description}</p>
-                                <div className="job-buttons">
-                                    <button className="apply-btn apply-here">
-                                        Apply Here
-                                    </button>
-                                    <button className="apply-btn apply-linkedin">
-                                        Apply via LinkedIn
-                                    </button>
+                            <div className="job-details-content">
+                                <div className="job-details-section">
+                                    <h3>Position Overview</h3>
+                                    <p>{selectedJob.details.overview}</p>
                                 </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
 
-            {/* Benefits Cards Section */}
-            <section className="benefits-section">
-                <h2 className="section-title">Why Join Our Team?</h2>
-                <p className="section-subtitle">We offer more than just a job - we offer growth, community, and meaningful work.</p>
+                                <div className="job-details-section">
+                                    <h3>Key Responsibilities</h3>
+                                    <ul>
+                                        {selectedJob.details.responsibilities.map((item, index) => (
+                                            <li key={index}>{item}</li>
+                                        ))}
+                                    </ul>
+                                </div>
 
-                <div className="benefits-grid">
-                    {benefits.map((benefit, index) => (
-                        <div
-                            className={`benefit-card ${activeCard === index ? 'active' : ''}`}
-                            key={index}
-                            onMouseEnter={() => setActiveCard(index)}
-                            onMouseLeave={() => setActiveCard(null)}
-                        >
-                            <div className="card-icon">{benefit.icon}</div>
-                            <h3 className="card-title">{benefit.title}</h3>
-                            <p className="card-description">{benefit.description}</p>
-                            <div className="card-highlight"></div>
-                        </div>
-                    ))}
-                </div>
-            </section>
+                                <div className="job-details-section">
+                                    <h3>Qualifications</h3>
+                                    <ul>
+                                        {selectedJob.details.qualifications.map((item, index) => (
+                                            <li key={index}>{item}</li>
+                                        ))}
+                                    </ul>
+                                </div>
 
-            {/* Main Form Section */}
-            <main className="careers-main">
-                <h2 className="form-heading">
-                    Ready to join the team? Fill out the application and upload your resume below.
-                </h2>
-                <form onSubmit={handleSubmit} className="application-form">
-                    <div className="form-grid">
-                        <div className="input-field">
-                            <input type="text" placeholder="Name" className="form-input" />
-                        </div>
-                        <div className="input-field">
-                            <input type="email" placeholder="Email" className="form-input" />
-                        </div>
-                        <div className="input-field">
-                            <input type="tel" placeholder="Phone" className="form-input" />
-                        </div>
-                        <div className="input-field">
-                            <input type="text" placeholder="Initiation Date (e.g. 10A)" className="form-input" />
-                        </div>
-                    </div>
-
-                    {/* Enhanced File Upload */}
-                    <div className="file-upload-container">
-                        <label className="file-upload-label">
-                            <div className={`file-upload-box ${selectedFile ? 'has-file' : ''}`}>
-                                {selectedFile ? (
-                                    <>
-                                        <span className="file-icon">📄</span>
-                                        <span className="file-name">{selectedFile.name}</span>
-                                        <button
-                                            type="button"
-                                            className="file-clear"
-                                            onClick={() => setSelectedFile(null)}
-                                        >
-                                            ×
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className="file-icon">⬆️</span>
-                                        <span>Upload Resume (PDF only)</span>
-                                    </>
+                                {selectedJob.details.preferredQualifications && (
+                                    <div className="job-details-section">
+                                        <h3>Preferred Qualifications</h3>
+                                        <ul>
+                                            {selectedJob.details.preferredQualifications.map((item, index) => (
+                                                <li key={index}>{item}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 )}
+
+                                <div className="job-details-section">
+                                    <h3>What We Offer</h3>
+                                    <ul>
+                                        {selectedJob.details.benefits.map((item, index) => (
+                                            <li key={index}>{item}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <button className="submit-btn apply-job-btn">
+                                    Apply for this Position
+                                </button>
+                                <button
+                                    className="back-button"
+                                    onClick={() => setShowJobDetails(false)}
+                                >
+                                    ← Back to Jobs
+                                </button>
                             </div>
-                            <input
-                                type="file"
-                                accept=".pdf"
-                                onChange={handleFileChange}
-                                className="file-input"
-                            />
-                        </label>
-                    </div>
-
-                    <div className="input-field">
-                        <textarea placeholder="Tell us about your experience and why you'd be a great fit (Optional)"
-                            className="form-input textarea-input" rows="4"></textarea>
-                    </div>
-
-                    <button type="submit" className="submit-btn">
-                        Submit Application <span className="btn-arrow">→</span>
-                    </button>
-                </form>
-
-                {isSubmitted && (
-                    <div className="submission-message">
-                        <div className="message-icon">✓</div>
-                        <p>Sit back and relax - your application has been successfully submitted.
-                            We'll contact the right candidates. No follow-up needed.</p>
-                    </div>
-                )}
-            </main>
+                        </div>
+                    )}
+                </div>
+            </section>
         </div>
     );
 };

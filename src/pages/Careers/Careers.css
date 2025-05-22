@@ -10,11 +10,16 @@
   --text-light: #6c757d;
 }
 
-.careers-container {
-  max-width: 700px;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
+/* New root container for the entire page */
+.careers-root {
   font-family: 'Inter', sans-serif;
+}
+
+/* Container for each section to maintain consistent padding */
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
 }
 
 /* Enhanced Header CSS */
@@ -23,7 +28,7 @@
   color: white;
   padding: 2.5rem;
   border-radius: 16px;
-  margin-bottom: 2.5rem;
+  margin: 2rem 2rem 1.5rem 2rem;
   box-shadow: 0 10px 30px rgba(57, 60, 105, 0.2);
   position: relative;
   overflow: hidden;
@@ -73,7 +78,8 @@
 .form-heading {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--accent-color, #2a2d4e); /* Fallback to teal if no theme variable */
+  color: var(--accent-color, #2a2d4e);
+  /* Fallback to teal if no theme variable */
   text-align: center;
   margin-bottom: 0.5rem;
   margin-top: 1.5rem;
@@ -155,14 +161,14 @@
   .header-title {
     font-size: 1.8rem;
   }
-  
+
   .contact-info {
     flex-direction: column;
     gap: 1.5rem;
     align-items: center;
     width: 100%;
   }
-  
+
   .contact-item {
     width: 100%;
     justify-content: center;
@@ -174,15 +180,15 @@
     font-size: 1.5rem;
     padding: 0 0.5rem;
   }
-  
+
   .title-decoration {
     margin-top: 0.5rem;
   }
-  
+
   .decoration-line {
     width: 40px;
   }
-  
+
   .decoration-dot {
     margin: 0 10px;
   }
@@ -211,6 +217,7 @@
   border-radius: 8px;
   font-size: 0.95rem;
   background: white;
+  color: var(--blue);
   transition: all 0.2s ease;
 }
 
@@ -289,9 +296,10 @@
   display: none;
 }
 
+
 /* Submit Button */
 .submit-btn {
-  width: 100%;
+  width: AUTO;
   padding: 1.1rem;
   background: linear-gradient(135deg, var(--teal), var(--blue));
   color: white;
@@ -342,8 +350,15 @@
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Responsive */
@@ -351,12 +366,12 @@
   .form-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .header-content {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .contact-info {
     width: 100%;
     justify-content: space-between;
@@ -367,11 +382,11 @@
   .careers-container {
     padding: 0 1rem;
   }
-  
+
   .careers-header {
     padding: 1.5rem;
   }
-  
+
   .application-form {
     padding: 1.5rem;
   }
@@ -379,290 +394,567 @@
 
 /* Benefits Section */
 .benefits-section {
-    margin: 3rem 0;
-    text-align: center;
+  margin: 3rem 0;
+  text-align: center;
 }
 
 .section-title {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--blue);
-    margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--blue);
+  margin-bottom: 1rem;
 }
 
 .section-subtitle {
-    color: var(--text-light);
-    margin-bottom: 2rem;
-    font-size: 1.1rem;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
 }
 
 .benefits-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .benefit-card {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem 1.5rem;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(57, 60, 105, 0.1);
+  background: white;
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(57, 60, 105, 0.1);
 }
 
 .benefit-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(57, 60, 105, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(57, 60, 105, 0.15);
 }
 
 .benefit-card.active {
-    background: linear-gradient(135deg, rgba(23, 196, 203, 0.05), rgba(57, 60, 105, 0.05));
+  background: linear-gradient(135deg, rgba(23, 196, 203, 0.05), rgba(57, 60, 105, 0.05));
 }
 
 .card-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1.2rem;
-    transition: all 0.3s ease;
+  font-size: 2.5rem;
+  margin-bottom: 1.2rem;
+  transition: all 0.3s ease;
 }
 
 .benefit-card:hover .card-icon {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .card-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: var(--blue);
-    margin-bottom: 0.8rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 0.8rem;
 }
 
 .card-description {
-    color: var(--text-light);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    transition: all 0.3s ease;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  transition: all 0.3s ease;
 }
 
 .benefit-card:hover .card-description {
-    color: var(--text);
+  color: var(--text);
 }
 
 .card-highlight {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, var(--teal), var(--blue));
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--teal), var(--blue));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
 }
 
 .benefit-card:hover .card-highlight {
-    transform: scaleX(1);
+  transform: scaleX(1);
 }
 
 .textarea-input {
-    resize: vertical;
-    min-height: 100px;
+  resize: vertical;
+  min-height: 100px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .benefits-grid {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
-    
-    .section-title {
-        font-size: 1.5rem;
-    }
-    
-    .section-subtitle {
-        font-size: 1rem;
-    }
+  .benefits-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .section-subtitle {
+    font-size: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
-    .benefit-card {
-        padding: 1.5rem 1rem;
-    }
-    
-    .card-title {
-        font-size: 1.1rem;
-    }
-    
-    .card-description {
-        font-size: 0.9rem;
-    }
+  .benefit-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+  }
+
+  .card-description {
+    font-size: 0.9rem;
+  }
 }
 
 /* Add these styles to your existing Careers.css */
 
 /* Job Openings Section */
 .openings-section {
-    margin: 3rem 0;
-    text-align: center;
+  margin: 1rem 0;
+  text-align: center;
 }
 
 .openings-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.65rem;
+  margin-top: 0.3rem;
 }
 
 .job-card {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: left;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(57, 60, 105, 0.1);
-    height: 120px;
-    transition: height 0.3s ease;
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  transition: height 0.3s ease-out;
+  /* Smooth transition for height */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(57, 60, 105, 0.1);
+  height: 120px;
+  /* Initial fixed height */
 }
 
-.job-card.active {
-    height: 220px;
-    box-shadow: 0 10px 25px rgba(57, 60, 105, 0.15);
+/* Dynamic height on hover */
+.job-card:hover {
+  height: auto;
+  /* Allow height to adjust to content */
+  min-height: 120px;
+  /* Ensure it doesn't collapse smaller than initial */
+  box-shadow: 0 10px 25px rgba(57, 60, 105, 0.15);
 }
+
+/* When the job card is active (clicked), ensure it's fully expanded */
+.job-card.active {
+  height: auto;
+  /* Should match hover behavior for consistent experience */
+  min-height: 220px;
+  /* This was for a fixed expanded height, now 'auto' is better */
+  box-shadow: 0 10px 25px rgba(57, 60, 105, 0.15);
+}
+
 
 .job-header {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .job-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--blue);
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 0.5rem;
+  margin-top: 0.2rem;
+  /* Add this */
+
+  line-height: 1.3;
 }
 
 .job-meta {
-    display: flex;
-    gap: 0.8rem;
-    font-size: 0.85rem;
+  display: flex;
+  gap: 0.8rem;
+  font-size: 0.85rem;
 }
 
 .job-mode {
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-weight: 500;
+  color: var(--blue);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
 .job-mode.remote {
-    background-color: rgba(23, 196, 203, 0.1);
-    color: var(--teal);
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--blue);
 }
 
 .job-mode.onsite {
-    background-color: rgba(57, 60, 105, 0.1);
-    color: var(--blue);
+  background-color: rgba(57, 60, 105, 0.1);
+  color: var(--blue);
 }
 
 .job-location {
-    color: var(--text-light);
-    display: flex;
-    align-items: center;
+  color: var(--blue);
+  display: flex;
+  align-items: center;
 }
 
 .job-location::before {
-    content: "📍";
-    margin-right: 0.3rem;
+  content: "📍";
+  margin-right: 0.3rem;
 }
 
 .job-description {
-    opacity: 0;
-    max-height: 0;
-    transition: all 0.3s ease;
-    color: var(--text-light);
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 1rem;
+  opacity: 0;
+  max-height: 0;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+  /* Transition for both */
+  color: var(--text-light);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  /* Adjust as needed */
 }
 
-.job-card.active .job-description {
-    opacity: 1;
-    max-height: 200px;
+/* Reveal description on hover */
+.job-card:hover .job-description {
+  opacity: 1;
+  max-height: 200px;
+  /* A sufficiently large value to reveal content */
 }
+
 
 .job-buttons {
-    display: flex;
-    gap: 0.8rem;
-    margin-top: 1rem;
-    opacity: 0;
-    transition: opacity 0.3s ease 0.1s;
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease 0.1s;
 }
 
-.job-card.active .job-buttons {
-    opacity: 1;
+/* Reveal buttons on hover */
+.job-card:hover .job-buttons {
+  opacity: 1;
 }
+
 
 .apply-btn {
-    flex: 1;
-    padding: 0.6rem;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  flex: 1;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .apply-here {
-    background-color: var(--teal);
-    color: white;
+  background-color: var(--teal);
+  color: white;
 }
 
 .apply-here:hover {
-    background-color: #12a8ae;
+  background-color: #12a8ae;
 }
 
 .apply-linkedin {
-    background-color: white;
-    color: #0077b5;
-    border: 1px solid #0077b5;
+  background-color: white;
+  color: #0077b5;
+  border: 1px solid #0077b5;
 }
 
 .apply-linkedin:hover {
-    background-color: rgba(0, 119, 181, 0.05);
+  background-color: rgba(0, 119, 181, 0.05);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .job-card {
-        height: 110px;
-    }
-    
-    .job-card.active {
-        height: 240px;
-    }
-    
-    .job-buttons {
-        flex-direction: column;
-    }
+  .job-card {
+    height: 110px;
+    /* Slightly adjusted initial height for smaller screens */
+  }
+
+  .job-card:hover,
+  .job-card.active {
+    height: auto;
+    /* Auto height on hover/active for responsive content */
+    min-height: 240px;
+    /* Keep a minimum height for mobile active state if needed */
+  }
+
+  .job-buttons {
+    flex-direction: column;
+  }
 }
 
 @media (max-width: 480px) {
-    .job-title {
-        font-size: 1.1rem;
-    }
-    
-    .job-meta {
-        font-size: 0.8rem;
-    }
+  .job-title {
+    font-size: 1.1rem;
+  }
+
+  .job-meta {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-container {
+    padding: 0 1.5rem;
+  }
+
+  .careers-header {
+    margin: 2.5rem 1rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-container {
+    padding: 0 1rem;
+  }
+
+  .careers-header {
+    margin: 2rem 0.5rem;
+    padding: 1.5rem 1rem;
+  }
+}
+
+/* Job Details Container - Left Aligned */
+.job-details-container {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+  overflow: hidden;
+  border: 1px solid rgba(57, 60, 105, 0.1);
+  text-align: left;
+  /* Ensure all text aligns left */
+}
+
+/* Header Section */
+.job-details-header {
+  background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+  color: white;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  text-align: left;
+  /* Left align header content */
+}
+
+/* Content Section */
+.job-details-content {
+  padding: 2rem;
+  text-align: left;
+  /* Explicit left alignment */
+}
+
+/* Back Button */
+.back-button {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: 600;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  position: relative;
+  z-index: 2;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+  justify-content: flex-start;
+  /* Left align button content */
+  width: auto;
+  text-align: left;
+}
+
+/* Job Title */
+.job-details-title {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+  line-height: 1.2;
+  text-align: left;
+  /* Explicit left alignment */
+}
+
+/* Meta Information */
+.job-details-meta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+  justify-content: flex-start;
+  /* Left align meta tags */
+  color: white;
+}
+
+/* Job Details Header - White Text for Tags */
+.job-details-header {
+  background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+  color: white;
+  padding: 2rem;
+  position: relative;
+}
+
+/* Meta Tags in Header - White Text */
+.job-details-meta>span {
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: white !important;
+  /* Force white text */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-right: 0.5rem;
+}
+
+/* Remote Tag */
+.job-details-meta .job-mode.remote {
+  background-color: rgba(23, 196, 203, 0.3);
+  /* Teal with opacity */
+}
+
+/* Onsite Tag */
+.job-details-meta .job-mode.onsite {
+  background-color: rgba(23, 196, 203, 0.3);
+  /* Teal with opacity */
+}
+
+/* Location Tag */
+.job-details-meta .job-location {
+  background-color: rgba(23, 196, 203, 0.3);
+  /* Teal with opacity */
+}
+
+/* Job Type Tag */
+.job-details-meta .job-type {
+  background-color: rgba(23, 196, 203, 0.3);
+  /* Teal with opacity */
+}
+
+/* Hover Effects */
+.job-details-meta>span:hover {
+  opacity: 0.9;
+}
+
+/* Content Sections */
+.job-details-section {
+  margin-bottom: 2rem;
+  text-align: left;
+  /* Ensure left alignment */
+}
+
+.job-details-section h3 {
+  font-size: 1.3rem;
+  color: var(--blue);
+  margin-bottom: 1rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.job-details-section p {
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.job-details-section ul {
+  padding-left: 1.5rem;
+  text-align: left;
+  margin-left: 0;
+}
+
+.job-details-section li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+  color: var(--text);
+  text-align: left;
+  list-style-position: inside;
+  /* Ensures bullets stay aligned */
+}
+
+/* Apply Button */
+.apply-job-btn {
+  margin-top: 2rem;
+  width: auto;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: block;
+  /* Makes button align left naturally */
+  text-align: center;
+  /* Center text within button */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .job-details-header {
+    padding: 1.5rem;
+  }
+
+  .job-details-content {
+    padding: 1.5rem;
+  }
+
+  .job-details-title {
+    font-size: 1.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-details-header {
+    padding: 1.2rem;
+  }
+
+  .job-details-content {
+    padding: 1.2rem;
+  }
+
+  .job-details-title {
+    font-size: 1.4rem;
+  }
+
+  .job-details-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+    /* Left align in column layout */
+  }
+
+  .job-details-section ul {
+    padding-left: 1rem;
+    /* Slightly reduce padding on mobile */
+  }
 }

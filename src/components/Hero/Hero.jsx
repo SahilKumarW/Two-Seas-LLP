@@ -13,7 +13,7 @@ const Hero = () => {
                     Well practiced in Western approaches and deployable in days; find out how we can provide you talent at 60% of the cost.
                 </p>
                 <Link to="/book-call" className="hero-cta">
-                    Book a strategy call
+                    Book a free strategy call
                 </Link>
             </div>
         </section>

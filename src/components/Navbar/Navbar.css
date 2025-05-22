@@ -29,13 +29,13 @@
 .logo-background {
     width: 80px;
     height: 80px;
-    background-color: white;
-    border-radius: 50%;
+    background-color: white; /* Add white background */
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
+    padding: 5px; /* Add some padding to prevent the logo from touching edges */
+    box-sizing: border-box; /* Include padding in width/height */
 }
 
 .nav-logo {
@@ -114,43 +114,86 @@
     background-color: #03407d;
     color: #ffffff;
 }
+/* Hamburger menu button styles */
+.hamburger {
+    display: none; /* hidden on desktop */
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1100; /* above dropdown */
+}
+
+.hamburger:focus {
+    outline: none;
+}
+
+.bar {
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+}
+
+/* Animate hamburger to "X" when open */
+.hamburger.open .bar:nth-child(1) {
+    transform: rotate(45deg);
+}
+
+.hamburger.open .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.open .bar:nth-child(3) {
+    transform: rotate(-45deg);
+}
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
-    .navbar {
-        height: auto;
+    .hamburger {
+        display: flex;
+    }
+
+    .nav-links {
+        position: fixed; /* overlay menu */
+        top: 99px; /* below navbar */
+        left: 0;
+        right: 0;
+        background-color: #06a3c2;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1rem 2rem;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        z-index: 1000;
+    }
+
+    .nav-links.mobile-open {
+        max-height: 500px; /* enough to show all links */
+        overflow-y: auto;
+    }
+
+    .nav-link, .dropdown-trigger {
+        width: 100%;
         padding: 1rem 0;
     }
-    
-    .nav-container {
-        flex-direction: column;
-        padding: 0 1rem;
-    }
-    
-    .logo-wrapper {
-        margin-bottom: 1rem;
-    }
-    
-    .nav-links {
-        flex-direction: column;
-        gap: 1rem;
-        width: 100%;
-    }
-    
-    .nav-link, .dropdown-trigger {
-        height: auto;
-        padding: 0.5rem 0;
-    }
-    
+
     .dropdown-menu {
         position: static;
         box-shadow: none;
         border-radius: 0;
         border-left: 3px solid #0099b9;
         margin-left: 1rem;
-    }
-    
-    .dropdown-item {
-        padding: 0.5rem 1rem;
+        background-color: transparent;
+        padding-left: 1rem;
     }
 }

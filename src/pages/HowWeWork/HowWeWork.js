@@ -9,10 +9,9 @@ import { FaBullhorn, FaFilter, FaUserFriends, FaDatabase, FaUsers } from 'react-
 const HowWeWork = () => {
     return (
         <div className="how-we-work-page">
-            {/* Existing Content */}
             <header className="how-we-work-header">
                 <h1>How We Work</h1>
-                <p>At Two Seas, we're committed to delivering exceptional HR solutions through our proven processes</p>
+                <p>At Two Seas, we're committed to delivering exceptional HR solutions through our 5-step methodology</p>
             </header>
             <SEASProcessFlow />
             <ProcessSection />

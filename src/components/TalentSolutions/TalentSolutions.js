@@ -4,6 +4,7 @@ import fbrLogo from "../../assets/FBR-Logo.png";
 import secpLogo from "../../assets/SCEP-Logo.png";
 import psebLogo from "../../assets/PSEB-Logo.png";
 import hipaaLogo from "../../assets/Hipaa Compliant.jpg";
+import { Link } from "react-router-dom";
 
 const TalentSolutions = () => {
     return (
@@ -19,49 +20,39 @@ const TalentSolutions = () => {
                     </div>
                 </div>
 
-                <div className="solutions-grid">
-                    {/* First Row */}
-                    <div className="solution-row">
-                        <div className="solution-item">
-                            <span className="solution-number">1</span>
-                            <span className="solution-text">On-Ground Support</span>
-                        </div>
-                        <div className="solution-item">
-                            <span className="solution-number">2</span>
-                            <span className="solution-text">HR</span>
-                        </div>
-                        <div className="solution-item">
-                            <span className="solution-number">3</span>
-                            <span className="solution-text">Compliance</span>
-                        </div>
-                    </div>
-
-                    {/* Second Row */}
-                    <div className="solution-row">
-                        <div className="solution-item">
-                            <span className="solution-number">4</span>
-                            <span className="solution-text">Performance Analytics</span>
-                        </div>
-                        <div className="solution-item">
-                            <span className="solution-number">5</span>
-                            <span className="solution-text">Employee Well-Being</span>
-                        </div>
+                <div className="solutions-content">
+                    <div className="solutions-grid">
+                        {[1, 2, 3, 4, 5, 6].map((num) => (
+                            <div key={num} className="solution-item">
+                                <span className="solution-number">{num}</span>
+                                <span className="solution-text">
+                                    {[
+                                        "HR",
+                                        "Payroll",
+                                        "Compliance",
+                                        "Performance Analytics",
+                                        "On-Ground Support",
+                                        "Employee Well-Being"
+                                    ][num - 1]}
+                                </span>
+                            </div>
+                        ))}
                     </div>
                 </div>
+            </div>
 
+            <div className="compliance-section">
                 <div className="compliance-logos">
-                    <div className="logo-item">
-                        <img src={fbrLogo} alt="FBR" />
-                    </div>
-                    <div className="logo-item">
-                        <img src={secpLogo} alt="SECP" />
-                    </div>
-                    <div className="logo-item">
-                        <img src={psebLogo} alt="PSEB" />
-                    </div>
-                    <div className="logo-item">
-                        <img src={hipaaLogo} alt="HIPAA" />
-                    </div>
+                    {[fbrLogo, secpLogo, psebLogo, hipaaLogo].map((logo, index) => (
+                        <div key={index} className="logo-item">
+                            <img src={logo} alt={["FBR", "SECP", "PSEB", "HIPAA"][index]} />
+                        </div>
+                    ))}
+                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Link to="/how-we-work" className="how-we-work-button">
+                        How We Work
+                    </Link>
                 </div>
             </div>
         </section>

@@ -57,7 +57,7 @@ const PromiseSection = () => {
                         <h3>Client Team Check</h3>
                         <div className="promise-content">
                             <ul>
-                                <li>Our internal team assistance centers developed as a standardized operating procedure we regularly meet within our employees to assess any communications, issues they are going and give them to our clients to complete our intermediary promise.</li>
+                                <p>Our internal team assistance centers developed as a standardized operating procedure we regularly meet within our employees to assess any communications, issues they are going and give them to our clients to complete our intermediary promise.</p>
                             </ul>
                         </div>
                     </div>

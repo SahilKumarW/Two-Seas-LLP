@@ -9,8 +9,8 @@ const Footer = () => {
                 <div className="footer-left">
                     <h2 className="footer-logo">Two Seas LLP<sup>®</sup></h2>
                     <p className="footer-text">
-                        ©2025 Two Seas LLP Pty Ltd <span className="dot">•</span> ABN 18 636 896 485 <span className="dot">•</span>{" "}
-                        <a href="#" className="footer-link">Privacy policy</a>
+                        ©2025 Two Seas LLP <span className="dot">•</span> Incorporation No. 0271957 <span className="dot">•</span>{" "}
+                        <a href="/privacy-policy" className="footer-link">Privacy policy</a>
                     </p>
                 </div>
                 <div className="footer-right">
