@@ -389,6 +389,7 @@ h3 {
 .promise-content p {
     line-height: 1.6;
     margin-bottom: 1rem;
+    text-align: center;
 }
 
 .promise-content ul {
