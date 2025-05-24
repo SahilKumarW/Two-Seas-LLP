@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const SEASProcessFlow = () => {
     const [activeStep, setActiveStep] = useState(0);
+    const [isHovering, setIsHovering] = useState(false);
+    const [hoveredStep, setHoveredStep] = useState(null);
+    
     const steps = [
         { icon: <FaBullhorn />, label: "Advertising" },
         { icon: <FaFilter />, label: "Screening" },
@@ -13,11 +16,25 @@ const SEASProcessFlow = () => {
     ];
 
     useEffect(() => {
-        const timer = setInterval(() => {
-            setActiveStep(prev => (prev + 1) % steps.length);
-        }, 2500);
-        return () => clearInterval(timer);
-    }, []);
+        // Only auto-advance if not hovering on any step
+        if (!isHovering) {
+            const timer = setInterval(() => {
+                setActiveStep(prev => (prev + 1) % steps.length);
+            }, 2500);
+            return () => clearInterval(timer);
+        }
+    }, [isHovering, steps.length]);
+
+    const handleStepHover = (index) => {
+        setIsHovering(true);
+        setHoveredStep(index);
+        setActiveStep(index); // Set the active step to the hovered one
+    };
+
+    const handleStepLeave = () => {
+        setIsHovering(false);
+        setHoveredStep(null);
+    };
 
     return (
         <div className="seas-flow-container">
@@ -42,6 +59,8 @@ const SEASProcessFlow = () => {
                                     damping: 15
                                 }}
                                 whileHover={{ scale: 1.05 }}
+                                onMouseEnter={() => handleStepHover(index)}
+                                onMouseLeave={handleStepLeave}
                             >
                                 <motion.div
                                     className="icon-wrapper"
@@ -60,6 +79,8 @@ const SEASProcessFlow = () => {
                                     color: activeStep === index ? '#06a3c2' : '#666',
                                     fontWeight: activeStep === index ? '600' : '400'
                                 }}
+                                onMouseEnter={() => handleStepHover(index)}
+                                onMouseLeave={handleStepLeave}
                             >
                                 {step.label}
                             </motion.div>
@@ -80,14 +101,14 @@ const SEASProcessFlow = () => {
 
             <AnimatePresence mode="wait">
                 <motion.div
-                    key={activeStep}
+                    key={isHovering ? `hover-${hoveredStep}` : `auto-${activeStep}`}
                     className="step-description"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
                 >
-                    {getStepDescription(activeStep)}
+                    {getStepDescription(isHovering ? hoveredStep : activeStep)}
                 </motion.div>
             </AnimatePresence>
         </div>
@@ -96,7 +117,7 @@ const SEASProcessFlow = () => {
 
 function getStepDescription(step) {
     const descriptions = [
-        "Advertising is done across multiple platforms to attract candidates.",
+        "Advertising of positions is done on multiple platforms.",
         "Each candidate undergoes rigorous screening for qualifications.",
         "Shortlisted candidates complete multiple interview rounds.",
         "We verify all references and background information.",

@@ -22,6 +22,7 @@ import AdminLogin from './components/AdminLogin/AdminLogin.jsx';
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard.jsx";
 import ManagedServices from "./pages/Managed Services/ManagedServices.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
+import ServiceDetails from "./components/ServiceDetails/ServiceDetails.js";
 import './App.css';
 
 function Layout() {
@@ -60,6 +61,8 @@ function Layout() {
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/managed-services" element={<ManagedServices />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/services/:serviceId" element={<ServiceDetails />} />
       </Routes>
 
       {!isBookCallPage && !isAdminLoginPage && <Footer />}

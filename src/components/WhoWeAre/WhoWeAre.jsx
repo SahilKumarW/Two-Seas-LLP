@@ -15,11 +15,14 @@ const WhoWeAre = () => {
                 <div className="who-we-are-text">
                     <h2 className="who-we-are-title">Who we are</h2>
                     <p className="who-we-are-highlight">
-                        A team of <span>retired military officers</span> led by Alumnus of an American University
+                        A team of <span>retired military officers</span> led by Alumnus of Western Academia
                     </p>
                     <p className="who-we-are-description">
-                        We strive to provide <span>transparency</span>, the right strategy, and the extremely necessary
-                        on-ground support to ensure overseas bear results.
+                        We strive to provide <span>relevant talent</span>, the right strategy, and the necessary
+                        on-ground support to ensure offshoring success.
+                    </p>
+                    <p className="who-we-are-description">
+                        We emphasize transparency and best practices at our end utilizing tools to monitor and motivate our workforce.
                     </p>
                     <button className="who-we-are-button">
                         Book a Demo

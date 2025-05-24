@@ -19,7 +19,7 @@ const ProcessSection = () => {
                         <h3>Meeting</h3>
                     </div>
                     <ul className="step-content">
-                        <li>Our dedicated account manager takes a zoom call to discuss how you really realize and achieve.</li>
+                        <li>Our account manager takes a zoom call with you to identify your needs, time zone, company culture, nature of expansion, and quality of talent that you require.</li>
                     </ul>
                 </div>
 
@@ -32,9 +32,9 @@ const ProcessSection = () => {
                         <h3>Selection</h3>
                     </div>
                     <ul className="step-content">
-                        <li>Based on client needs, our VR team selects and filters the right file for your company from the latest pool.</li>
-                        <li>Our latest pool includes thousands of credits from whom only the top makes up a recommended, another option.</li>
-                        <li>Our complete profile is created with a recruiter assessment, and reference input will available to our clients.</li>
+                        <li>Based on client needs, our HR team selects and filters talent from our talent pool or if it feels the need to; re-advertisment is done to scower the right fits according to exact qulifactions that is desired by the clients.</li>
+                        <li>Our latest pool includes thousands of candidates from whom only the top matches are recommended to the clients. Ensuring the saving of time and effort.</li>
+                        <li>Our complete profile is created with a recruiter assessment, and reference input which is made available to our clients.</li>
                     </ul>
                 </div>
 
@@ -47,7 +47,7 @@ const ProcessSection = () => {
                         <h3>Interview</h3>
                     </div>
                     <ul className="step-content">
-                        <li>Once you have selected a candidate of your preference, we will arrange for the interviews help you control the employee and identify the action mechanism.</li>
+                        <li>Once you have selected a candidate of your preference, we will arrange for the interviews, helping you control the employee through our methods of overseeing.</li>
                     </ul>
                 </div>
             </div>

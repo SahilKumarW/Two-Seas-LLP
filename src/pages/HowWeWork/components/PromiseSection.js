@@ -1,70 +1,76 @@
 import React from 'react';
-import { FaChartLine, FaShieldAlt, FaUsers, FaHandshake } from 'react-icons/fa';
+import { FaChartLine, FaShieldAlt, FaUsers, FaHandshake, FaAward, FaHeadset } from 'react-icons/fa';
 
 const PromiseSection = () => {
+    const promises = [
+        {
+            icon: <FaChartLine />,
+            title: "Activity Tracking",
+            description: "Automatic productivity insights, including team work hours, activity levels, task distribution, and screenshots, are readily made available to our clients ensuring transparency and visibility for both us and you."
+        },
+        {
+            icon: <FaShieldAlt />,
+            title: "Security of Data",
+            description: "We ensure data security by enacting strict privacy policies bound by legal contract so that your organization's data remains secure."
+        },
+        {
+            icon: <FaUsers />,
+            title: "Staff Engagement",
+            description: "We own our employees and keep them motivated and engaged. Our team enjoys regular movie nights, work-cations, and outings. We believe in building a high-performance team, both on and off-site."
+        },
+        {
+            icon: <FaHandshake />,
+            title: "Check Ins",
+            description: "We regularly meet with our employees to assess any communication gaps or issues and provide updates to our clients to fulfill our intermediary promise and seek timely solutions."
+        },
+        {
+            icon: <FaAward />,
+            title: "Employee Recognition",
+            description: "Longevity is a core value of our company. We reward 6-month and 1-year tenure completions with financial bonuses, gifts, and professional validation."
+        },
+        {
+            icon: <FaHeadset />,
+            title: "Operational Support",
+            description: "When operational challenges arise within your remote unit, you won't be left in the dark. Our dedicated account managers are available via call, email, or text to ensure seamless operations."
+        }
+    ];
+
     return (
         <section className="promise-section">
             <div className="promise-header">
                 <h2>The Two Seas Promise</h2>
                 <div className="header-divider"></div>
-                <p className="promise-intro">As a HR consulting firm we are at the forefront of ensuring health our employees and team client's success.</p>
+                <p className="promise-intro">
+                    As an HR consulting firm, we are at the forefront of ensuring the well-being of our employees and our clients' success.
+                </p>
             </div>
 
             <div className="promise-grid">
-                {/* Row 1 */}
-                <div className="promise-row">
-                    {/* Activity Tracking */}
-                    <div className="promise-card">
-                        <div className="promise-icon">
-                            <FaChartLine />
-                        </div>
-                        <h3>Activity Tracking</h3>
-                        <div className="promise-content">
-                            <p>How Do I Practice working software into the brand and use to implement it through the user's work. For these changes I gain automatic productivity insights, including team work hours, activity levels, task distribution, and other employees are most active.</p>
-                        </div>
+                {chunkArray(promises, 2).map((row, rowIndex) => (
+                    <div className="promise-row" key={rowIndex}>
+                        {row.map((promise, index) => (
+                            <div className="promise-card" key={index}>
+                                <div className="promise-icon">
+                                    {promise.icon}
+                                </div>
+                                <h3>{promise.title}</h3>
+                                <div className="promise-content">
+                                    <p>{promise.description}</p>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-
-                    {/* Security of Data */}
-                    <div className="promise-card">
-                        <div className="promise-icon">
-                            <FaShieldAlt />
-                        </div>
-                        <h3>Security of Data</h3>
-                        <div className="promise-content">
-                            <p>We ensure you can data security by enacting strict privacy policies based on control and the allocation of a virtual data source. Our strategy is provide sure access to your organizations private data.</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Row 2 */}
-                <div className="promise-row">
-                    {/* Staff Engagement */}
-                    <div className="promise-card">
-                        <div className="promise-icon">
-                            <FaUsers />
-                        </div>
-                        <h3>Staff Engagement</h3>
-                        <div className="promise-content">
-                            <p>We keep our staff ethical, motivated, and careful. Regular organizing of thematic donors, authors, and user-science employee well being is a priority for us. We believe keeping staff ethical engaged, and motivated leads to a high performance yielding team ability.</p>
-                        </div>
-                    </div>
-
-                    {/* Client Team Check */}
-                    <div className="promise-card">
-                        <div className="promise-icon">
-                            <FaHandshake />
-                        </div>
-                        <h3>Client Team Check</h3>
-                        <div className="promise-content">
-                            <ul>
-                                <p>Our internal team assistance centers developed as a standardized operating procedure we regularly meet within our employees to assess any communications, issues they are going and give them to our clients to complete our intermediary promise.</p>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                ))}
             </div>
         </section>
     );
 };
+
+// Helper function to split array into chunks
+function chunkArray(arr, size) {
+    return Array.from({ length: Math.ceil(arr.length / size) }, (v, i) =>
+        arr.slice(i * size, i * size + size)
+    );
+}
 
 export default PromiseSection;
