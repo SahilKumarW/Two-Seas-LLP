@@ -8,7 +8,7 @@ const SideNav = () => {
     const navItems = [
         "Sales & Marketing",
         "Untitled Professionals",
-        "AI and Telecom",
+        "IT and Telecom",
         "Contact Centre",
         "Accounting & Finance",
         "Insurance",

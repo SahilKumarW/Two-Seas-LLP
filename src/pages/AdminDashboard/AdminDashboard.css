@@ -67,32 +67,42 @@
 
 /* Profile Section with Cards */
 /* Profile Section Styles */
+
 .profile-section {
   display: flex;
-  height: 300px; /* Adjust height as needed */
+  gap: 2rem;
+  min-height: 200px; /* Minimum height for the section */
+  background: white;
   border-radius: 12px;
-  overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  padding: 1.5rem;
+  align-items: flex-start; /* Align items to the top */
+  height: auto;
 }
 
 .profile-image-container {
-  flex: 0 0 40%; /* Image takes 40% width */
-  height: 100%;
   position: relative;
+  width: 150px; /* Natural width for the image */
+  height: 150px; /* Square aspect ratio */
+  flex-shrink: 0; /* Prevent shrinking */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.profile-image-wrapper {
+  flex: 0 0 auto; /* Don't grow or shrink */
 }
 
 .profile-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  display: block;
 }
 
 .profile-content {
   flex: 1;
-  padding: 2rem;
-  background: white;
+  min-height: 100%; /* Take full height of parent */
   display: flex;
   flex-direction: column;
 }
@@ -467,4 +477,539 @@
   .time-value {
     text-align: left;
   }
+}
+
+/* Updated Profile Section Layout */
+.profile-details-container {
+  display: flex;
+  gap: 1rem;
+  /* margin-top: 0.1rem; */
+}
+
+.profile-details-column {
+  flex: 1;
+}
+
+.document-previews-column {
+  margin-top: 5%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.document-preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.document-preview-box {
+  width: 150px;
+  height: 50px;
+  background: rgba(42, 45, 124, 0.05);
+  border: 2px dashed rgba(42, 45, 124, 0.3);
+  border-radius: 8px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  flex: 1;
+  height: 35px;
+}
+
+.document-preview-overlay {
+  /* position: absolute; */
+  left: 50%;
+  top: 50%;
+  /* transform: translate(-50%, -50%); */
+  width: 100%;
+  height: 33px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background: rgba(255, 255, 255, 0.7); */
+  border-radius: 4px;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-size: 13px;
+}
+
+.document-preview-box:hover .document-preview-overlay {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.download-btn {
+  background: #2A2D7C;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.download-btn:hover {
+  background: #393c68;
+  transform: translateY(-2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-details-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .document-preview-box {
+    height: 80px;
+  }
+}
+
+/* Document Modals */
+.document-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.document-modal-container {
+  background-color: #fff;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.document-modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.document-modal-header h3 {
+  margin: 0;
+  color: #2A2D7C;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.document-modal-content {
+  padding: 20px;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.pdf-viewer {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  background: #f5f5f5;
+}
+
+.document-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #eee;
+  text-align: right;
+}
+
+.modal-download-btn {
+  background-color: #2A2D7C;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-download-btn:hover {
+  background-color: #1a1c5a;
+}
+
+/* Download buttons */
+.download-btn {
+  background-color: var(--primary);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  margin-top: 8px;
+  width: 100%;
+  justify-content: center;
+}
+
+.download-btn:hover {
+  background-color: #081176;
+}
+
+/* Photo and Video Action Buttons */
+.photo-actions, .video-actions, .report-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.action-btn {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-btn {
+  background-color: #2A2D7C;
+  color: white;
+}
+
+.upload-btn:hover {
+  background-color: #1a1c5a;
+}
+
+.remove-btn {
+  background-color: #FF6B6B;
+  color: white;
+}
+
+.remove-btn:hover {
+  background-color: #e05555;
+}
+
+/* Editable Fields */
+.editing-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  flex-grow: 1;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.save-btn, .cancel-btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.save-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.static-field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+/* Video Player Styles */
+.video-player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #2A2D7C, #07A2C1);
+  position: relative;
+}
+
+.no-video-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: #666;
+}
+
+/* Section Header */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* Report Actions */
+.report-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.report-actions .upload-btn {
+  flex-grow: 1;
+}
+
+.document-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.upload-btn {
+  background-color: #2A2D7C;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  height: 35px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.upload-btn:hover {
+  background-color: #1a1c5a;
+}
+
+.download-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.download-btn:hover {
+  background-color: #3e8e41;
+}
+
+.download-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.preview-upload-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.profile-image-container {
+  position: relative;
+  width: 300px; /* Adjust as needed */
+  height: auto; /* Adjust as needed */
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.profile-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+.image-actions {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+.edit-icon, .delete-icon {
+  width: 32px;
+  height: 32px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  font-size: 16px;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.edit-icon:hover, .delete-icon:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.delete-icon:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .profile-section {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-image-container {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* PDF Modal Styles */
+.pdf-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.pdf-modal-container {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.pdf-modal-header {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2A2D7C;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.pdf-modal-header h3 {
+  margin: 0;
+  color: white;
+}
+
+.close-modal {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+
+.close-modal:hover {
+  color: var(--accent);
+}
+
+.pdf-modal-content {
+  padding: 20px;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.pdf-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #444;
+  text-align: center;
+  background-color: #2A2D7C;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.pdf-modal-footer .download-btn {
+  background-color: white;
+  color: black;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.pdf-modal-footer .download-btn:hover {
+  background-color: #ffffff;
+}
+
+.pdf-modal-footer .download-btn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
 }
