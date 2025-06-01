@@ -95,7 +95,7 @@ const AdminDashboard = () => {
       <div className="modal-overlay">
         <div className="visibility-modal">
           <div className="modal-header">
-            <h3>Manage Visibility for {niche?.name}</h3>
+            <h3 style={{ color: '#2A2D7C' }}>Manage Visibility for {niche?.name}</h3>
             <button className="close-btn" onClick={onClose}>×</button>
           </div>
 
@@ -114,7 +114,7 @@ const AdminDashboard = () => {
 
           <div className="modal-actions">
             <button className="cancel-btn" onClick={onClose}>Cancel</button>
-            <button className="save-btn" onClick={handleSave}>Save Changes</button>
+            <button className="save-btn" style={{ backgroundColor: '#2A2D7C' }} onClick={handleSave}>Save Changes</button>
           </div>
         </div>
       </div>
