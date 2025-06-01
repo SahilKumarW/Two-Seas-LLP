@@ -1,6 +1,6 @@
 import React from "react";
 import "./WhoWeAre.css";
-import whoWeAreImage from "../../assets/who-we-are.png";
+import whoWeAreImage from "../../assets/who-we-are2.jpeg";
 
 const WhoWeAre = () => {
     return (

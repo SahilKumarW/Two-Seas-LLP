@@ -7,7 +7,7 @@ const Hero = () => {
         <section className="hero">
             <div className="hero-container">
                 <h1 className="hero-title">
-                    Extrordinary talented, <br />skillfully sourced,<br />methodically placed.
+                    Extrordinarily talented, <br />skillfully sourced,<br />methodically placed.
                 </h1>
                 <p className="hero-subtitle">
                     Well practiced in Western approaches and deployable in days; find out how we provide talent at 60% of the cost than that of hiring locally.

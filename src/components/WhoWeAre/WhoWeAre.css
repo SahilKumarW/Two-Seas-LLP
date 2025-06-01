@@ -17,8 +17,9 @@
 
 /* Left Image Styling */
 .who-we-are-image img {
-    width: 100%;
-    max-width: 500px;
+    width: auto;
+    max-width: 550px;
+    max-height: 450px;
     height: auto;
     border-radius: 16px;
     object-fit: cover;
