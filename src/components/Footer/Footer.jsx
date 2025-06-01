@@ -7,8 +7,8 @@ import emailIcon from "../../assets/email.svg";
 const Footer = () => {
     const contactInfo = {
         whatsapp: {
-            number: "923315667003",
-            display: "+92 (331) 5667003"
+            number: "923347777506",
+            display: "+92 (334) 7777506"
         },
         email: "hello@TwoSeasLLP.org",
         linkedin: {
