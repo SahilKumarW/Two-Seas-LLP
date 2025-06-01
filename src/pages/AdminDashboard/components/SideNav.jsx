@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './SideNav.css';
 
-const SideNav = () => {
+const SideNav = ({ wishlist, setShowWishlist }) => {
     const [activeItem, setActiveItem] = useState(0);
     const [hoveredItem, setHoveredItem] = useState(null);
 
@@ -18,6 +18,15 @@ const SideNav = () => {
 
     return (
         <div className="side-nav">
+            {/* Wishlist button added before the header */}
+            <button 
+                className="view-wishlist-btn top-wishlist-btn"
+                onClick={() => setShowWishlist(true)}
+            >
+                {/* <span className="wishlist-icon">❤️</span> */}
+                <span className="wishlist-text">Wishlist ({wishlist.length})</span>
+            </button>
+
             <div className="nav-header">
                 <div className="header-content">
                     <h3>
@@ -53,7 +62,6 @@ const SideNav = () => {
                     </li>
                 ))}
             </ul>
-            
         </div>
     );
 };

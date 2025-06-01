@@ -13,7 +13,7 @@
 
 .side-nav {
   width: 300px;
-  height: 130vh;
+  height: 140vh;
   padding: 20px 0;
   background: var(--bg-color);
   color: var(--text-dark);
@@ -26,6 +26,7 @@
 }
 
 .nav-header {
+  margin-top: 20px;
   padding: 0 3px 2px;
   position: relative;
 }
@@ -209,5 +210,62 @@
   .nav-item.active {
     transform: translateY(-3px);
     box-shadow: inset 0 4px 0 var(--primary-dark);
-  }
+  } 
+}
+
+/* Update the wishlist button styles to match the nav items */
+.view-wishlist-btn.top-wishlist-btn {
+  position: relative;
+  width: calc(100% - 50px); /* Match nav item width */
+  margin: 0 25px 20px; /* Match nav item margins */
+  border-radius: 8px; /* Match nav item border radius */
+  background: var(--accent-light); /* Lighter background like nav items */
+  color: var(--primary-dark); /* Dark text like nav items */
+  border: none;
+  padding: 14px 16px; /* Match nav item padding */
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px; /* Match nav item gap */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Match nav item transition */
+  box-shadow: none;
+  border-bottom: none;
+  justify-content: center;
+}
+
+.view-wishlist-btn.top-wishlist-btn:hover {
+  background-color: var(--accent-medium); /* Slightly darker on hover */
+  transform: translateX(5px); /* Match nav item hover effect */
+  box-shadow: inset 4px 0 0 var(--primary-dark); /* Match nav item hover effect */
+  color: var(--primary-dark);
+}
+
+.wishlist-icon {
+  font-size: 1.1rem; /* Match nav icon size */
+  color: var(--primary-dark);
+  min-width: 24px; /* Match nav icon min-width */
+  text-align: center; /* Match nav icon alignment */
+}
+
+.wishlist-text {
+  font-size: 1rem; /* Match nav text size */
+  font-weight: 500; /* Match nav text weight */
+  transition: all 0.3s ease; /* Match nav text transition */
+}
+
+.view-wishlist-btn.top-wishlist-btn:hover .wishlist-text {
+  font-weight: 700; /* Match nav text hover effect */
+  letter-spacing: 0.3px; /* Match nav text hover effect */
+}
+
+.view-wishlist-btn.top-wishlist-btn:hover .wishlist-icon {
+  transform: scale(1.2); /* Match nav icon hover effect */
+  filter: drop-shadow(var(--neon-glow)); /* Match nav icon hover effect */
+}
+
+/* Remove the fixed bottom button styles if no longer needed */
+.view-wishlist-btn:not(.top-wishlist-btn) {
+  display: none;
 }
