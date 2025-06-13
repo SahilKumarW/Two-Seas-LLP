@@ -77,7 +77,7 @@
 /* Enhanced Profile Section Styles with #2A2D7C and #07A2C1 color theme */
 .profile-section {
   display: flex;
-  gap: 2rem;
+  /* gap: 2rem; */
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(42, 45, 124, 0.1);
