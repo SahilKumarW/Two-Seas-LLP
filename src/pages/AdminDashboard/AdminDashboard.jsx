@@ -438,6 +438,14 @@ const AdminDashboard = () => {
                 style={{ display: 'none' }}
               />
             </div>
+
+            {/* Add Wishlist Button Here */}
+            <button
+              onClick={toggleWishlist}
+              className={`wishlist-btn ${isInWishlist() ? 'in-wishlist' : ''}`}
+            >
+              {isInWishlist() ? '❤️ Remove from Wishlist' : '♡ Add to Wishlist'}
+            </button>
           </div>
 
           <div className="profile-content">
