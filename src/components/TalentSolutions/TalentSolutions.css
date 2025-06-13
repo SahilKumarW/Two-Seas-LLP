@@ -8,7 +8,7 @@
 .solutions-container {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 2rem;
+  /* padding: 0 2rem; */
   text-align: center;
 }
 
@@ -32,9 +32,9 @@
 
 .title-line-1 {
   font-size: 2.5rem;
-  color: #0099b9;
+  color: #6b8c93;
   position: relative;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.2rem;
 }
 
 .title-line-1::after {
@@ -64,7 +64,7 @@
   padding: 0.7rem 2.5rem;
   border-radius: 50px;
   box-shadow: 0 6px 15px rgba(0, 153, 185, 0.25);
-  margin-top: 2rem;
+  margin-top: 4rem;
   transition: all 0.3s ease;
   text-align: center;
   width: fit-content;
@@ -136,8 +136,9 @@
   justify-content: center;
   align-items: center;
   gap: 5rem;
+  margin-top: 0.1rem;
   flex-wrap: wrap;
-  padding-top: auto;
+  /* padding-top: auto; */
   /* border-top: 1px solid rgba(0, 153, 185, 0.1); */
 }
 

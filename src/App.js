@@ -24,6 +24,7 @@ import ManagedServices from "./pages/Managed Services/ManagedServices.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
 import ServiceDetails from "./components/ServiceDetails/ServiceDetails.js";
 import './App.css';
+import WhatsAppChat from './components/WhatsAppChat/WhatsAppChat';
 
 function Layout() {
   const location = useLocation();
@@ -31,6 +32,7 @@ function Layout() {
   const isBookCallPage = location.pathname === "/book-call";
   const isContactPage = location.pathname === "/contact-us";
   const isAdminLoginPage = location.pathname === "/admin-login";
+  const isAdminDashboardPage = location.pathname === "/admin-dashboard";
 
   return (
     <>
@@ -64,6 +66,9 @@ function Layout() {
         <Route path="/services" element={<Services />} />
         <Route path="/services/:serviceId" element={<ServiceDetails />} />
       </Routes>
+
+      {/* Add WhatsAppChat component here */}
+      {!isAdminDashboardPage && <WhatsAppChat />}
 
       {!isBookCallPage && !isAdminLoginPage && <Footer />}
     </>

@@ -6,32 +6,57 @@ import sampleResume from '../../assets/resume.pdf';
 import sampleReport from '../../assets/report.pdf';
 import defaultVideoThumbnail from '../../assets/video-thumbnail.png';
 
+// Import country flags (you'll need to add these to your assets)
+import usFlag from '../../assets/flags/us.png';
+import ukFlag from '../../assets/flags/uk.png';
+import euFlag from '../../assets/flags/eu.jpg';
+import pkFlag from '../../assets/flags/pk.svg';
+
 const AdminDashboard = () => {
   const interviewVideoInputRef = useRef(null);
 
   // State management
   const [admin, setAdmin] = useState({
-    name: 'Shaista',
+    name: 'Shaista ',
     rate: 2,
+    currency: 'USD',
     experience: '2 years',
     expertise: 'Technical Recruitment',
+    intro: 'Experienced recruiter with a focus on technical roles in the IT sector.',
     image: defaultProfileImage,
     video: null,
     interviewVideo: null,
-    showIntroVideo: true, // Separate toggle for intro video
-    showInterviewVideo: true, // Separate toggle for interview video
-    showRate: true // Toggle for rate display
+    showIntroVideo: true,
+    showInterviewVideo: true,
+    showRate: true
   });
 
   const [editing, setEditing] = useState({
+    name: false,
     rate: false,
-    expertise: false
+    expertise: false,
+    experience: false,
+    intro: false
   });
 
   const [tempValues, setTempValues] = useState({
+    name: '',
     rate: '',
-    expertise: ''
+    expertise: '',
+    experience: '',
+    intro: ''
   });
+
+  // Currency options
+  const [currencies] = useState([
+    { code: 'USD', symbol: '$', name: 'US Dollar', flag: usFlag },
+    { code: 'GBP', symbol: '£', name: 'British Pound', flag: ukFlag },
+    { code: 'EUR', symbol: '€', name: 'Euro', flag: euFlag },
+    { code: 'PKR', symbol: 'Rs', name: 'Pakistani Rupee', flag: pkFlag }
+  ]);
+
+  const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
 
   const [selectedTimes, setSelectedTimes] = useState({
     day: '',
@@ -284,38 +309,6 @@ const AdminDashboard = () => {
     return wishlist.some(item => item.name === admin.name);
   };
 
-  // JSX for editable fields
-  const renderEditableField = (field, label) => {
-    if (editing[field]) {
-      return (
-        <div className="editing-field">
-          <input
-            type={field === 'rate' ? 'number' : 'text'}
-            value={tempValues[field]}
-            onChange={(e) => handleInputChange(e, field)}
-            className="edit-input"
-          />
-          <div className="edit-buttons">
-            <button onClick={() => saveEdit(field)} className="save-btn">
-              Save
-            </button>
-            <button onClick={() => cancelEdit(field)} className="cancel-btn">
-              Cancel
-            </button>
-          </div>
-        </div>
-      );
-    }
-    return (
-      <div className="static-field">
-        <span>{admin[field]}{field === 'rate' ? '/hr' : ''}</span>
-        <button onClick={() => startEditing(field)} className="edit-btn">
-          <EditIcon />
-        </button>
-      </div>
-    );
-  };
-
   // New handler for interview video upload
   const handleInterviewVideoUpload = (e) => {
     const file = e.target.files[0];
@@ -360,6 +353,54 @@ const AdminDashboard = () => {
     setAdmin({ ...admin, showRate: !admin.showRate });
   };
 
+  // Add new handler for currency selection
+  const handleCurrencySelect = (currency) => {
+    setSelectedCurrency(currency);
+    setShowCurrencyDropdown(false);
+    setAdmin({ ...admin, currency: currency.code });
+  };
+
+  // JSX for editable fields
+  const renderEditableField = (field, label) => {
+    if (editing[field]) {
+      return (
+        <div className="editing-field">
+          {field === 'intro' ? (
+            <textarea
+              value={tempValues[field]}
+              onChange={(e) => handleInputChange(e, field)}
+              className="edit-textarea"
+              rows={3}
+            />
+          ) : (
+            <input
+              type={field === 'rate' ? 'number' : 'text'}
+              value={tempValues[field]}
+              onChange={(e) => handleInputChange(e, field)}
+              className="edit-input"
+            />
+          )}
+          <div className="edit-buttons">
+            <button onClick={() => saveEdit(field)} className="save-btn">
+              Save
+            </button>
+            <button onClick={() => cancelEdit(field)} className="cancel-btn">
+              Cancel
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="static-field">
+        <span>{field === 'rate' ? `${selectedCurrency.symbol}${admin[field]}/hr` : admin[field]}</span>
+        <button onClick={() => startEditing(field)} className="edit-btn">
+          <EditIcon />
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="admin-dashboard">
       <SideNav
@@ -400,8 +441,58 @@ const AdminDashboard = () => {
           </div>
 
           <div className="profile-content">
+            {/* Name + Currency + Rate */}
             <div className="profile-header">
-              <h2>{admin.name}</h2>
+              <div className="name-and-currency">
+                <h2>
+                  {editing.name ? (
+                    <div className="editing-field">
+                      <input
+                        type="text"
+                        value={tempValues.name}
+                        onChange={(e) => handleInputChange(e, 'name')}
+                        className="edit-input name-input"
+                      />
+                      <div className="edit-buttons">
+                        <button onClick={() => saveEdit('name')} className="save-btn">Save</button>
+                        <button onClick={() => cancelEdit('name')} className="cancel-btn">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      {admin.name}
+                      <button onClick={() => startEditing('name')} className="edit-btn">
+                        <EditIcon />
+                      </button>
+                    </>
+                  )}
+                </h2>
+                <div className="currency-selector">
+                  <button
+                    className="currency-btn"
+                    onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
+                  >
+                    <img src={selectedCurrency.flag} alt={selectedCurrency.name} className="currency-flag" />
+                    <span>{selectedCurrency.code}</span>
+                    <ChevronDown />
+                  </button>
+                  {showCurrencyDropdown && (
+                    <div className="currency-dropdown">
+                      {currencies.map(currency => (
+                        <div
+                          key={currency.code}
+                          className="currency-option"
+                          onClick={() => handleCurrencySelect(currency)}
+                        >
+                          <img src={currency.flag} alt={currency.name} className="currency-flag" />
+                          <span>{currency.code} ({currency.symbol})</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="rate-display">
                 {admin.showRate ? (
                   <div className="rate-badge">
@@ -416,11 +507,62 @@ const AdminDashboard = () => {
               </div>
             </div>
 
+            {/* INTRODUCTION: moved here */}
+            <div className="intro-block">
+              <span className="detail-label">Introduction</span>
+              <div className="detail-value">
+                {editing.intro ? (
+                  <div className="editing-field">
+                    <textarea
+                      value={tempValues.intro}
+                      onChange={(e) => handleInputChange(e, 'intro')}
+                      className="edit-textarea"
+                      rows={3}
+                    />
+                    <div className="edit-buttons">
+                      <button onClick={() => saveEdit('intro')} className="save-btn">Save</button>
+                      <button onClick={() => cancelEdit('intro')} className="cancel-btn">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <p className="intro-text">{admin.intro}</p>
+                    <button onClick={() => startEditing('intro')} className="edit-btn">
+                      <EditIcon />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Experience, Expertise, Resume, Report */}
             <div className="profile-details-container">
               <div className="profile-details-column">
                 <div className="detail-item">
                   <span className="detail-label">Experience</span>
-                  <span className="detail-value">{admin.experience}</span>
+                  <div className="detail-value">
+                    {editing.experience ? (
+                      <div className="editing-field">
+                        <input
+                          type="text"
+                          value={tempValues.experience}
+                          onChange={(e) => handleInputChange(e, 'experience')}
+                          className="edit-input"
+                        />
+                        <div className="edit-buttons">
+                          <button onClick={() => saveEdit('experience')} className="save-btn">Save</button>
+                          <button onClick={() => cancelEdit('experience')} className="cancel-btn">Cancel</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        {admin.experience}
+                        <button onClick={() => startEditing('experience')} className="edit-btn">
+                          <EditIcon />
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
                 <div className="detail-item">
                   <span className="detail-label">Expertise</span>
@@ -483,23 +625,6 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Client Visibility Controls
-        <div className="client-controls">
-          <h3>Client Visibility</h3>
-          <div className="client-selector">
-            <label>Select Client:</label>
-            <select
-              value={selectedClient}
-              onChange={(e) => setSelectedClient(Number(e.target.value))}
-            >
-              {clients.map(client => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div> */}
 
         {/* Niche Selection Section */}
         <div className="niche-section">
@@ -823,7 +948,7 @@ const AdminDashboard = () => {
                         <div className="candidate-details">
                           <h3>{candidate.name}</h3>
                           <p className="candidate-expertise">{candidate.expertise}</p>
-                          <p className="candidate-rate">${candidate.rate}/hr</p>
+                          <p className="candidate-rate">{candidate.currency === 'USD' ? '$' : candidate.currency === 'GBP' ? '£' : candidate.currency === 'EUR' ? '€' : 'Rs'}{candidate.rate}/hr</p>
                         </div>
                       </div>
                       <div className="wishlist-actions">
@@ -831,7 +956,6 @@ const AdminDashboard = () => {
                           className="schedule-btn"
                           onClick={() => {
                             setShowWishlist(false);
-                            // You might want to pre-fill interview scheduling here
                           }}
                         >
                           Schedule Interview
@@ -850,8 +974,8 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 
@@ -859,7 +983,7 @@ const AdminDashboard = () => {
 const PlayIcon = () => <span>▶</span>;
 const DownloadIcon = () => <span>⭳</span>;
 const EditIcon = () => <span>✎</span>;
-const ChevronDown = () => <span>⌄</span>;
+const ChevronDown = () => <span>▼</span>;
 const MailIcon = () => <span>✉</span>;
 const AutoReplyIcon = () => <span>↻</span>;
 const CheckCircle = () => <span>✓</span>;
