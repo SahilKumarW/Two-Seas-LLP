@@ -152,7 +152,7 @@ const Contact = () => {
                         <div className="contact-method">
                             <div className="method-icon blue-bg">✉️</div>
                             <h3>Email</h3>
-                            <p className="highlight-blue">contact@twoseasllp.com</p>
+                            <p className="highlight-blue">contact@twoseas.org</p>
                         </div>
                     </div>
                 </form>
