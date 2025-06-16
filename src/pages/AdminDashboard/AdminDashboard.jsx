@@ -28,7 +28,18 @@ const AdminDashboard = () => {
     interviewVideo: null,
     showIntroVideo: true,
     showInterviewVideo: true,
-    showRate: true
+    showRate: true,
+    showVideoSection: true,
+    videoVisibility: {
+      introduction: {
+        hidden: false,
+        collapsed: false
+      },
+      interview: {
+        hidden: false,
+        collapsed: false
+      }
+    }
   });
 
   const [editing, setEditing] = useState({
@@ -347,6 +358,39 @@ const AdminDashboard = () => {
       showIntroVideo: !bothVisible,
       showInterviewVideo: !bothVisible
     });
+  };
+
+  const toggleVideoSection = () => {
+    setAdmin(prev => ({
+      ...prev,
+      showVideoSection: !prev.showVideoSection
+    }));
+  };
+
+  const toggleVideoHidden = (section) => {
+    setAdmin(prev => ({
+      ...prev,
+      videoVisibility: {
+        ...prev.videoVisibility,
+        [section]: {
+          ...prev.videoVisibility[section],
+          hidden: !prev.videoVisibility[section].hidden
+        }
+      }
+    }));
+  };
+
+  const toggleVideoCollapsed = (section) => {
+    setAdmin(prev => ({
+      ...prev,
+      videoVisibility: {
+        ...prev.videoVisibility,
+        [section]: {
+          ...prev.videoVisibility[section],
+          collapsed: !prev.videoVisibility[section].collapsed
+        }
+      }
+    }));
   };
 
   const toggleRate = () => {
@@ -691,179 +735,250 @@ const AdminDashboard = () => {
         </div>
 
         {/* Video Section */}
-        <div className="video-section">
-          <div className={`video-header-section ${!videosCollapsed ? 'uncollapsed' : ''}`}>
-            <div className="section-header" onClick={() => setVideosCollapsed(!videosCollapsed)}>
-              <h3 className="section-title">Videos</h3>
-              <span className="collapse-icon-wrapper">
-                <CollapseIcon collapsed={videosCollapsed} />
-              </span>
+        {admin.showVideoSection ? (
+          <div className="video-section">
+            <div className={`video-header-section ${!videosCollapsed ? 'uncollapsed' : ''}`}>
+              <div className="section-header" onClick={() => setVideosCollapsed(!videosCollapsed)}>
+                <h3 className="section-title">Videos</h3>
+                <div className="section-header-actions">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleVideoSection();
+                    }}
+                    className="toggle-eye-btn" style={{ color: '#2A2D7C' }}
+                  >
+                    <EyeIcon visible={admin.showVideoSection} />
+                  </button>
+                  <span className="collapse-icon-wrapper">
+                    <CollapseIcon collapsed={videosCollapsed} />
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <input
+              type="file"
+              ref={videoInputRef}
+              onChange={handleVideoUpload}
+              accept="video/*"
+              style={{ display: 'none' }}
+            />
+            <input
+              type="file"
+              ref={interviewVideoInputRef}
+              onChange={handleInterviewVideoUpload}
+              accept="video/*"
+              style={{ display: 'none' }}
+            />
+
+            {!videosCollapsed && (
+              <>
+                {/* Introduction Video */}
+                <div className="video-subsection">
+                  {admin.videoVisibility.introduction.hidden ? (
+                    <div className="placeholder-row">
+                      <p><i>The introduction video is hidden.</i></p>
+                      <button
+                        onClick={() => toggleVideoHidden('introduction')}
+                        className="unhide-btn"
+                      >
+                        Unhide
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div
+                        className={`subsection-header ${!admin.videoVisibility.introduction.collapsed ? 'uncollapsed' : ''}`}
+                        onClick={() => toggleVideoCollapsed('introduction')}
+                      >
+                        <h4 className="subsection-title">
+                          Introduction Video
+                        </h4>
+                        <div className="video-actions">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleVideoHidden('introduction');
+                            }}
+                            className="toggle-eye-btn" style={{ color: '#2A2D7C' }}
+                          >
+                            <EyeIcon visible={true} />
+                          </button>
+                          {admin.video ? (
+                            <button onClick={(e) => {
+                              e.stopPropagation();
+                              removeVideo();
+                            }} className="action-btn remove-btn">
+                              Remove Video
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                videoInputRef.current.click();
+                              }}
+                              className="action-btn upload-btn"
+                            >
+                              Add Video
+                            </button>
+                          )}
+                        </div>
+                        <span className="collapse-icon-wrapper">
+                          <CollapseIcon collapsed={admin.videoVisibility.introduction.collapsed} />
+                        </span>
+                      </div>
+
+                      {!admin.videoVisibility.introduction.collapsed && (
+                        <div className="video-container">
+                          <div className="dummy-player">
+                            {admin.video ? (
+                              <video
+                                src={admin.video}
+                                controls
+                                className="video-player"
+                              />
+                            ) : (
+                              <div className="dummy-player-placeholder">
+                                <div className="dummy-player-screen"></div>
+                                <div className="dummy-player-controls">
+                                  <div className="play-button">
+                                    <svg width="16" height="16" viewBox="0 0 24 24">
+                                      <path fill="currentColor" d="M8 5v14l11-7z" />
+                                    </svg>
+                                  </div>
+                                  <div className="progress-bar"></div>
+                                  <div className="time-display">0:00 / 0:00</div>
+                                  <div className="volume-control">
+                                    <svg width="16" height="16" viewBox="0 0 24 24">
+                                      <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                                    </svg>
+                                  </div>
+                                  <div className="fullscreen">
+                                    <svg width="16" height="16" viewBox="0 0 24 24">
+                                      <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Interview Video */}
+                <div className="video-subsection">
+                  {admin.videoVisibility.interview.hidden ? (
+                    <div className="placeholder-row">
+                      <p><i>The interview video is hidden.</i></p>
+                      <button
+                        onClick={() => toggleVideoHidden('interview')}
+                        className="unhide-btn"
+                      >
+                        Unhide
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <div
+                        className={`subsection-header ${!admin.videoVisibility.interview.collapsed ? 'uncollapsed' : ''}`}
+                        onClick={() => toggleVideoCollapsed('interview')}
+                      >
+                        <h4 className="subsection-title">
+                          Interview Video
+                        </h4>
+                        <div className="video-actions">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleVideoHidden('interview');
+                            }}
+                            className="toggle-eye-btn" style={{ color: '#2A2D7C' }}
+                          >
+                            <EyeIcon visible={true} />
+                          </button>
+                          {admin.interviewVideo ? (
+                            <button onClick={(e) => {
+                              e.stopPropagation();
+                              removeInterviewVideo();
+                            }} className="action-btn remove-btn">
+                              Remove Video
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                interviewVideoInputRef.current.click();
+                              }}
+                              className="action-btn upload-btn"
+                            >
+                              Add Video
+                            </button>
+                          )}
+                        </div>
+                        <span className="collapse-icon-wrapper">
+                          <CollapseIcon collapsed={admin.videoVisibility.interview.collapsed} />
+                        </span>
+                      </div>
+
+                      {!admin.videoVisibility.interview.collapsed && (
+                        <div className="video-container">
+                          <div className="dummy-player">
+                            {admin.interviewVideo ? (
+                              <video
+                                src={admin.interviewVideo}
+                                controls
+                                className="video-player"
+                              />
+                            ) : (
+                              <div className="dummy-player-placeholder">
+                                <div className="dummy-player-screen"></div>
+                                <div className="dummy-player-controls">
+                                  <div className="play-button">
+                                    <svg width="16" height="16" viewBox="0 0 24 24">
+                                      <path fill="currentColor" d="M8 5v14l11-7z" />
+                                    </svg>
+                                  </div>
+                                  <div className="progress-bar"></div>
+                                  <div className="time-display">0:00 / 0:00</div>
+                                  <div className="volume-control">
+                                    <svg width="16" height="16" viewBox="0 0 24 24">
+                                      <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
+                                    </svg>
+                                  </div>
+                                  <div className="fullscreen">
+                                    <svg width="16" height="16" viewBox="0 0 24 24">
+                                      <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        ) : (
+          <div className="hidden-section-placeholder">
+            <div className="placeholder-content">
+              <p><i>The video section is currently hidden.</i></p>
+              <button
+                onClick={toggleVideoSection}
+                className="unhide-btn"
+              >
+                Show Videos
+              </button>
             </div>
           </div>
-
-          <input
-            type="file"
-            ref={videoInputRef}
-            onChange={handleVideoUpload}
-            accept="video/*"
-            style={{ display: 'none' }}
-          />
-          <input
-            type="file"
-            ref={interviewVideoInputRef}
-            onChange={handleInterviewVideoUpload}
-            accept="video/*"
-            style={{ display: 'none' }}
-          />
-
-          {!videosCollapsed && (
-            <>
-              {/* Introduction Video */}
-              <div className="video-subsection">
-                <div
-                  className={`subsection-header ${!videoSectionsCollapsed.introduction ? 'uncollapsed' : ''}`}
-                  onClick={toggleIntroductionVideo}
-                >
-                  <h4 className="subsection-title">
-                    Introduction Video
-                  </h4>
-                  <div className="video-actions">
-                    {admin.video ? (
-                      <button onClick={(e) => {
-                        e.stopPropagation();
-                        removeVideo();
-                      }} className="action-btn remove-btn">
-                        Remove Video
-                      </button>
-                    ) : (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          videoInputRef.current.click();
-                        }}
-                        className="action-btn upload-btn"
-                      >
-                        Add Video
-                      </button>
-                    )}
-                  </div>
-                  <span className="collapse-icon-wrapper">
-                    <CollapseIcon collapsed={videoSectionsCollapsed.introduction} />
-                  </span>
-                </div>
-
-                {!videoSectionsCollapsed.introduction && (
-                  <div className="video-container">
-                    <div className="dummy-player">
-                      {admin.video ? (
-                        <video
-                          src={admin.video}
-                          controls
-                          className="video-player"
-                        />
-                      ) : (
-                        <div className="dummy-player-placeholder">
-                          <div className="dummy-player-screen"></div>
-                          <div className="dummy-player-controls">
-                            <div className="play-button">
-                              <svg width="16" height="16" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
-                            <div className="progress-bar"></div>
-                            <div className="time-display">0:00 / 0:00</div>
-                            <div className="volume-control">
-                              <svg width="16" height="16" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                              </svg>
-                            </div>
-                            <div className="fullscreen">
-                              <svg width="16" height="16" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Interview Video */}
-              <div className="video-subsection">
-                <div
-                  className={`subsection-header ${!videoSectionsCollapsed.interview ? 'uncollapsed' : ''}`}
-                  onClick={toggleInterviewVideo}
-                >
-                  <h4 className="subsection-title">
-                    Interview Video
-                  </h4>
-                  <div className="video-actions">
-                    {admin.interviewVideo ? (
-                      <button onClick={(e) => {
-                        e.stopPropagation();
-                        removeInterviewVideo();
-                      }} className="action-btn remove-btn">
-                        Remove Video
-                      </button>
-                    ) : (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          interviewVideoInputRef.current.click();
-                        }}
-                        className="action-btn upload-btn"
-                      >
-                        Add Video
-                      </button>
-                    )}
-                  </div>
-                  <span className="collapse-icon-wrapper">
-                    <CollapseIcon collapsed={videoSectionsCollapsed.interview} />
-                  </span>
-                </div>
-
-                {!videoSectionsCollapsed.interview && (
-                  <div className="video-container">
-                    <div className="dummy-player">
-                      {admin.interviewVideo ? (
-                        <video
-                          src={admin.interviewVideo}
-                          controls
-                          className="video-player"
-                        />
-                      ) : (
-                        <div className="dummy-player-placeholder">
-                          <div className="dummy-player-screen"></div>
-                          <div className="dummy-player-controls">
-                            <div className="play-button">
-                              <svg width="16" height="16" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M8 5v14l11-7z" />
-                              </svg>
-                            </div>
-                            <div className="progress-bar"></div>
-                            <div className="time-display">0:00 / 0:00</div>
-                            <div className="volume-control">
-                              <svg width="16" height="16" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z" />
-                              </svg>
-                            </div>
-                            <div className="fullscreen">
-                              <svg width="16" height="16" viewBox="0 0 24 24">
-                                <path fill="currentColor" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-                              </svg>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+        )}
 
         {/* Resume Preview Modal */}
         {showResumeModal && (
