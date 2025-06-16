@@ -10,10 +10,10 @@ const Footer = () => {
             number: "923347777506",
             display: "+92 (334) 7777506"
         },
-        email: "hello@TwoSeasLLP.org",
+        email: "sales@TwoSeas.org",
         linkedin: {
             url: "https://linkedin.com/company/two-seas-llp",
-            display: "Two Seas LLP"
+            display: "Two Seas"
         }
     };
 
@@ -23,7 +23,7 @@ const Footer = () => {
         <footer className="footer">
             <div className="footer-container">
                 <div className="footer-left">
-                    <h2 className="footer-logo">Two Seas LLP<sup>®</sup></h2>
+                    <h2 className="footer-logo">Two Seas<sup>®</sup></h2>
                     <p className="footer-text">
                         ©2025 Two Seas LLP <span className="dot">•</span> Incorporation No. 0271957 <span className="dot">•</span>{" "}
                         <a href="/privacy-policy" className="footer-link">Privacy policy</a>
