@@ -22,7 +22,7 @@ const TalentSolutions = () => {
 
                 <div className="solutions-content">
                     <div className="solutions-grid">
-                        {[1, 2, 3, 4, 5, 6].map((num) => (
+                        {[1, 2, 3, 4, 5, 6, 7].map((num) => (
                             <div key={num} className="solution-item">
                                 <span className="solution-number">{num}</span>
                                 <span className="solution-text">
@@ -32,7 +32,8 @@ const TalentSolutions = () => {
                                         "Compliance",
                                         "Performance Analytics",
                                         "On-Ground Support",
-                                        "Employee Well-Being"
+                                        "Employee Well-Being",
+                                        "Cost Savings"
                                     ][num - 1]}
                                 </span>
                             </div>

@@ -24,6 +24,8 @@ import ManagedServices from "./pages/Managed Services/ManagedServices.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
 import ServiceDetails from "./components/ServiceDetails/ServiceDetails.js";
 import './App.css';
+import ProfilePage from "./components/ProfilePage/ProfilePage.js";
+
 import WhatsAppChat from './components/WhatsAppChat/WhatsAppChat';
 
 function Layout() {
@@ -65,6 +67,7 @@ function Layout() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/services" element={<Services />} />
         <Route path="/services/:serviceId" element={<ServiceDetails />} />
+        <Route path="/profile/:id" element={<ProfilePage />} />
       </Routes>
 
       {/* Add WhatsAppChat component here */}

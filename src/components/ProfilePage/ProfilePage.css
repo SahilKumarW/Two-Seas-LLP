@@ -1,0 +1,36 @@
+/* ProfilePage.css */
+.profile-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #fff;
+}
+
+/* Make all class names specific to profile page */
+.profile-page-header {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.profile-page-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-page-info h1 {
+  color: #2A2D7C;
+  margin: 0;
+}
+
+/* Add 'profile-page' prefix to all classes */
+.profile-page-rate {
+  font-size: 1.2rem;
+  color: #2A2D7C;
+}
+
+.profile-page-about {
+  margin-top: 30px;
+}

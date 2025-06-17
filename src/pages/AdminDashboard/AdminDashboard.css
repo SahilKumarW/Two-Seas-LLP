@@ -294,8 +294,7 @@
 }
 
 .rate-badge {
-  background: #2A2D7C;
-  color: white;
+  color: #2A2D7C;
   padding: 6px 12px;
   border-radius: 20px;
   font-weight: 600;
@@ -625,7 +624,7 @@
 
 /* Video Section Styles */
 .video-section {
-  /* margin: 1rem 0; */
+  margin: 1rem 0;
   padding: 24px 24px 8px 24px;
   background: white;
   border-radius: 12px;
@@ -2336,7 +2335,7 @@
 
 .rate-badge {
   background: var(--primary);
-  color: white;
+  color: #2A2D7C;
   padding: 6px 12px;
   border-radius: 20px;
   font-weight: 600;
@@ -2407,4 +2406,71 @@
 .currency-dropdown,
 .editing-field {
   animation: fadeIn 0.2s ease-out forwards;
+}
+
+/* Add these styles to your AdminDashboard.css */
+
+.clickable-name {
+  cursor: pointer;
+  color: #2A2D7C;
+  text-decoration: underline;
+}
+
+.clickable-name:hover {
+  color: #1a1d5a;
+}
+
+.wishlist-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  /* border-bottom: 1px solid #eee; */
+}
+
+.wishlist-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.time-slot-dropdown {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  z-index: 100;
+  margin-top: 5px;
+}
+
+.time-slot-option {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.time-slot-option:hover {
+  background-color: #f5f5f5;
+}
+
+.schedule-interview-container {
+  position: relative;
+  display: inline-block;
+}
+
+.time-slot-dropdown {
+  position: absolute;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  z-index: 100;
+  margin-top: 5px;
+  min-width: 200px;
+}
+
+.back-to-wishlist {
+    margin-bottom: 10px;
+    /* padding: 0 15px; */
 }

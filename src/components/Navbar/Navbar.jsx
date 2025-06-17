@@ -1,37 +1,94 @@
 import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
 import logo from "../../assets/Two Seas Logo.png";
-import { useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const currentPath = window.location.pathname;
+    const location = useLocation();
     const navigate = useNavigate();
 
-    const isActive = (path) => currentPath === path;
+    const isActive = (path) => location.pathname === path;
+
+    const services = [
+        { 
+            id: 'insurance',
+            title: "Insurance", 
+            icon: "🤝",
+            desc: "Expert insurance professionals for all your coverage needs.",
+            details: {
+                description: "We provide specialized insurance professionals including underwriters, claims adjusters, risk managers, and actuaries. All candidates have minimum 2 years experience in the insurance sector.",
+                hiringProcess: "Our rigorous 4-step process ensures we find insurance experts with the right technical knowledge and customer service skills."
+            }
+        },
+        { 
+            id: 'sales-marketing',
+            title: "Sales & Marketing", 
+            icon: "📈",
+            desc: "Revenue-driving professionals for your growth needs.",
+            details: {
+                description: "Our sales and marketing team includes digital marketers, sales executives, business developers, and CRM specialists. We focus on both B2B and B2C expertise.",
+                hiringProcess: "Candidates undergo practical sales simulations and marketing strategy assessments."
+            }
+        },
+        { 
+            id: 'accounting-finance',
+            title: "Accounting & Finance", 
+            icon: "💰",
+            desc: "Financial experts to manage your fiscal operations.",
+            details: {
+                description: "We provide qualified accountants, financial analysts, auditors, and bookkeepers. All professionals are proficient in major accounting software.",
+                hiringProcess: "Financial professionals complete technical accounting tests and scenario-based evaluations."
+            }
+        },
+        { 
+            id: 'virtual-professionals',
+            title: "Virtual Professionals", 
+            displayTitle: "Virtual",
+            icon: "👥",
+            desc: "Skilled remote support for your business needs.",
+            details: {
+                description: "Our virtual assistants, data entry specialists, and remote administrators are trained in productivity tools and communication platforms.",
+                hiringProcess: "Virtual professionals are tested on time management, communication skills, and technical proficiency."
+            }
+        },
+        { 
+            id: 'it-telecom',
+            title: "IT & Telecom", 
+            icon: "💻",
+            desc: "Technical experts for your digital infrastructure.",
+            details: {
+                description: "We provide software developers, network engineers, cybersecurity specialists, and telecom technicians across all major platforms and languages.",
+                hiringProcess: "IT candidates complete coding challenges and infrastructure troubleshooting scenarios."
+            }
+        }
+    ];
 
     const handleLogoClick = () => {
         navigate('/');
-        setIsMobileMenuOpen(false);  // Close mobile menu on navigation
+        setIsMobileMenuOpen(false);
     };
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(prev => !prev);
     };
 
+    const handleServiceClick = (service) => {
+        navigate(`/services/${service.id}`, { state: { service } });
+        setIsMobileMenuOpen(false);
+        setIsDropdownOpen(false);
+    };
+
     return (
         <nav className="navbar">
             <div className="nav-container">
                 <div className="logo-wrapper" onClick={handleLogoClick}>
-                    <div className="logo-background">
-                        <img src={logo} alt="Two Seas Logo" className="nav-logo" />
-                    </div>
+                    <img src={logo} alt="Two Seas Logo" className="nav-logo" />
                 </div>
 
-                {/* Hamburger Icon for mobile */}
-                <button 
-                    className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`} 
+                <button
+                    className={`hamburger ${isMobileMenuOpen ? 'open' : ''}`}
                     onClick={toggleMobileMenu}
                     aria-label="Toggle menu"
                 >
@@ -41,38 +98,46 @@ const Navbar = () => {
                 </button>
 
                 <div className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-                    <a href="/" className={`nav-link ${isActive('/') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Home</a>
+                    <Link to="/" className={`nav-link ${isActive('/') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                        Home
+                    </Link>
+                    
                     <div
                         className="nav-link dropdown-trigger"
                         onMouseEnter={() => setIsDropdownOpen(true)}
                         onMouseLeave={() => setIsDropdownOpen(false)}
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}  // enable click toggle on mobile
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
-                        <span className={`${currentPath.startsWith('/services') ? 'white-text' : ''}`}>
-                            Our Services
+                        <span className={`${location.pathname.startsWith('/services') ? 'white-text' : ''}`}>
+                            Our Professionals
                         </span>
                         {isDropdownOpen && (
                             <div className="dropdown-menu">
-                                {/* Updated Services */}
-                                <a href="/services/website-development" className={`dropdown-item ${isActive('/services/website-development') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Website Development</a>
-                                <a href="/services/application-development" className={`dropdown-item ${isActive('/services/application-development') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Application Development</a>
-                                <a href="/services/seo" className={`dropdown-item ${isActive('/services/seo') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Search Engine Optimization</a>
-                                                                
-                                {/* Existing Services (if you want to keep them)
-                                <a href="/virtual-assistant" className={`dropdown-item ${isActive('/virtual-assistant') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Virtual Assistant</a>
-                                <a href="/sales" className={`dropdown-item ${isActive('/sales') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Sales</a>
-                                <a href="/marketing" className={`dropdown-item ${isActive('/marketing') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Marketing</a>
-                                <a href="/admin" className={`dropdown-item ${isActive('/admin') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Admin</a>
-                                <a href="/medical" className={`dropdown-item ${isActive('/medical') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Medical</a>
-                                <a href="/dental" className={`dropdown-item ${isActive('/dental') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Dental</a>
-                                <a href="/insurance" className={`dropdown-item ${isActive('/insurance') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Insurance</a>
-                                <a href="/it" className={`dropdown-item ${isActive('/it') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>IT</a> */}
+                                {services.map(service => (
+                                    <div
+                                        key={service.id}
+                                        className={`dropdown-item ${isActive(`/services/${service.id}`) ? 'white-text' : ''}`}
+                                        onClick={() => handleServiceClick(service)}
+                                    >
+                                        {/* <span className="dropdown-icon">{service.icon}</span> */}
+                                        {service.title}
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>
-                    <a href="/how-we-work" className={`nav-link ${isActive('/how-we-work') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>How We Work</a>
-                    <a href="/contact-us" className={`nav-link ${isActive('/contact-us') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Contact Us</a>
-                    <a href="/careers" className={`nav-link careers-link ${isActive('/careers') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>Careers</a>
+                    
+                    <Link to="/how-we-work" className={`nav-link ${isActive('/how-we-work') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                        How We Work
+                    </Link>
+                    
+                    <Link to="/contact-us" className={`nav-link ${isActive('/contact-us') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                        Contact Us
+                    </Link>
+                    
+                    <Link to="/careers" className={`nav-link careers-link ${isActive('/careers') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                        Careers
+                    </Link>
                 </div>
             </div>
         </nav>

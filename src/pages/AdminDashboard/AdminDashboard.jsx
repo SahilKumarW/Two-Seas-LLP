@@ -5,6 +5,7 @@ import defaultProfileImage from '../../assets/admin.jpg';
 import sampleResume from '../../assets/resume.pdf';
 import sampleReport from '../../assets/report.pdf';
 import defaultVideoThumbnail from '../../assets/video-thumbnail.png';
+import CandidateProfile from '../CandidateProfile/CandidateProfile';
 
 // Import country flags (you'll need to add these to your assets)
 import usFlag from '../../assets/flags/us.png';
@@ -69,6 +70,9 @@ const AdminDashboard = () => {
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
 
+  const [viewingCandidate, setViewingCandidate] = useState(null);
+  const [selectedCandidate, setSelectedCandidate] = useState(null);
+
   const [selectedTimes, setSelectedTimes] = useState({
     day: '',
     date: '',
@@ -76,6 +80,11 @@ const AdminDashboard = () => {
   });
 
   const [showTimeDropdown, setShowTimeDropdown] = useState(false);
+  const [openDropdownId, setOpenDropdownId] = useState(null); // Track which dropdown is open
+
+  const toggleTimeDropdown = (candidateId) => {
+    setOpenDropdownId(openDropdownId === candidateId ? null : candidateId);
+  };
 
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [videosCollapsed, setVideosCollapsed] = useState(false);
@@ -105,6 +114,48 @@ const AdminDashboard = () => {
     { id: 'client2', name: 'XYZ Industries' },
     { id: 'client3', name: 'Acme Ltd' }
   ]);
+
+  const DEFAULT_WISHLIST = [
+    {
+      id: 1,
+      name: 'Muhammad Ibrahim',
+      rate: 45,
+      currency: 'PKR',
+      experience: '5 years',
+      expertise: 'Frontend Development',
+      intro: 'Experienced React developer with a focus on UI/UX design.',
+      image: defaultProfileImage,
+      video: null,
+      interviewVideo: null,
+      showRate: true
+    },
+    {
+      id: 2,
+      name: 'Jane Smith',
+      rate: 55,
+      currency: 'EUR',
+      experience: '7 years',
+      expertise: 'Backend Development',
+      intro: 'Senior Node.js developer with extensive database experience.',
+      image: defaultProfileImage,
+      video: null,
+      interviewVideo: null,
+      showRate: true
+    },
+    {
+      id: 3,
+      name: 'Alex Johnson',
+      rate: 60,
+      currency: 'GBP',
+      experience: '8 years',
+      expertise: 'Full Stack Development',
+      intro: 'Skilled in both frontend and backend technologies.',
+      image: defaultProfileImage,
+      video: null,
+      interviewVideo: null,
+      showRate: false  // Testing hidden rate
+    }
+  ];
 
   const [visibilityModal, setVisibilityModal] = useState({
     isOpen: false,
@@ -157,7 +208,7 @@ const AdminDashboard = () => {
     );
   };
 
-  const [wishlist, setWishlist] = useState([]);
+  const [wishlist, setWishlist] = useState(DEFAULT_WISHLIST);
   const [showWishlist, setShowWishlist] = useState(false);
 
   // Refs for file inputs
@@ -174,14 +225,14 @@ const AdminDashboard = () => {
     { day: 'Fri', date: 'Jun 9', time: '3:15 PM' }
   ];
 
-  // Handler functions
-  const handleTimeSelect = (slot) => {
+  const handleTimeSelect = (slot, candidate) => {  // Now passing the whole candidate object
     setSelectedTimes({
       day: slot.day,
       date: slot.date,
       time: slot.time
     });
-    setShowTimeDropdown(false);
+    setOpenDropdownId(null); // Close dropdown after selection
+    alert(`Interview scheduled for ${candidate.name} on ${slot.day}, ${slot.date} at ${slot.time}`);
   };
 
   const handlePlayVideo = () => {
@@ -190,9 +241,10 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleRequestInterview = () => {
+  const handleRequestInterview = (candidate) => {
     if (selectedTimes.day && selectedTimes.date && selectedTimes.time) {
-      setInterviewRequested(true);
+      alert(`Interview scheduled for ${candidate.name} on ${selectedTimes.day}, ${selectedTimes.date} at ${selectedTimes.time}`);
+      setSelectedTimes({ day: '', date: '', time: '' });
     } else {
       alert('Please select day, date and time first');
     }
@@ -234,6 +286,11 @@ const AdminDashboard = () => {
     if (file) {
       setReportFile(file);
     }
+  };
+
+  // Modify the wishlist item click handler
+  const handleViewCandidate = (candidate) => {
+    setViewingCandidate(candidate);
   };
 
   // Video handling
@@ -444,6 +501,10 @@ const AdminDashboard = () => {
       </div>
     );
   };
+
+  if (selectedCandidate) {
+    return <CandidateProfile candidate={selectedCandidate} onClose={() => setSelectedCandidate(null)} />;
+  }
 
   return (
     <div className="admin-dashboard">
@@ -1064,28 +1125,61 @@ const AdminDashboard = () => {
                 <p className='wishlist-empty-text'>Your wishlist is empty</p>
               ) : (
                 <div className="wishlist-items">
-                  {wishlist.map((candidate, index) => (
-                    <div key={index} className="wishlist-item">
+                  {wishlist.map((candidate) => (
+                    <div key={candidate.id} className="wishlist-item">
                       <div className="candidate-info">
                         <img src={candidate.image} alt={candidate.name} />
                         <div className="candidate-details">
-                          <h3>{candidate.name}</h3>
+                          <h3
+                            className="clickable-name"
+                            onClick={() => setSelectedCandidate(candidate)}
+                          >
+                            {candidate.name}
+                          </h3>
                           <p className="candidate-expertise">{candidate.expertise}</p>
-                          <p className="candidate-rate">{candidate.currency === 'USD' ? '$' : candidate.currency === 'GBP' ? '£' : candidate.currency === 'EUR' ? '€' : 'Rs'}{candidate.rate}/hr</p>
+                          <p className="candidate-rate">
+                            {candidate.showRate ? (
+                              <>
+                                {candidate.currency === 'USD' ? '$' :
+                                  candidate.currency === 'GBP' ? '£' :
+                                    candidate.currency === 'EUR' ? '€' : 'Rs'}
+                                {candidate.rate}/hr
+                              </>
+                            ) : 'Rate hidden'}
+                          </p>
                         </div>
                       </div>
                       <div className="wishlist-actions">
-                        <button
-                          className="schedule-btn"
-                          onClick={() => {
-                            setShowWishlist(false);
-                          }}
-                        >
-                          Schedule Interview
-                        </button>
+                        <div className="schedule-interview-container">
+                          <button
+                            className="schedule-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleTimeDropdown(candidate.id);
+                            }}
+                          >
+                            Schedule Interview
+                          </button>
+                          {openDropdownId === candidate.id && (
+                            <div className="time-slot-dropdown">
+                              {timeSlots.map((slot) => (
+                                <div
+                                  key={`${slot.day}-${slot.time}`}
+                                  className="time-slot-option"
+                                  onClick={() => handleTimeSelect(slot, candidate)}  // Passing candidate object
+                                >
+                                  {slot.day}, {slot.date} at {slot.time}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                         <button
                           className="remove-icon"
-                          onClick={() => setWishlist(wishlist.filter(item => item.name !== candidate.name))}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setWishlist(wishlist.filter(item => item.id !== candidate.id));
+                          }}
                         >
                           🗑️
                         </button>
