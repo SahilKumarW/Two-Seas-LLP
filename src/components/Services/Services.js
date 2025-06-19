@@ -12,8 +12,8 @@ const Services = () => {
             icon: "🤝",
             desc: "Expert insurance professionals for all your coverage needs.",
             details: {
-                description: "We provide specialized insurance professionals including underwriters, claims adjusters, risk managers, and actuaries. All candidates have minimum 2 years experience in the insurance sector.",
-                hiringProcess: "Our rigorous 4-step process ensures we find insurance experts with the right technical knowledge and customer service skills."
+                description: "We provide a wide array of experienced workforce and fresh graduates wanting to work in the niche of Insurance. Our reps are pre-vetted, interviewed, and reference checked through the two seas 5 step method. ",
+                hiringProcess: "Our rigorous process ensures we find insurance experts with the right technical knowledge and customer service skills. Want to know if we have what you're looking for?"
             }
         },
         { 
@@ -22,7 +22,7 @@ const Services = () => {
             icon: "📈",
             desc: "Revenue-driving professionals for your growth needs.",
             details: {
-                description: "Our sales and marketing team includes digital marketers, sales executives, business developers, and CRM specialists. We focus on both B2B and B2C expertise.",
+                description: "Our sales and marketing team consist of outbound and inbound telemarketers, sales executives, business developers, and account executives. Focusing on both B2B and B2C expertise.",
                 hiringProcess: "Candidates undergo practical sales simulations and marketing strategy assessments."
             }
         },
@@ -32,7 +32,7 @@ const Services = () => {
             icon: "💰",
             desc: "Financial experts to manage your fiscal operations.",
             details: {
-                description: "We provide qualified accountants, financial analysts, auditors, and bookkeepers. All professionals are proficient in major accounting software.",
+                description: "We help accounting firms find top 1% accounting talent to function as their offshore arm. Our accountants specialize in audits, financial statements, bookkeeping taxation, and spreadsheets. They are majorly proficient accounting software, Microsoft 365, and the English language.",
                 hiringProcess: "Financial professionals complete technical accounting tests and scenario-based evaluations."
             }
         },
@@ -43,7 +43,7 @@ const Services = () => {
             icon: "👥",
             desc: "Skilled remote support for your business needs.",
             details: {
-                description: "Our virtual assistants, data entry specialists, and remote administrators are trained in productivity tools and communication platforms.",
+                description: "Our Virtual Professionals can take on a number of back office tasks for our clients, including data entry, CRM logins, customer support, front desk staff, back-office support, calendar management, billings, verification, note taking, and assistance to Executives. Our virtual professionals maintain data security whilst performing their job as per their contract.",
                 hiringProcess: "Virtual professionals are tested on time management, communication skills, and technical proficiency."
             }
         },
@@ -53,7 +53,7 @@ const Services = () => {
             icon: "💻",
             desc: "Technical experts for your digital infrastructure.",
             details: {
-                description: "We provide software developers, network engineers, cybersecurity specialists, and telecom technicians across all major platforms and languages.",
+                description: "We provide back end/front-end software engineers, Voice Engineers, application and game developers, cyber security specialists as well as technical support professionals to our clients.",
                 hiringProcess: "IT candidates complete coding challenges and infrastructure troubleshooting scenarios."
             }
         }

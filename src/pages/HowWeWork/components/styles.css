@@ -41,14 +41,14 @@ h2 {
   color: #06a3c2;
   font-size: 2rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 0.5rem;
+  /* border-bottom: 2px solid #eee; */
+  /* padding-bottom: 0.5rem; */
 }
 
 h3 {
   color: #03407d;
   font-size: 1.5rem;
-  margin: 1.5rem 0 1rem;
+  /* margin: 1.5rem 0 1rem; */
 }
 
 /* Process Section Styles */

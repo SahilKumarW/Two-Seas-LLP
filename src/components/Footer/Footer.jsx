@@ -10,7 +10,7 @@ const Footer = () => {
             number: "923347777506",
             display: "+92 (334) 7777506"
         },
-        email: "sales@TwoSeas.org",
+        email: "sales@twoseas.org",
         linkedin: {
             url: "https://linkedin.com/company/two-seas-llp",
             display: "Two Seas"

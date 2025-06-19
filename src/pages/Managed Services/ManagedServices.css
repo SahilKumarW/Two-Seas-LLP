@@ -93,11 +93,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-}
-
-.back-button:hover {
-  background: #393C68;
-  transform: translateY(-2px);
+  justify-content: center;
 }
 
 .workforce-grid {

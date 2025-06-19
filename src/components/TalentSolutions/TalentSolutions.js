@@ -7,6 +7,22 @@ import hipaaLogo from "../../assets/Hipaa Compliant.jpg";
 import { Link } from "react-router-dom";
 
 const TalentSolutions = () => {
+    const solutionItems = [
+        "HR",
+        "Payroll",
+        "Compliance",
+        "Performance Analytics",
+        "On-Ground Support",
+        "Employee Well-Being",
+        "Cost Savings"
+    ];
+
+    // Split items into rows of 3, then handle the remaining items
+    const rows = [];
+    for (let i = 0; i < solutionItems.length; i += 3) {
+        rows.push(solutionItems.slice(i, i + 3));
+    }
+
     return (
         <section className="talent-solutions">
             <div className="solutions-container">
@@ -21,24 +37,22 @@ const TalentSolutions = () => {
                 </div>
 
                 <div className="solutions-content">
-                    <div className="solutions-grid">
-                        {[1, 2, 3, 4, 5, 6, 7].map((num) => (
-                            <div key={num} className="solution-item">
-                                <span className="solution-number">{num}</span>
-                                <span className="solution-text">
-                                    {[
-                                        "HR",
-                                        "Payroll",
-                                        "Compliance",
-                                        "Performance Analytics",
-                                        "On-Ground Support",
-                                        "Employee Well-Being",
-                                        "Cost Savings"
-                                    ][num - 1]}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
+                    {rows.map((row, rowIndex) => (
+                        <div 
+                            key={rowIndex} 
+                            className={`solution-row ${
+                                row.length === 1 ? 'single-item' : 
+                                row.length === 2 ? 'double-items' : ''
+                            }`}
+                        >
+                            {row.map((item, index) => (
+                                <div key={index} className="solution-item">
+                                    <span className="solution-number">{rowIndex * 3 + index + 1}</span>
+                                    <span className="solution-text">{item}</span>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
                 </div>
             </div>
 

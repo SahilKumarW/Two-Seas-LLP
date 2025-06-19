@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Careers.css';
 import { jobOpenings } from '../../jobsData';
+import { FaLinkedin, FaBriefcase } from 'react-icons/fa';
 
 const Careers = () => {
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -175,15 +176,38 @@ const Careers = () => {
                                     </ul>
                                 </div>
 
-                                <button className="submit-btn apply-job-btn">
-                                    Apply for this Position
-                                </button>
-                                <button
-                                    className="back-button"
-                                    onClick={() => setShowJobDetails(false)}
-                                >
-                                    ← Back to Jobs
-                                </button>
+                                <div className="apply-actions">
+                                    <div className="apply-options">
+                                        <button className="apply-btn apply-direct">
+                                            Apply for this Position
+                                        </button>
+                                        <a
+                                            href={`https://www.indeed.com/jobs?q=${encodeURIComponent(selectedJob.title)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="apply-btn apply-indeed"
+                                        >
+                                            <FaBriefcase /> Apply via Indeed
+                                        </a>
+                                        <a
+                                            href={`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(selectedJob.title)}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="apply-btn apply-linkedin"
+                                        >
+                                            <FaLinkedin /> Apply via LinkedIn
+                                        </a>
+                                    </div>
+
+                                    <div className="back-button-container">
+                                        <button
+                                            className="back-button"
+                                            onClick={() => setShowJobDetails(false)}
+                                        >
+                                            ← Back to Jobs
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

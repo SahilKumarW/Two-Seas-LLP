@@ -42,12 +42,12 @@
 
 .back-button-container {
     display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-top: 2rem;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 20px;
 }
 
-.back-button {
+/* .back-button {
     background: #06a3c2;
     color: white;
     border: none;
@@ -58,10 +58,59 @@
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 153, 185, 0.2);
+} */
+
+.action-buttons-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 30px;
+    gap: 20px;
+}
+
+.consultation-button {
+    background-color: #2A2D7C;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 2;
+}
+
+.consultation-button:hover {
+    background-color: #1a1c5a;
+}
+
+.back-button {
+    background-color: #2A2D7C;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    flex: 1;
 }
 
 .back-button:hover {
-    background: #007a96;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 153, 185, 0.3);
+    background-color: #007a96;
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+    .action-buttons-container {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .consultation-button,
+    .back-button {
+        width: 100%;
+        flex: auto;
+    }
 }

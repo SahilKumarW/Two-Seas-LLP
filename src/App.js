@@ -25,8 +25,9 @@ import PrivacyPolicy from "./pages/PrivacyPolicy/PrivacyPolicy.jsx";
 import ServiceDetails from "./components/ServiceDetails/ServiceDetails.js";
 import './App.css';
 import ProfilePage from "./components/ProfilePage/ProfilePage.js";
-
 import WhatsAppChat from './components/WhatsAppChat/WhatsAppChat';
+import AddEmployee from "./pages/AddEmployee/AddEmployee.jsx";
+import AddNewOpening from "./pages/AddNewOpening/AddNewOpening.jsx";
 
 function Layout() {
   const location = useLocation();
@@ -68,6 +69,8 @@ function Layout() {
         <Route path="/services" element={<Services />} />
         <Route path="/services/:serviceId" element={<ServiceDetails />} />
         <Route path="/profile/:id" element={<ProfilePage />} />
+        <Route path="/admin-dashboard/add-employee" element={<AddEmployee />} />
+        <Route path="/careers/add-new-opening" element={<AddNewOpening />} />
       </Routes>
 
       {/* Add WhatsAppChat component here */}

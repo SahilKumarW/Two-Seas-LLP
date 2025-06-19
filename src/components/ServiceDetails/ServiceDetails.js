@@ -13,6 +13,13 @@ const ServiceDetails = () => {
         return null;
     }
 
+    const handleBookConsultation = () => {
+        // You can replace this with your actual booking logic
+        console.log("Booking consultation for", service.title);
+        // Or navigate to a booking page:
+        // navigate('/book-consultation', { state: { service } });
+    };
+
     return (
         <div className="service-detail-page">
             <h2 className="service-title">{service.displayTitle || service.title} Professionals</h2>
@@ -21,7 +28,14 @@ const ServiceDetails = () => {
             <SEASProcessFlow />
             <p>{service.details.hiringProcess}</p>
             
-            <div className="back-button-container">
+            <div className="action-buttons-container">
+                <button 
+                    className="consultation-button"
+                    onClick={handleBookConsultation}
+                >
+                    Book Yourself a Free Consultation
+                </button>
+                
                 <button 
                     className="back-button"
                     onClick={() => navigate('/services')}

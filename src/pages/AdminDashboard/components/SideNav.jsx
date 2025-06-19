@@ -1,20 +1,10 @@
 import React, { useState } from 'react';
 import './SideNav.css';
+import { navItems } from '../constants';
 
 const SideNav = ({ wishlist = [], setShowWishlist }) => {
     const [activeItem, setActiveItem] = useState(0);
     const [hoveredItem, setHoveredItem] = useState(null);
-
-    const navItems = [
-        "Sales & Marketing",
-        "Untitled Professionals",
-        "IT and Telecom",
-        "Contact Centre",
-        "Accounting & Finance",
-        "Insurance",
-        "Medical",
-        "Dental"
-    ];
 
     return (
         <div className="side-nav">
@@ -25,9 +15,6 @@ const SideNav = ({ wishlist = [], setShowWishlist }) => {
             >
                 Wishlist ({wishlist.length || 0})
             </button>
-            {/* <span className="wishlist-icon">❤️</span>
-                <span className="wishlist-text">Wishlist ({wishlist.length})</span>
-            </button> */}
 
             <div className="nav-header">
                 <div className="header-content">

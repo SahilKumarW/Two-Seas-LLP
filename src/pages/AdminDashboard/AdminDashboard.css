@@ -18,6 +18,25 @@
   --text-light: #6A6D8A;
 }
 
+.expertise-hidden {
+  color: #2A2D7C;
+  font-style: italic;
+}
+
+.detail-item .detail-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-item .toggle-eye-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 5px;
+}
+
 .admin-dashboard {
   display: flex;
   min-height: 100vh;
@@ -323,7 +342,7 @@
 }
 
 .toggle-eye-btn:hover {
-  background: rgba(42, 45, 124, 0.1);
+  background: #2A2D7C;
 }
 
 .profile-details-container {
@@ -1656,6 +1675,7 @@
 .modal-header h3 {
   margin: 0;
   font-size: 1.2rem;
+  color: #2A2D7C;
 }
 
 .close-btn {
@@ -2082,6 +2102,31 @@
 /* Eye Icon Styles */
 .eye-icon {
   vertical-align: middle;
+  /* width: 24px;
+  height: 24px; */
+  /* padding: 4px; */
+  /* background: #2A2D7C; */
+  border-radius: 50%; /* This makes it circular */
+  color: white; /* Icon color */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.eye-icon:hover {
+  background: #2A2D7C; /* Slightly darker on hover */
+}
+
+
+/* Specific style for expertise eye button */
+.hide-eye-btn .eye-icon {
+  color: #2A2D7C;
+}
+
+.hide-eye-btn:hover .eye-icon {
+  color: white; /* Slightly darker shade for hover */
 }
 
 .toggle-eye-btn {
@@ -2363,10 +2408,6 @@
   transition: all 0.2s ease;
 }
 
-.toggle-eye-btn:hover {
-  background: rgba(42, 45, 124, 0.1);
-}
-
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .name-and-currency {
@@ -2473,4 +2514,361 @@
 .back-to-wishlist {
     margin-bottom: 10px;
     /* padding: 0 15px; */
+}
+
+.employee-selection-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.employee-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 15px 0;
+}
+
+.employee-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.employee-item:hover {
+  background-color: #f5f5f5;
+}
+
+.employee-item.selected {
+  background-color: #e6f0ff;
+  border-color: #2A2D7C;
+}
+
+.employee-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.employee-details h4 {
+  margin: 0;
+  color: #2A2D7C;
+}
+
+.employee-details p {
+  margin: 4px 0 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.confirm-btn {
+  background-color: #2A2D7C;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.confirm-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Add to your AdminDashboard.css */
+.tab-container {
+  margin-bottom: 20px;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.niche-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.niche-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  background: #f5f5f5;
+}
+
+.niche-item input {
+  margin: 0;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Container */
+.visibility-modal {
+  background-color: white;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Modal Header */
+.modal-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #2A2D7C;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+/* Scrollable Content */
+.modal-content-scrollable {
+  padding: 16px 24px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.selection-section {
+  margin-bottom: 20px;
+}
+
+.selection-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: #333;
+}
+
+.selection-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.selection-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 4px;
+  background: #f8f8f8;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.selection-item:hover {
+  background: #eee;
+}
+
+.selection-item input {
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Modal Footer */
+.modal-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e5e5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-btn {
+  padding: 8px 16px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cancel-btn:hover {
+  background: #e5e5e5;
+}
+
+.save-btn {
+  padding: 8px 16px;
+  background: #2A2D7C;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.save-btn:hover {
+  background: #1a1d5c;
+}
+
+/* Scrollbar styling */
+.selection-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.selection-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.selection-list::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.selection-list::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Employee Selection Modal */
+.employee-selection-modal {
+  background-color: white;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.employee-list {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.employee-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.employee-item:hover {
+  background-color: #f8f8f8;
+}
+
+.employee-item.selected {
+  background-color: #f0f7ff;
+  border-color: #cce0ff;
+}
+
+.employee-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 16px;
+}
+
+.employee-details {
+  flex: 1;
+}
+
+.employee-details h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+}
+
+.employee-details p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.selection-checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 12px;
+}
+
+.employee-item.selected .selection-checkbox {
+  background-color: #2A2D7C;
+  border-color: #2A2D7C;
+  color: white;
+}
+
+.checkmark {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.modal-actions .confirm-btn {
+  position: relative;
+}
+
+.modal-actions .confirm-btn::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
 }

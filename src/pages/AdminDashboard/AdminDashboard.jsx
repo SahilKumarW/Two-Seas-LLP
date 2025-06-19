@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './AdminDashboard.css';
 import SideNav from '../AdminDashboard/components/SideNav';
 import defaultProfileImage from '../../assets/admin.jpg';
@@ -6,12 +6,7 @@ import sampleResume from '../../assets/resume.pdf';
 import sampleReport from '../../assets/report.pdf';
 import defaultVideoThumbnail from '../../assets/video-thumbnail.png';
 import CandidateProfile from '../CandidateProfile/CandidateProfile';
-
-// Import country flags (you'll need to add these to your assets)
-import usFlag from '../../assets/flags/us.png';
-import ukFlag from '../../assets/flags/uk.png';
-import euFlag from '../../assets/flags/eu.jpg';
-import pkFlag from '../../assets/flags/pk.svg';
+import { currencies, niches as importedNiches } from './constants';
 
 const AdminDashboard = () => {
   const interviewVideoInputRef = useRef(null);
@@ -30,6 +25,7 @@ const AdminDashboard = () => {
     showIntroVideo: true,
     showInterviewVideo: true,
     showRate: true,
+    showExpertise: true,
     showVideoSection: true,
     videoVisibility: {
       introduction: {
@@ -59,16 +55,99 @@ const AdminDashboard = () => {
     intro: ''
   });
 
-  // Currency options
-  const [currencies] = useState([
-    { code: 'USD', symbol: '$', name: 'US Dollar', flag: usFlag },
-    { code: 'GBP', symbol: '£', name: 'British Pound', flag: ukFlag },
-    { code: 'EUR', symbol: '€', name: 'Euro', flag: euFlag },
-    { code: 'PKR', symbol: 'Rs', name: 'Pakistani Rupee', flag: pkFlag }
-  ]);
-
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState(currencies[0]);
+
+  // Add this useEffect hook near your other state declarations
+  const currencyDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (currencyDropdownRef.current && !currencyDropdownRef.current.contains(event.target)) {
+        setShowCurrencyDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const EmployeeSelectionModal = ({
+    isOpen,
+    employees,
+    currentNiche,
+    onClose,
+    onConfirm
+  }) => {
+    const [selectedEmployees, setSelectedEmployees] = useState([]); // Changed to array for multiple selection
+
+    const toggleEmployeeSelection = (employee) => {
+      setSelectedEmployees(prev =>
+        prev.some(e => e.id === employee.id)
+          ? prev.filter(e => e.id !== employee.id)
+          : [...prev, employee]
+      );
+    };
+
+    if (!isOpen) return null;
+
+    return (
+      <div className="modal-overlay">
+        <div className="employee-selection-modal">
+          <div className="modal-header">
+            <h3>Select Employees for {currentNiche?.name}</h3>
+            <button className="close-btn" onClick={onClose}>×</button>
+          </div>
+
+          <div className="employee-list">
+            {employees.map(employee => (
+              <div
+                key={employee.id}
+                className={`employee-item ${selectedEmployees.some(e => e.id === employee.id) ? 'selected' : ''}`}
+                onClick={() => toggleEmployeeSelection(employee)}
+              >
+                <img src={employee.image} alt={employee.name} className="employee-image" />
+                <div className="employee-details">
+                  <h4>{employee.name}</h4>
+                  <p>{employee.expertise}</p>
+                </div>
+                <div className="selection-checkbox">
+                  {selectedEmployees.some(e => e.id === employee.id) && (
+                    <span className="checkmark">✓</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="modal-actions">
+            <button className="cancel-btn" onClick={onClose}>Cancel</button>
+            <button
+              className="confirm-btn"
+              disabled={selectedEmployees.length === 0}
+              onClick={() => {
+                if (selectedEmployees.length > 0) {
+                  if (window.confirm(`Add ${selectedEmployees.length} employee(s) to ${currentNiche.name}?`)) {
+                    selectedEmployees.forEach(employee => onConfirm(employee));
+                    onClose();
+                  }
+                }
+              }}
+            >
+              Confirm Selection ({selectedEmployees.length})
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const [employeeSelectionModal, setEmployeeSelectionModal] = useState({
+    isOpen: false,
+    currentNiche: null
+  });
 
   const [viewingCandidate, setViewingCandidate] = useState(null);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
@@ -100,12 +179,17 @@ const AdminDashboard = () => {
   const [resumeFile, setResumeFile] = useState(null);
   const [reportFile, setReportFile] = useState(null);
 
-  const [niches, setNiches] = useState([
-    { id: 1, name: 'Dinotec', employees: [], visibleTo: [] },
-    { id: 2, name: '3Sip Services', employees: [], visibleTo: [] },
-    { id: 3, name: 'Masterways', employees: [], visibleTo: [] },
-    { id: 4, name: 'Akuls', employees: [], visibleTo: [] }
-  ]);
+  const [niches, setNiches] = useState(() => {
+    // Initialize with your company data
+    const initialCompanies = [
+      { id: 1, name: 'Dinotec', employees: [], visibleTo: [], visibleToNiches: [], hidden: false },
+      { id: 2, name: '3Sip Services', employees: [], visibleTo: [], visibleToNiches: [], hidden: false },
+      { id: 3, name: 'Masterways', employees: [], visibleTo: [], visibleToNiches: [], hidden: false },
+      { id: 4, name: 'Akuls', employees: [], visibleTo: [], visibleToNiches: [], hidden: false }
+    ];
+
+    return initialCompanies;
+  });
 
   const [selectedClient, setSelectedClient] = useState(null);
 
@@ -164,6 +248,7 @@ const AdminDashboard = () => {
 
   const NicheVisibilityModal = ({ clients, niche, onClose, onSave }) => {
     const [selectedClients, setSelectedClients] = useState(niche?.visibleTo || []);
+    const [selectedNiches, setSelectedNiches] = useState(niche?.visibleToNiches || []);
 
     const toggleClient = (clientId) => {
       setSelectedClients(prev =>
@@ -173,8 +258,16 @@ const AdminDashboard = () => {
       );
     };
 
+    const toggleNiche = (nicheId) => {
+      setSelectedNiches(prev =>
+        prev.includes(nicheId)
+          ? prev.filter(id => id !== nicheId)
+          : [...prev, nicheId]
+      );
+    };
+
     const handleSave = () => {
-      onSave(selectedClients);
+      onSave(selectedClients, selectedNiches);
       onClose();
     };
 
@@ -182,26 +275,47 @@ const AdminDashboard = () => {
       <div className="modal-overlay">
         <div className="visibility-modal">
           <div className="modal-header">
-            <h3 style={{ color: '#2A2D7C' }}>Manage Visibility for {niche?.name}</h3>
+            <h3>Manage Visibility for {niche?.name}</h3>
             <button className="close-btn" onClick={onClose}>×</button>
           </div>
 
-          <div className="client-list">
-            {clients.map(client => (
-              <label key={client.id} className="client-item">
-                <input
-                  type="checkbox"
-                  checked={selectedClients.includes(client.id)}
-                  onChange={() => toggleClient(client.id)}
-                />
-                <span>{client.name}</span>
-              </label>
-            ))}
+          <div className="modal-content-scrollable">
+            {/* <div className="selection-section">
+              <h4>Select Clients</h4>
+              <div className="selection-list">
+                {clients.map(client => (
+                  <label key={client.id} className="selection-item">
+                    <input
+                      type="checkbox"
+                      checked={selectedClients.includes(client.id)}
+                      onChange={() => toggleClient(client.id)}
+                    />
+                    <span>{client.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div> */}
+
+            <div className="selection-section">
+              <h4>Select Niches</h4>
+              <div className="selection-list">
+                {importedNiches.map(nicheItem => (
+                  <label key={nicheItem.id} className="selection-item">
+                    <input
+                      type="checkbox"
+                      checked={selectedNiches.includes(nicheItem.id)}
+                      onChange={() => toggleNiche(nicheItem.id)}
+                    />
+                    <span>{nicheItem.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="modal-actions">
             <button className="cancel-btn" onClick={onClose}>Cancel</button>
-            <button className="save-btn" style={{ backgroundColor: '#2A2D7C' }} onClick={handleSave}>Save Changes</button>
+            <button className="save-btn" onClick={handleSave}>Save Changes</button>
           </div>
         </div>
       </div>
@@ -355,14 +469,21 @@ const AdminDashboard = () => {
     }
   };
 
+  const openEmployeeSelection = (niche) => {
+    setEmployeeSelectionModal({
+      isOpen: true,
+      currentNiche: niche
+    });
+  };
+
   // Niche and wishlist functions
-  const addToNiche = (nicheId) => {
+  const addToNiche = (employee) => {
     setNiches(niches.map(niche =>
-      niche.id === nicheId
-        ? { ...niche, employees: [...niche.employees, admin] }
+      niche.id === employeeSelectionModal.currentNiche.id
+        ? { ...niche, employees: [...niche.employees, employee] }
         : niche
     ));
-    alert(`Employee ${admin.name} added to ${niches.find(n => n.id === nicheId).name}`);
+    alert(`${employee.name} was added to ${employeeSelectionModal.currentNiche.name}`);
   };
 
   const toggleWishlist = () => {
@@ -454,6 +575,10 @@ const AdminDashboard = () => {
     setAdmin({ ...admin, showRate: !admin.showRate });
   };
 
+  const toggleExpertise = () => {
+    setAdmin({ ...admin, showExpertise: !admin.showExpertise });
+  };
+
   // Add new handler for currency selection
   const handleCurrencySelect = (currency) => {
     setSelectedCurrency(currency);
@@ -494,10 +619,17 @@ const AdminDashboard = () => {
     }
     return (
       <div className="static-field">
-        <span>{field === 'rate' ? `${selectedCurrency.symbol}${admin[field]}/hr` : admin[field]}</span>
-        <button onClick={() => startEditing(field)} className="edit-btn">
-          <EditIcon />
-        </button>
+        <span>
+          {field === 'rate' ?
+            `${selectedCurrency.symbol}${admin[field]}/hr` :
+            field === 'expertise' && !admin.showExpertise ? 'Expertise Hidden' :
+              admin[field]}
+        </span>
+        {field !== 'expertise' || admin.showExpertise ? (
+          <button onClick={() => startEditing(field)} className="edit-btn">
+            <EditIcon />
+          </button>
+        ) : null}
       </div>
     );
   };
@@ -580,7 +712,7 @@ const AdminDashboard = () => {
                     </>
                   )}
                 </h2>
-                <div className="currency-selector">
+                <div className="currency-selector" ref={currencyDropdownRef}>
                   <button
                     className="currency-btn"
                     onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
@@ -680,7 +812,14 @@ const AdminDashboard = () => {
                 <div className="detail-item">
                   <span className="detail-label">Expertise</span>
                   <div className="detail-value">
-                    {renderEditableField('expertise', 'Expertise')}
+                    {admin.showExpertise ? (
+                      renderEditableField('expertise', 'Expertise')
+                    ) : (
+                      <span className="expertise-hidden">Expertise Hidden</span>
+                    )}
+                    <button onClick={toggleExpertise} className="toggle-eye-btn hide-eye-btn">
+                      <EyeIcon visible={admin.showExpertise} />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -751,11 +890,25 @@ const AdminDashboard = () => {
                 <div className="niche-info">
                   <h4 className='niche-name'>{niche.name}</h4>
                   <div className="visibility-info">
-                    <span>
-                      {niche.visibleTo.length > 0
-                        ? `Visible to ${niche.visibleTo.length} client(s)`
-                        : 'Hidden from all clients'}
-                    </span>
+                    {(niche.visibleTo?.length > 0 || niche.visibleToNiches?.length > 0) ? (
+                      <span>
+                        Shown to {
+                          [
+                            ...(niche.visibleTo || []).map(clientId =>
+                              clients.find(c => c.id === clientId)?.name
+                            ),
+                            ...(niche.visibleToNiches || []).map(nicheId =>
+                              importedNiches.find(n => n.id === nicheId)?.name
+                            )
+                          ]
+                            .filter(Boolean)
+                            .join(', ')
+                            .replace(/, ([^,]*)$/, ' and $1')
+                        }
+                      </span>
+                    ) : (
+                      <span>Hidden from all</span>
+                    )}
                     <button
                       className="manage-visibility-btn"
                       onClick={() => setVisibilityModal({
@@ -769,7 +922,7 @@ const AdminDashboard = () => {
                 </div>
                 <button
                   className="add-to-niche-btn"
-                  onClick={() => addToNiche(niche.id)}
+                  onClick={() => openEmployeeSelection(niche)}
                 >
                   Add Employee
                 </button>
@@ -782,11 +935,11 @@ const AdminDashboard = () => {
               clients={clients}
               niche={visibilityModal.currentNiche}
               onClose={() => setVisibilityModal({ isOpen: false, currentNiche: null })}
-              onSave={(selectedClients) => {
+              onSave={(selectedClients, selectedNiches) => {
                 setNiches(
                   niches.map(n =>
                     n.id === visibilityModal.currentNiche.id
-                      ? { ...n, visibleTo: selectedClients }
+                      ? { ...n, visibleTo: selectedClients, visibleToNiches: selectedNiches }
                       : n
                   )
                 );
@@ -807,8 +960,7 @@ const AdminDashboard = () => {
                       e.stopPropagation();
                       toggleVideoSection();
                     }}
-                    className="toggle-eye-btn" style={{ color: '#2A2D7C' }}
-                  >
+                    className="toggle-eye-btn hide-eye-btn">
                     <EyeIcon visible={admin.showVideoSection} />
                   </button>
                   <span className="collapse-icon-wrapper">
@@ -862,8 +1014,7 @@ const AdminDashboard = () => {
                               e.stopPropagation();
                               toggleVideoHidden('introduction');
                             }}
-                            className="toggle-eye-btn" style={{ color: '#2A2D7C' }}
-                          >
+                            className="toggle-eye-btn hide-eye-btn">
                             <EyeIcon visible={true} />
                           </button>
                           {admin.video ? (
@@ -957,8 +1108,7 @@ const AdminDashboard = () => {
                               e.stopPropagation();
                               toggleVideoHidden('interview');
                             }}
-                            className="toggle-eye-btn" style={{ color: '#2A2D7C' }}
-                          >
+                            className="toggle-eye-btn hide-eye-btn">
                             <EyeIcon visible={true} />
                           </button>
                           {admin.interviewVideo ? (
@@ -1142,7 +1292,10 @@ const AdminDashboard = () => {
                               <>
                                 {candidate.currency === 'USD' ? '$' :
                                   candidate.currency === 'GBP' ? '£' :
-                                    candidate.currency === 'EUR' ? '€' : 'Rs'}
+                                    candidate.currency === 'EUR' ? '€' :
+                                      candidate.currency === 'AED' ? 'د.إ' :
+                                        candidate.currency === 'SAR' ? '﷼' :
+                                          candidate.currency === 'AUD' ? 'A$' : 'Rs'}
                                 {candidate.rate}/hr
                               </>
                             ) : 'Rate hidden'}
@@ -1190,6 +1343,15 @@ const AdminDashboard = () => {
               )}
             </div>
           </div>
+        )}
+        {employeeSelectionModal.isOpen && (
+          <EmployeeSelectionModal
+            isOpen={employeeSelectionModal.isOpen}
+            employees={wishlist} // Or any other source of employees
+            currentNiche={employeeSelectionModal.currentNiche}
+            onClose={() => setEmployeeSelectionModal({ isOpen: false, currentNiche: null })}
+            onConfirm={addToNiche}
+          />
         )}
       </div>
     </div>

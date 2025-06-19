@@ -5,6 +5,50 @@
   position: relative;
 }
 
+/* Updated CSS for solution items */
+.solution-row {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+.solution-row.single-item {
+  justify-content: center;
+}
+
+.solution-row.single-item .solution-item {
+  flex: 0 1 300px; /* Fixed width same as 3-item row items */
+  min-width: 260px;
+  max-width: 300px;
+}
+
+.solution-row.double-items {
+  justify-content: center;
+  gap: 2.5rem;
+}
+
+.solution-row.double-items .solution-item {
+  flex: 0 1 calc(50% - 2.5rem);
+  max-width: 300px;
+  min-width: 260px;
+}
+
+.solution-item {
+  flex: 0 1 300px;
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.8rem 2.5rem;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  border-left: 5px solid #0099b9;
+}
+
 .solutions-container {
   max-width: 1100px;
   margin: 0 auto;
@@ -80,7 +124,7 @@
   justify-content: center;
   align-items: stretch;
   gap: 2.5rem;
-  margin-bottom: 5rem;
+  /* margin-bottom: 5rem; */
   flex-wrap: wrap;
 }
 

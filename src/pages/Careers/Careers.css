@@ -406,7 +406,7 @@
 }
 
 .section-subtitle {
-  color: var(--text-light);
+  color: #2A2D7C;
   margin-bottom: 2rem;
   font-size: 1.1rem;
   max-width: 700px;
@@ -750,7 +750,7 @@
 
 /* Header Section */
 .job-details-header {
-  background: linear-gradient(135deg, var(--blue), var(--dark-blue));
+  background: #2A2D7C;
   color: white;
   padding: 2rem;
   position: relative;
@@ -768,12 +768,12 @@
 
 /* Back Button */
 .back-button {
-  background: none;
+  background: #2A2D7C;
   border: none;
   color: white;
   font-weight: 600;
-  margin-top: 0.3rem;
-  margin-bottom: 1rem;
+  /* margin-top: 0.3rem;
+  margin-bottom: 1rem; */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -804,7 +804,7 @@
 .job-details-meta {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  /* margin-bottom: 1.5rem; */
   flex-wrap: wrap;
   position: relative;
   z-index: 2;
@@ -819,6 +819,72 @@
   color: white;
   padding: 2rem;
   position: relative;
+}
+
+.apply-options {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin: 25px 0;
+}
+
+.apply-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: 5px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  justify-content: center;
+  background-color: #2A2D7C;
+}
+
+.apply-direct {
+  background-color: #2A2D7C;
+  color: white;
+  border: none;
+  justify-content: center;
+  font-size: medium;
+}
+
+.apply-indeed {
+  background-color: #2A2D7C;
+  color: white;
+  text-decoration: none;
+  justify-content: center;
+  font-size: medium;
+}
+
+.apply-linkedin {
+  background-color: #2A2D7C;
+  color: white;
+  text-decoration: none;
+  justify-content: center;
+  font-size: medium;
+}
+
+.apply-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.apply-direct:hover {
+  background-color: #00669c;
+}
+
+.apply-indeed:hover {
+  background-color: #00669c;
+}
+
+.apply-linkedin:hover {
+  background-color: #00669c;
+}
+
+@media (max-width: 768px) {
+  .apply-options {
+    flex-direction: column;
+  }
 }
 
 /* Meta Tags in Header - White Text */

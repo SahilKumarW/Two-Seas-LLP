@@ -153,10 +153,6 @@ p {
 }
 
 /* Process Steps */
-.process-steps {
-  margin: 3rem 0;
-}
-
 .process-step {
   display: flex;
   gap: 2rem;
