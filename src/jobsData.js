@@ -144,7 +144,7 @@ export const jobOpenings = [
         "Client communication – Collaborate with clients to gather necessary financial information, address queries, and ensure a smooth client experience.",
       ],
       qualifications: [
-        "Qualification: A 4-Year Bachelor's degree is preferable. Preferably in Accounting & Finance.",
+        "Qualification: A 4-Year Bachelor's degree, preferably in Accounting & Finance.",
         "Prior knowledge/experience of QuickBooks.",
         "Exposure to Debit/Credit (double entries).",
         "Prior Accounting Firm Experience",
@@ -186,7 +186,7 @@ export const jobOpenings = [
         "Prepare and file Business Activity Statements, ensuring GST compliance under senior accountant supervision",
       ],
       qualifications: [
-        "Qualification: A 4-Year Bachelor's degree is preferable. Preferably in Accounting & Finance CA/ ACCA Associate",
+        "Qualification: A 4-Year Bachelor's degree, preferably in Accounting & Finance, CA/ACCA Associate",
         "Prior knowledge/experience of QuickBooks.",
         "Exposure to Debit/Credit (double entries).",
         "Prior Accounting Firm Experience",
@@ -275,6 +275,7 @@ export const jobOpenings = [
         "Confidentiality and proprietary agreement to be signed.",
       ],
       qualifications: [
+        "Bachelors degree in Arts. Preferably Political Science, Law, or IR.",
         "Proven experience as a Paralegal in Estate Planning, Probate, and Guardianship is preferred but willing to train a viable candidate.",
         "Strong knowledge of relevant laws and legal procedures.",
         "Excellent drafting and writing skills.",
@@ -315,8 +316,7 @@ export const jobOpenings = [
         "Minimum bachelor’s degree in Business, Economics or Humanities",
         "At least 2 year of Commercial lines, Personal Lines, Customer Service and Sales",
         "Proficiency in digital tools (Google Workspace, MS Office, Zoom)",
-        "Minimum Internet speed of 40 MBPS fiber connection and 4G portable internet as a backup",
-        "A laptop and a headset for training at Edge Edu",
+        "Minimum Internet speed of 40 MBPS fiber connection and a power back up",
       ],
       benefits: [ // Added a placeholder 'benefits' array for consistency
         "Competitive base salary",
@@ -392,7 +392,6 @@ export const jobOpenings = [
         "Proficient in CRM usage.",
         "Minimum Internet speed of 40 MBPS fiber connection and 4G portable internet as a backup",
         "Familiarity with medical terminology and patient care protocols.",
-        "A laptop and a headset for training at Edge Edu",
       ],
       benefits: [ // Added a placeholder 'benefits' array for consistency
         "Competitive base salary",

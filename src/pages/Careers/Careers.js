@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Careers.css';
 import { jobOpenings } from '../../jobsData';
 import { FaLinkedin, FaBriefcase } from 'react-icons/fa';
@@ -19,11 +19,6 @@ const Careers = () => {
         e.preventDefault();
         setIsSubmitted(true);
         setTimeout(() => setIsSubmitted(false), 3000);
-    };
-
-    const handleJobClick = (job) => {
-        setSelectedJob(job);
-        setShowJobDetails(true);
     };
 
     const benefits = [
@@ -58,6 +53,32 @@ const Careers = () => {
             icon: "✈️"
         }
     ];
+
+    const handleJobClick = (job) => {
+        setSelectedJob(job);
+        setShowJobDetails(true);
+        // Add a new entry to the history stack
+        window.history.pushState({ showDetails: true }, '', window.location.pathname);
+    };
+
+    const handleBackToJobs = () => {
+        setShowJobDetails(false);
+        // Replace current history entry to prevent double-back
+        window.history.replaceState({ showDetails: false }, '', window.location.pathname);
+    };
+
+    useEffect(() => {
+        // Handle browser back/forward buttons
+        const handlePopState = (event) => {
+            setShowJobDetails(false);
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
 
     return (
         <div className="careers-root">
