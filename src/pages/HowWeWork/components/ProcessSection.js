@@ -32,7 +32,7 @@ const ProcessSection = () => {
                         <h3>Selection</h3>
                     </div>
                     <ul className="step-content">
-                        <li>Based on client needs, our HR team selects and filters talent from our talent pool or if it feels the need to; re-advertisment is done to scower the right fits according to exact qulifactions that is desired by the clients.</li>
+                        <li>Based on client needs, our HR team either selects and filters talent from our existing pool or, if necessary, re-advertises to find the right candidates with the exact qualifications desired by the clients.</li>
                         <li>Our latest pool includes thousands of candidates from whom only the top matches are recommended to the clients. Ensuring the saving of time and effort.</li>
                         <li>Our complete profile is created with a recruiter assessment, and reference input which is made available to our clients.</li>
                     </ul>
