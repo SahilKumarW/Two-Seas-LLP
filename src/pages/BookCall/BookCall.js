@@ -35,8 +35,8 @@ const BookCall = () => {
 
                 {/* Right Section - Form */}
                 <div className="right-section">
-                    <h2 className="company-name">Two Seas LLP</h2>
-                    <p className="form-subtitle">Fill in the details below to schedule a call.</p>
+                    <h2 style={{ textAlign: 'center', color: '#2A2D7C', marginTop: '20px'}} className="company-name">Two Seas LLP</h2>
+                    <p style={{textAlign: 'center'}} className="form-subtitle">Fill in the details below to schedule a call.</p>
 
                     <form onSubmit={handleSubmit} className="form">
                         <div className="form-group">
@@ -51,7 +51,7 @@ const BookCall = () => {
                             />
                         </div>
 
-                        <div className="form-group">
+                        <div style={{gap: '0'}} className="form-group">
                             <label>Email</label>
                             <input
                                 type="email"

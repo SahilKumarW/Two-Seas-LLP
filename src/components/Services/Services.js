@@ -33,7 +33,7 @@ const Services = () => {
             desc: "Financial experts to manage your fiscal operations.",
             details: {
                 description: "We help accounting firms find top 1% accounting talent to function as their offshore arm. Our accountants specialize in audits, financial statements, bookkeeping taxation, and spreadsheets. They are majorly proficient accounting software, Microsoft 365, and the English language.",
-                hiringProcess: "Financial professionals complete technical accounting tests and scenario-based evaluations."
+                hiringProcess: ""
             }
         },
         { 
@@ -44,7 +44,7 @@ const Services = () => {
             desc: "Skilled remote support for your business needs.",
             details: {
                 description: "Our Virtual Professionals can take on a number of back office tasks for our clients, including data entry, CRM logins, customer support, front desk staff, back-office support, calendar management, billings, verification, note taking, and assistance to Executives. Our virtual professionals maintain data security whilst performing their job as per their contract.",
-                hiringProcess: "Virtual professionals are tested on time management, communication skills, and technical proficiency."
+                // hiringProcess: "Virtual professionals are tested on time management, communication skills, and technical proficiency."
             }
         },
         { 
@@ -53,8 +53,8 @@ const Services = () => {
             icon: "💻",
             desc: "Technical experts for your digital infrastructure.",
             details: {
-                description: "We provide back end/front-end software engineers, Voice Engineers, application and game developers, cyber security specialists as well as technical support professionals to our clients.",
-                hiringProcess: "IT candidates complete coding challenges and infrastructure troubleshooting scenarios."
+                description: "We provide back end/front-end software engineers, voice engineers, application and game developers, cyber security specialists as well as technical support professionals to our clients.",
+                // hiringProcess: "IT candidates complete coding challenges and infrastructure troubleshooting scenarios."
             }
         }
     ];

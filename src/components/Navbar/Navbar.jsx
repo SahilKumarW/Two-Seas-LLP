@@ -12,9 +12,9 @@ const Navbar = () => {
     const isActive = (path) => location.pathname === path;
 
     const services = [
-        { 
+        {
             id: 'insurance',
-            title: "Insurance", 
+            title: "Insurance",
             icon: "🤝",
             desc: "Expert insurance professionals for all your coverage needs.",
             details: {
@@ -22,9 +22,9 @@ const Navbar = () => {
                 hiringProcess: "Our rigorous process ensures we find insurance experts with the right technical knowledge and customer service skills. Want to know if we have what you're looking for?"
             }
         },
-        { 
+        {
             id: 'sales-marketing',
-            title: "Sales & Marketing", 
+            title: "Sales & Marketing",
             icon: "📈",
             desc: "Revenue-driving professionals for your growth needs.",
             details: {
@@ -32,41 +32,50 @@ const Navbar = () => {
                 hiringProcess: "Candidates undergo practical sales simulations and marketing strategy assessments."
             }
         },
-        { 
+        {
             id: 'accounting-finance',
-            title: "Accounting & Finance", 
+            title: "Accounting & Finance",
             icon: "💰",
             desc: "Financial experts to manage your fiscal operations.",
             details: {
                 description: "We help accounting firms find top 1% accounting talent to function as their offshore arm. Our accountants specialize in audits, financial statements, bookkeeping taxation, and spreadsheets. They are majorly proficient accounting software, Microsoft 365, and the English language.",
-                hiringProcess: "Financial professionals complete technical accounting tests and scenario-based evaluations."
+                hiringProcess: ""
             }
         },
-        { 
+        {
             id: 'virtual-professionals',
-            title: "Virtual Professionals", 
+            title: "Virtual Professionals",
             displayTitle: "Virtual",
             icon: "👥",
             desc: "Skilled remote support for your business needs.",
             details: {
                 description: "Our Virtual Professionals can take on a number of back office tasks for our clients, including data entry, CRM logins, customer support, front desk staff, back-office support, calendar management, billings, verification, note taking, and assistance to Executives. Our virtual professionals maintain data security whilst performing their job as per their contract.",
-                hiringProcess: "Virtual professionals are tested on time management, communication skills, and technical proficiency."
+                // hiringProcess: "Virtual professionals are tested on time management, communication skills, and technical proficiency."
             }
         },
-        { 
+        {
             id: 'it-telecom',
-            title: "IT & Telecom", 
+            title: "IT & Telecom",
             icon: "💻",
             desc: "Technical experts for your digital infrastructure.",
             details: {
-                description: "We provide back end/front-end software engineers, Voice Engineers, application and game developers, cyber security specialists as well as technical support professionals to our clients.",
-                hiringProcess: "IT candidates complete coding challenges and infrastructure troubleshooting scenarios."
+                description: "We provide back end/front-end software engineers, voice engineers, application and game developers, cyber security specialists as well as technical support professionals to our clients.",
+                // hiringProcess: "IT candidates complete coding challenges and infrastructure troubleshooting scenarios."
             }
         }
     ];
 
     const handleLogoClick = () => {
-        navigate('/');
+        if (location.pathname === '/') {
+            // If already on home page, scroll to top
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        } else {
+            // If not on home page, navigate to home
+            navigate('/');
+        }
         setIsMobileMenuOpen(false);
     };
 
@@ -101,7 +110,7 @@ const Navbar = () => {
                     <Link to="/" className={`nav-link ${isActive('/') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                         Home
                     </Link>
-                    
+
                     <div
                         className="nav-link dropdown-trigger"
                         onMouseEnter={() => setIsDropdownOpen(true)}
@@ -126,15 +135,15 @@ const Navbar = () => {
                             </div>
                         )}
                     </div>
-                    
+
                     <Link to="/how-we-work" className={`nav-link ${isActive('/how-we-work') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                         How We Work
                     </Link>
-                    
+
                     <Link to="/contact-us" className={`nav-link ${isActive('/contact-us') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                         Contact Us
                     </Link>
-                    
+
                     <Link to="/careers" className={`nav-link careers-link ${isActive('/careers') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
                         Careers
                     </Link>

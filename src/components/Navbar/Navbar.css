@@ -5,18 +5,21 @@
     padding: 1.5rem 0;
     font-family: 'Inter', sans-serif;
     display: flex;
-    align-items: center; /* This ensures navbar content is vertically centered */
+    align-items: center;
+    /* This ensures navbar content is vertically centered */
 }
 
 .nav-container {
     display: flex;
     justify-content: space-between;
-    align-items: center; /* This centers items vertically */
+    align-items: center;
+    /* This centers items vertically */
     max-width: 1200px;
     width: 100%;
     margin: 0 auto;
     padding: 0 2rem;
-    height: 100%; /* Take full height of navbar */
+    height: 100%;
+    /* Take full height of navbar */
 }
 
 .logo-wrapper {
@@ -29,13 +32,16 @@
 .logo-background {
     width: 80px;
     height: 80px;
-    background-color: white; /* Add white background */
+    background-color: white;
+    /* Add white background */
     display: flex;
     justify-content: center;
     align-items: center;
     transition: all 0.3s ease;
-    padding: 5px; /* Add some padding to prevent the logo from touching edges */
-    box-sizing: border-box; /* Include padding in width/height */
+    padding: 5px;
+    /* Add some padding to prevent the logo from touching edges */
+    box-sizing: border-box;
+    /* Include padding in width/height */
 }
 
 .nav-logo {
@@ -59,7 +65,8 @@
     display: flex;
     align-items: center;
     gap: 2rem;
-    height: 100%; /* Take full height to align items properly */
+    height: 100%;
+    /* Take full height to align items properly */
 }
 
 .nav-link {
@@ -69,9 +76,12 @@
     font-size: 1rem;
     transition: color 0.2s;
     display: flex;
-    align-items: center; /* Center text vertically */
-    height: 100%; /* Take full height */
-    padding: 0 0.5rem; /* Add some horizontal padding */
+    align-items: center;
+    /* Center text vertically */
+    height: 100%;
+    /* Take full height */
+    padding: 0 0.5rem;
+    /* Add some horizontal padding */
 }
 
 .nav-link:hover {
@@ -86,13 +96,16 @@
     position: relative;
     cursor: pointer;
     display: flex;
-    align-items: center; /* Center dropdown trigger vertically */
-    height: 100%; /* Take full height */
+    align-items: center;
+    /* Center dropdown trigger vertically */
+    height: 100%;
+    /* Take full height */
 }
 
 .dropdown-menu {
     position: absolute;
-    top: 100%; /* Position below the navbar */
+    top: 100%;
+    /* Position below the navbar */
     left: 0;
     background-color: white;
     border-radius: 8px;
@@ -114,9 +127,11 @@
     background-color: #03407d;
     color: #ffffff;
 }
+
 /* Hamburger menu button styles */
 .hamburger {
-    display: none; /* hidden on desktop */
+    display: none;
+    /* hidden on desktop */
     flex-direction: column;
     justify-content: space-around;
     width: 30px;
@@ -125,7 +140,8 @@
     border: none;
     cursor: pointer;
     padding: 0;
-    z-index: 1100; /* above dropdown */
+    z-index: 1100;
+    /* above dropdown */
 }
 
 .hamburger:focus {
@@ -155,45 +171,95 @@
     transform: rotate(-45deg);
 }
 
-/* Mobile responsiveness */
+/* Enhanced Mobile Responsiveness */
 @media (max-width: 768px) {
+    .navbar {
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+    }
+
+    .nav-container {
+        padding: 0 1.5rem;
+    }
+
+    .nav-logo {
+        width: 70px;
+        height: 70px;
+    }
+
     .hamburger {
         display: flex;
     }
 
     .nav-links {
-        position: fixed; /* overlay menu */
-        top: 99px; /* below navbar */
+        position: fixed;
+        top: 90px;
         left: 0;
         right: 0;
         background-color: #06a3c2;
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
-        /* padding: 1rem 2rem; */
+        gap: 0;
+        padding: 0 1.5rem;
         max-height: 0;
         overflow: hidden;
-        transition: max-height 0.3s ease;
-        z-index: 1000;
+        transition: max-height 0.4s ease-out;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
     .nav-links.mobile-open {
-        max-height: 500px; /* enough to show all links */
+        max-height: calc(100vh - 90px);
         overflow-y: auto;
+        padding-bottom: 2rem;
     }
 
-    .nav-link, .dropdown-trigger {
+    .nav-link,
+    .dropdown-trigger {
         width: 100%;
         padding: 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        height: auto;
     }
 
     .dropdown-menu {
         position: static;
+        width: 100%;
         box-shadow: none;
-        border-radius: 0;
-        border-left: 3px solid #0099b9;
-        margin-left: 1rem;
-        background-color: transparent;
-        padding-left: 1rem;
+        background-color: rgba(255, 255, 255, 0.1);
+        margin: 0.5rem 0 0 0;
+        padding: 0;
+    }
+
+    .dropdown-item {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+
+    .nav-logo {
+        width: 60px;
+        height: 60px;
+    }
+
+    .nav-links {
+        top: 80px;
+    }
+
+    .nav-links.mobile-open {
+        max-height: calc(100vh - 80px);
+    }
+
+    .nav-link {
+        font-size: 0.95rem;
     }
 }

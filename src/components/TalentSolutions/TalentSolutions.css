@@ -19,7 +19,7 @@
 }
 
 .solution-row.single-item .solution-item {
-  flex: 0 1 300px; /* Fixed width same as 3-item row items */
+  /* flex: 0 1 300px; Fixed width same as 3-item row items */
   min-width: 260px;
   max-width: 300px;
 }

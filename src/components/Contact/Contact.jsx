@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import './Contact.css';
 import logo from '../../assets/Two Seas Logo.png'; // Adjust path as needed
+import CalendarScheduler from '../../components/CalendarScheduler'; // Import the custom scheduler
 
 const Contact = () => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        name: '',
+        companyName: '',
         phone: '',
         email: '',
         message: ''
@@ -16,24 +17,49 @@ const Contact = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // You'd typically handle form submission here, e.g., sending data to an API
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log("Form data submitted:", formData);
-        // Add your form submission logic (e.g., API call, validation)
         alert('Thank you for your message! We will get back to you shortly.');
-        setFormData({ // Clear form after submission
-            firstName: '',
-            lastName: '',
+        setFormData({
+            name: '',
+            companyName: '',
             phone: '',
             email: '',
             message: ''
         });
     };
 
+    // Handler for when the scheduling form is submitted
+    const handleScheduleSubmit = async (appointmentData) => {
+        try {
+            // Combine contact form data with appointment data
+            const fullData = {
+                ...appointmentData,
+                contactInfo: {
+                    name: formData.name,
+                    companyName: formData.companyName,
+                    email: formData.email,
+                    phone: formData.phone
+                }
+            };
+
+            console.log("Scheduling data:", fullData);
+
+            // Here you would typically send to your API
+            // await api.scheduleAppointment(fullData);
+
+            // For now, we'll use the email fallback from the CalendarScheduler
+            return false; // Return false to let the component handle its default behavior
+        } catch (error) {
+            console.error('Error scheduling appointment:', error);
+            throw error;
+        }
+    };
+
     return (
-        <div className="contact-page-wrapper"> {/* New wrapper for the entire section */}
-            {/* Header section (remains largely the same) */}
+        <div className="contact-page-wrapper">
+            {/* Header section */}
             <div className="contact-header">
                 <div className="logo-container">
                     <img
@@ -42,7 +68,7 @@ const Contact = () => {
                         className="contact-logo"
                         onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = "https://via.placeholder.com/100?text=Logo"; // Fallback image
+                            e.target.src = "https://via.placeholder.com/100?text=Logo";
                         }}
                     />
                 </div>
@@ -52,29 +78,27 @@ const Contact = () => {
                 </h1>
             </div>
 
-            {/* Main content: Calendly + Form */}
-            <div className="contact-content-grid"> {/* New grid for side-by-side layout */}
-                {/* Left Side: Calendly Integration */}
+            {/* Main content: Scheduler + Form */}
+            <div className="contact-content-grid">
+                {/* Left Side: Custom Scheduler Integration */}
                 <div className="calendly-section">
                     <h2 className="section-title-alt">Schedule Your Call</h2>
                     <p className="section-subtitle-alt">
                         Your path to building/scaling a thriving business begins here.
                     </p>
-                    <div className="calendly-embed-container">
-                        {/* Replace with your actual Calendly embed code */}
-                        <iframe
-                            src="https://calendly.com/YOUR_CALENDLY_USERNAME/30min" // <<< IMPORTANT: Replace with your Calendly URL
-                            width="100%"
-                            height="700px" // Adjust height as needed
-                            frameBorder="0"
-                            title="Schedule a meeting"
-                        ></iframe>
-                    </div>
+                    {/* <div className="custom-scheduler-container"> */}
+                    <CalendarScheduler
+                        onScheduleSubmit={handleScheduleSubmit}
+                        // title="Book a Strategy Call"
+                        submitButtonText="Confirm Appointment"
+                        successMessage="We'll contact you shortly to confirm your appointment time."
+                    />
+                    {/* </div> */}
                 </div>
 
                 {/* Right Side: Contact Form */}
                 <form className="contact-form" onSubmit={handleSubmit}>
-                <h2 className="form-title">Fill in the Form Below</h2>
+                    <h2 className="form-title">Fill in the Form Below</h2>
                     {/* Input Fields */}
                     <div className="contact-card">
                         <div className="input-grid">
@@ -82,9 +106,9 @@ const Contact = () => {
                                 <div className="input-container">
                                     <input
                                         type="text"
-                                        name="firstName"
-                                        placeholder="First Name"
-                                        value={formData.firstName}
+                                        name="name"
+                                        placeholder="Name"
+                                        value={formData.name}
                                         onChange={handleChange}
                                         className="contact-input"
                                         required
@@ -93,9 +117,9 @@ const Contact = () => {
                                 <div className="input-container">
                                     <input
                                         type="text"
-                                        name="lastName"
-                                        placeholder="Last Name"
-                                        value={formData.lastName}
+                                        name="companyName"
+                                        placeholder="Company Name"
+                                        value={formData.companyName}
                                         onChange={handleChange}
                                         className="contact-input"
                                         required
@@ -105,7 +129,7 @@ const Contact = () => {
                             <div className="input-pair">
                                 <div className="input-container">
                                     <input
-                                        type="tel" // Changed to tel for phone numbers
+                                        type="tel"
                                         name="phone"
                                         placeholder="Phone Number"
                                         value={formData.phone}
@@ -115,7 +139,7 @@ const Contact = () => {
                                 </div>
                                 <div className="input-container">
                                     <input
-                                        type="email" // Changed to email for email validation
+                                        type="email"
                                         name="email"
                                         placeholder="Email"
                                         value={formData.email}
@@ -147,8 +171,8 @@ const Contact = () => {
                         Send Message <span className="btn-wave">→</span>
                     </button>
 
-                    {/* Contact Options - Only Email remains */}
-                    <div className="contact-options-single"> {/* Adjusted class for single item */}
+                    {/* Contact Options */}
+                    <div className="contact-options-single">
                         <div className="contact-method">
                             <div className="method-icon blue-bg">✉️</div>
                             <h3>Email</h3>
