@@ -85,7 +85,7 @@
   background: white;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(57, 60, 105, 0.08);
-  height: 920.01px;
+  /* height: 920.01px; */
   /* Adjust height to content */
 }
 
@@ -128,7 +128,7 @@
   flex-direction: column;
   gap: 1.5rem;
   /* Space between form sections */
-  height: 920.01px;
+  /* height: 920.01px; */
 }
 
 .form-title {
@@ -287,7 +287,7 @@
   background: white;
   border-radius: 12px;
   transition: all 0.3s ease;
-  border: 1px solid rgba(57, 60, 105, 0.1);
+  border: 1px solid #2A2D7C;
   box-shadow: 0 5px 15px rgba(57, 60, 105, 0.05);
   /* Subtle shadow */
 }

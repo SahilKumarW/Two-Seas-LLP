@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaCalendarAlt, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { niches } from '../../AdminDashboard/constants';
+import CalendarScheduler from '../../../components/CalendarScheduler';
 
 const EmployeeSupportSection = () => {
     const [selectedDate, setSelectedDate] = useState(null);
@@ -136,8 +137,9 @@ const EmployeeSupportSection = () => {
                     <div className="cta-icon">
                         <FaCalendarAlt />
                     </div>
+                    <CalendarScheduler/>
 
-                    {!selectedDate ? (
+                    {/* {!selectedDate ? (
                         <>
                             <div className="calendar-header">
                                 <button
@@ -232,10 +234,10 @@ const EmployeeSupportSection = () => {
                                     <p className="selected-slot">
                                         {selectedDate}
                                         {selectedTime && `, ${selectedTime}`}
-                                    </p>
+                                    </p> */}
 
-                                    <form onSubmit={handleSubmit} className="appointment-form">
-                                        <div className="form-group">
+                                    {/* <form onSubmit={handleSubmit} className="appointment-form"> */}
+                                        {/* <div className="form-group">
                                             <label htmlFor="name">Full Name *</label>
                                             <input
                                                 type="text"
@@ -245,9 +247,9 @@ const EmployeeSupportSection = () => {
                                                 onChange={handleInputChange}
                                                 required
                                             />
-                                        </div>
+                                        </div> */}
 
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                             <label htmlFor="email">Email *</label>
                                             <input
                                                 type="email"
@@ -257,9 +259,9 @@ const EmployeeSupportSection = () => {
                                                 onChange={handleInputChange}
                                                 required
                                             />
-                                        </div>
+                                        </div> */}
 
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                             <label htmlFor="phone">Phone Number *</label>
                                             <input
                                                 type="tel"
@@ -269,10 +271,10 @@ const EmployeeSupportSection = () => {
                                                 onChange={handleInputChange}
                                                 required
                                             />
-                                        </div>
+                                        </div> */}
 
                                         {/* Add these new fields */}
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                             <label htmlFor="company">Company Name *</label>
                                             <input
                                                 type="text"
@@ -282,9 +284,9 @@ const EmployeeSupportSection = () => {
                                                 onChange={handleInputChange}
                                                 required
                                             />
-                                        </div>
+                                        </div> */}
 
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                             <label htmlFor="niche">Niche of Hiring *</label>
                                             <select
                                                 id="niche"
@@ -300,9 +302,9 @@ const EmployeeSupportSection = () => {
                                                     </option>
                                                 ))}
                                             </select>
-                                        </div>
+                                        </div> */}
 
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                             <label htmlFor="notes">Any further details you would like to add</label>
                                             <textarea
                                                 id="notes"
@@ -312,7 +314,7 @@ const EmployeeSupportSection = () => {
                                                 rows="4"
                                                 placeholder="Please share any specific requirements..."
                                             />
-                                        </div>
+                                        </div> */}
 
                                         {/* <div className="form-group">
                                             <label htmlFor="message">Additional Information</label>
@@ -325,7 +327,7 @@ const EmployeeSupportSection = () => {
                                             />
                                         </div> */}
 
-                                        <div className="form-buttons">
+                                        {/* <div className="form-buttons">
                                             <button
                                                 type="submit"
                                                 className="schedule-btn confirm-btn"
@@ -345,12 +347,12 @@ const EmployeeSupportSection = () => {
                                             >
                                                 Back to Availability
                                             </button>
-                                        </div>
-                                    </form>
-                                </>
-                            )}
-                        </div>
-                    )}
+                                        </div> */}
+                                    {/* </form> */}
+                                {/* </> */}
+                            {/* )} */}
+                        {/* </div> */}
+                    {/* )} */}
                 </div>
             </div>
 
@@ -372,8 +374,8 @@ const EmployeeSupportSection = () => {
                 .meeting-cta {
                     background-color: #f8f9fa;
                     border-radius: 8px;
-                    padding: 2rem;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                    // padding: 2rem;
+                    // box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
                 }
                 
                 .cta-card {
@@ -576,11 +578,11 @@ textarea {
                 }
                 
                 .back-btn {
-                    background-color: #6c757d;
+                    background-color: #2A2D7C;
                 }
                 
                 .back-btn:hover {
-                    background-color: #5a6268;
+                    background-color: #06a3c2;
                 }
                 
                 .success-message {

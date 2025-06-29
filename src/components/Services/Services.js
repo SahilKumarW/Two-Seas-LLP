@@ -9,7 +9,7 @@ const Services = () => {
         { 
             id: 'insurance',
             title: "Insurance", 
-            icon: "🤝",
+            icon: "☂️",
             desc: "Expert insurance professionals for all your coverage needs.",
             details: {
                 description: "We provide a wide array of experienced workforce and fresh graduates wanting to work in the niche of Insurance. Our reps are pre-vetted, interviewed, and reference checked through the two seas 5 step method. ",
@@ -32,7 +32,7 @@ const Services = () => {
             icon: "💰",
             desc: "Financial experts to manage your fiscal operations.",
             details: {
-                description: "We help accounting firms find top 1% accounting talent to function as their offshore arm. Our accountants specialize in audits, financial statements, bookkeeping taxation, and spreadsheets. They are majorly proficient accounting software, Microsoft 365, and the English language.",
+                description: "We help accounting firms find top 1% accounting talent to function as their offshore arm. Our accountants specialize in audits, financial statements, bookkeeping, taxation, and spreadsheets. They are majorly proficient accounting software, Microsoft 365, and the English language.",
                 hiringProcess: ""
             }
         },
@@ -43,7 +43,7 @@ const Services = () => {
             icon: "👥",
             desc: "Skilled remote support for your business needs.",
             details: {
-                description: "Our Virtual Professionals can take on a number of back office tasks for our clients, including data entry, CRM logins, customer support, front desk staff, back-office support, calendar management, billings, verification, note taking, and assistance to Executives. Our virtual professionals maintain data security whilst performing their job as per their contract.",
+                description: "Our Virtual Professionals can take on a number of back office tasks for our clients including data entry, CRM logins, customer support, front desk staff, back-office support, calendar management, billings, verification, note taking, and assistance to Executives. Our virtual professionals maintain data security whilst performing their job as per their contract.",
                 // hiringProcess: "Virtual professionals are tested on time management, communication skills, and technical proficiency."
             }
         },

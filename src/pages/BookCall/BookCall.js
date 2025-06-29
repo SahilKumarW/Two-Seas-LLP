@@ -3,13 +3,14 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import "./BookCall.css";
 import logo from "../../assets/logo.png"; // Update with actual path to your logo
+import { niches } from "../AdminDashboard/constants";
 
 const BookCall = () => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
         phone: "",
-        industry: "",
+        niche: "",
     });
 
     const handleChange = (e) => {
@@ -35,8 +36,8 @@ const BookCall = () => {
 
                 {/* Right Section - Form */}
                 <div className="right-section">
-                    <h2 style={{ textAlign: 'center', color: '#2A2D7C', marginTop: '20px'}} className="company-name">Two Seas LLP</h2>
-                    <p style={{textAlign: 'center'}} className="form-subtitle">Fill in the details below to schedule a call.</p>
+                    <h2 style={{ textAlign: 'center', color: '#2A2D7C', marginTop: '20px' }} className="company-name">Two Seas LLP</h2>
+                    <p style={{ textAlign: 'center' }} className="form-subtitle">Fill in the details below to schedule a call.</p>
 
                     <form onSubmit={handleSubmit} className="form">
                         <div className="form-group">
@@ -51,7 +52,7 @@ const BookCall = () => {
                             />
                         </div>
 
-                        <div style={{gap: '0'}} className="form-group">
+                        <div style={{ gap: '0' }} className="form-group">
                             <label>Email</label>
                             <input
                                 type="email"
@@ -66,7 +67,7 @@ const BookCall = () => {
                         <div className="form-group">
                             <label>Phone Number</label>
                             <PhoneInput
-                                country={"us"}
+                                country={"pk"}
                                 value={formData.phone}
                                 onChange={handlePhoneChange}
                                 inputClass="phone-input"
@@ -76,18 +77,19 @@ const BookCall = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Industry</label>
+                            <label>Niche</label>
                             <select
-                                name="industry"
-                                value={formData.industry}
+                                name="niche"
+                                value={formData.niche}
                                 onChange={handleChange}
                                 required
                             >
-                                <option value="" disabled>Select Industry</option>
-                                <option value="Energy & Utilities">Energy & Utilities</option>
-                                <option value="Finance">Finance</option>
-                                <option value="Real Estate">Real Estate</option>
-                                <option value="IT & Telecom">IT & Telecom</option>
+                                <option value="" disabled>Select Niche</option>
+                                {niches.map((niche) => (
+                                    <option key={niche.id} value={niche.name}>
+                                        {niche.name}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
