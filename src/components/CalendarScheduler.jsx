@@ -29,6 +29,7 @@ const CalendarScheduler = ({
         email: '',
         phone: '',
         company: '',
+        website: '',
         details: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -199,7 +200,7 @@ const CalendarScheduler = ({
             } else {
                 // Default behavior if no callback provided
                 const subject = `Appointment Request - ${userDetails.company || userDetails.name}`;
-                const body = `Company: ${userDetails.company}%0D%0AName: ${userDetails.name}%0D%0AEmail: ${userDetails.email}%0D%0APhone: ${userDetails.phone}%0D%0A%0D%0ARequested Appointment Time:%0D%0A${selectedDate.toLocaleDateString()} at ${selectedTime}%0D%0A%0D%0AAdditional Details:%0D%0A${userDetails.details}%0D%0A%0D%0A`;
+                const body = `Company: ${userDetails.company}%0D%0AWebsite: ${userDetails.website || 'N/A'}%0D%0AName: ${userDetails.name}%0D%0AEmail: ${userDetails.email}%0D%0APhone: ${userDetails.phone}%0D%0A%0D%0ARequested Appointment Time:%0D%0A${selectedDate.toLocaleDateString()} at ${selectedTime}%0D%0A%0D%0AAdditional Details:%0D%0A${userDetails.details}%0D%0A%0D%0A`;
                 window.open(`mailto:?subject=${subject}&body=${body}`);
             }
 
@@ -208,6 +209,7 @@ const CalendarScheduler = ({
                 email: '',
                 phone: '',
                 company: '',
+                website: '',
                 niche: '',
                 details: ''
             });
@@ -445,6 +447,19 @@ const CalendarScheduler = ({
                                         name="company"
                                         value={userDetails.company}
                                         onChange={handleInputChange}
+                                    />
+                                </div>
+
+                                {/* Add this new form group */}
+                                <div className="form-group">
+                                    <label htmlFor="website">Company Website</label>
+                                    <input
+                                        type="url"
+                                        id="website"
+                                        name="website"
+                                        value={userDetails.website}
+                                        onChange={handleInputChange}
+                                        placeholder="https://example.com"
                                     />
                                 </div>
 
