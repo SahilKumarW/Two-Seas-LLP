@@ -200,7 +200,7 @@
 }
 
 .contact-method {
-  display: flex;
+  /* display: flex; */
   align-items: center;
   margin-bottom: 0.8rem;
   color: var(--dark-text);
