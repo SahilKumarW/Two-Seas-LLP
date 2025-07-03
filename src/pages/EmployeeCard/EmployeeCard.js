@@ -115,7 +115,7 @@ const EmployeeCard = () => {
       <header className="portal-header">
         <h1 className="portal-title">Team Directory</h1>
         <p className="portal-subtitle">Meet our talented professionals</p>
-        <div className="header-accent"></div>
+        {/* <div className="header-accent"></div> */}
       </header>
 
       <div className="employee-grid">

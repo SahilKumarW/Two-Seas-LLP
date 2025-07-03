@@ -72,7 +72,7 @@ function Layout() {
         <Route path="/profile/:id" element={<ProfilePage />} />
         <Route path="/admin-dashboard/add-employee" element={<AddEmployee />} />
         <Route path="/careers/add-new-opening" element={<AddNewOpening />} />
-        <Route path="/employee-cards" element={<EmployeeCard/>} />
+        <Route path="/employee-diary" element={<EmployeeCard/>} />
       </Routes>
 
       {/* Add WhatsAppChat component here */}
