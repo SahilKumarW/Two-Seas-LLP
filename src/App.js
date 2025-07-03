@@ -28,6 +28,7 @@ import ProfilePage from "./components/ProfilePage/ProfilePage.js";
 import WhatsAppChat from './components/WhatsAppChat/WhatsAppChat';
 import AddEmployee from "./pages/AddEmployee/AddEmployee.jsx";
 import AddNewOpening from "./pages/AddNewOpening/AddNewOpening.jsx";
+import EmployeeCard from "./pages/EmployeeCard/EmployeeCard.js";
 
 function Layout() {
   const location = useLocation();
@@ -71,6 +72,7 @@ function Layout() {
         <Route path="/profile/:id" element={<ProfilePage />} />
         <Route path="/admin-dashboard/add-employee" element={<AddEmployee />} />
         <Route path="/careers/add-new-opening" element={<AddNewOpening />} />
+        <Route path="/employee-cards" element={<EmployeeCard/>} />
       </Routes>
 
       {/* Add WhatsAppChat component here */}

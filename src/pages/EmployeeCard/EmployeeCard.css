@@ -1,0 +1,290 @@
+/* EmployeeCards.css */
+:root {
+  --primary-blue: #2A2D7C;
+  --secondary-blue: #06a3c2;
+  --light-accent: #e1f5fe;
+  --dark-text: #2d3748;
+  --light-text: #f8fafc;
+  --gradient: linear-gradient(135deg, #06a3c2 0%, #2A2D7C 100%);
+}
+
+.employee-portal {
+  max-width: 1400px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.portal-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.portal-title {
+  font-size: 2.5rem;
+  color: var(--primary-blue);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.portal-subtitle {
+  font-size: 1.1rem;
+  color: var(--secondary-blue);
+  margin-bottom: 1.5rem;
+}
+
+.header-accent {
+  width: 80px;
+  height: 4px;
+  background: var(--gradient);
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+.employee-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2.5rem;
+  padding: 1rem;
+}
+
+.employee-card {
+  position: relative;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 10px 30px rgba(42, 45, 124, 0.1);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.employee-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px rgba(42, 45, 124, 0.15);
+}
+
+.card-gradient-border {
+  position: relative;
+  border-radius: 16px;
+  padding: 2px;
+  background: var(--gradient);
+}
+
+.card-content {
+  background: white;
+  border-radius: 14px;
+  padding: 1.8rem;
+  height: 100%;
+}
+
+.employee-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-container {
+  position: relative;
+  margin-right: 1.5rem;
+}
+
+.employee-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.experience-badge {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background: var(--gradient);
+  color: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(6, 163, 194, 0.3);
+}
+
+.profile-info {
+  flex: 1;
+}
+
+.employee-name {
+  font-size: 1.4rem;
+  color: var(--primary-blue);
+  margin: 0 0 0.3rem;
+  font-weight: 700;
+}
+
+.employee-position {
+  color: var(--secondary-blue);
+  margin: 0 0 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.social-links {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.social-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: white;
+}
+
+.social-btn.linkedin {
+  background: #0077b5;
+}
+
+.social-btn.github {
+  background: #333;
+}
+
+.social-btn:hover {
+  transform: scale(1.1);
+}
+
+.employee-bio {
+  color: var(--dark-text);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.8rem;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  color: var(--primary-blue);
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.section-label .icon {
+  margin-right: 0.6rem;
+  color: var(--secondary-blue);
+}
+
+.expertise-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.8rem;
+}
+
+.skill-tag {
+  background: var(--light-accent);
+  color: var(--primary-blue);
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(42, 45, 124, 0.05);
+}
+
+.contact-section {
+  margin-bottom: 1.5rem;
+}
+
+.contact-method {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  color: var(--dark-text);
+  font-size: 0.9rem;
+}
+
+.contact-icon {
+  margin-right: 0.8rem;
+  color: var(--secondary-blue);
+  min-width: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.action-btn.call {
+  background: var(--primary-blue);
+  color: white;
+}
+
+.action-btn.email {
+  background: white;
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(42, 45, 124, 0.1);
+}
+
+.action-btn.call:hover {
+  background: #1a1c52;
+}
+
+.action-btn.email:hover {
+  background: var(--light-accent);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .employee-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  
+  .employee-profile {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .avatar-container {
+    margin-right: 0;
+    margin-bottom: 1.2rem;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .portal-title {
+    font-size: 2rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
+}

@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaClock } from 'react-icons/fa';
+import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaClock, FaGlobe } from 'react-icons/fa';
 import { niches } from '../pages/AdminDashboard/constants';
+
+const timeZones = [
+    { value: 'GMT-12:00', label: 'GMT-12:00 (International Date Line West)' },
+    { value: 'GMT-08:00', label: 'GMT-08:00 (Pacific Time)' },
+    { value: 'GMT-05:00', label: 'GMT-05:00 (Eastern Time)' },
+    { value: 'GMT+00:00', label: 'GMT+00:00 (London)' },
+    { value: 'GMT+01:00', label: 'GMT+01:00 (Central European Time)' },
+    { value: 'GMT+05:00', label: 'GMT+05:00 (Pakistan Standard Time)' },
+    { value: 'GMT+08:00', label: 'GMT+08:00 (China Standard Time)' },
+    { value: 'GMT+10:00', label: 'GMT+10:00 (Australian Eastern Time)' },
+];
 
 const CalendarScheduler = ({
     onScheduleSubmit,
-    unavailableDates = [], // Array of dates that are already booked
+    unavailableDates = [],
     title = "Schedule a Meeting",
     submitButtonText = "Send Appointment Request",
     successMessage = "We'll contact you shortly to confirm your appointment.",
@@ -12,6 +23,7 @@ const CalendarScheduler = ({
 }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
+    const [selectedTimeZone, setSelectedTimeZone] = useState('GMT+05:00');
     const [userDetails, setUserDetails] = useState({
         name: '',
         email: '',
@@ -25,23 +37,65 @@ const CalendarScheduler = ({
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [timeSlots, setTimeSlots] = useState([]);
 
+    // Utility function to convert times between timezones
+    const convertTimeToTimezone = (time, fromTimezone, toTimezone) => {
+        const offsetMap = {
+            'GMT-12:00': -12,
+            'GMT-08:00': -8,
+            'GMT-05:00': -5,
+            'GMT+00:00': 0,
+            'GMT+01:00': 1,
+            'GMT+05:00': 5,
+            'GMT+08:00': 8,
+            'GMT+10:00': 10,
+        };
+
+        const fromOffset = offsetMap[fromTimezone] || 0;
+        const toOffset = offsetMap[toTimezone] || 0;
+        const diff = toOffset - fromOffset;
+
+        // Extract hour from time string (format: "H:00 AM/PM")
+        const [hourStr, period] = time.split(/[: ]/);
+        let hour = parseInt(hourStr);
+
+        if (period === 'PM' && hour !== 12) hour += 12;
+        if (period === 'AM' && hour === 12) hour = 0;
+
+        // Apply timezone difference
+        hour += diff;
+
+        // Normalize hour (0-23)
+        hour = (hour + 24) % 24;
+
+        // Convert back to 12-hour format
+        let newPeriod = hour >= 12 ? 'PM' : 'AM';
+        let newHour = hour > 12 ? hour - 12 : hour;
+        if (newHour === 0) newHour = 12;
+
+        return `${newHour}:00 ${newPeriod}`;
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setUserDetails(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
     // Generate days for the current month view
     const generateDays = (month, year) => {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
         const daysInMonth = lastDay.getDate();
-
-        // Get day of week for first day of month (0 = Sunday, 6 = Saturday)
         const startingDay = firstDay.getDay();
 
         const days = [];
 
-        // Add empty cells for days before the first day of the month
         for (let i = 0; i < startingDay; i++) {
             days.push(null);
         }
 
-        // Add all days of the month
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(year, month, day);
             days.push(date);
@@ -52,74 +106,77 @@ const CalendarScheduler = ({
 
     const [days, setDays] = useState(() => generateDays(currentMonth, currentYear));
 
-    // Update days when month/year changes
     useEffect(() => {
         setDays(generateDays(currentMonth, currentYear));
     }, [currentMonth, currentYear]);
 
-    // Check if a date is disabled (weekend or past date)
     const isDateDisabled = (date) => {
         if (!date) return true;
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Disable past dates
         if (date < today) return true;
 
-        // Disable weekends (Saturday = 6, Sunday = 0)
         const dayOfWeek = date.getDay();
         if (dayOfWeek === 0 || dayOfWeek === 6) return true;
 
-        // Disable dates that are in the unavailableDates array
         const dateString = date.toISOString().split('T')[0];
         if (unavailableDates.includes(dateString)) return true;
 
         return false;
     };
 
-    // Generate time slots for the selected date (9 AM to 4 PM)
-    const generateTimeSlots = (date) => {
+    // Modified to handle timezone conversion
+    const generateTimeSlots = (date, timeZone) => {
         if (!date) return [];
 
         const slots = [];
-        const startHour = 9; // 9 AM
-        const endHour = 16;  // 4 PM
+        const startHour = workingHours.start;
+        const endHour = workingHours.end;
 
-        // Generate slots every hour from start to end (inclusive)
         for (let hour = startHour; hour <= endHour; hour++) {
-            // Convert to 12-hour format with AM/PM
+            if (hour === 12) continue;
+
             const period = hour >= 12 ? 'PM' : 'AM';
             const displayHour = hour > 12 ? hour - 12 : hour;
             const timeString = `${displayHour}:00 ${period}`;
 
-            slots.push(timeString);
+            // Convert to user's selected timezone
+            const userTimeString = convertTimeToTimezone(
+                timeString,
+                'GMT+05:00', // System timezone (adjust to your server's timezone)
+                timeZone
+            );
+
+            slots.push({
+                systemTime: timeString,  // Store original time
+                displayTime: userTimeString // Time to show user
+            });
         }
 
         return slots;
     };
 
-    // Handle date selection
     const handleDateClick = (date) => {
         if (isDateDisabled(date)) return;
 
         setSelectedDate(date);
         setSelectedTime(null);
         setIsSuccess(false);
-        setTimeSlots(generateTimeSlots(date));
+        setTimeSlots(generateTimeSlots(date, selectedTimeZone));
     };
 
-    // Handle time slot selection
+    const handleTimeZoneChange = (e) => {
+        const newTimeZone = e.target.value;
+        setSelectedTimeZone(newTimeZone);
+        if (selectedDate) {
+            setTimeSlots(generateTimeSlots(selectedDate, newTimeZone));
+        }
+    };
+
     const handleTimeClick = (time) => {
         setSelectedTime(time);
-    };
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setUserDetails(prev => ({
-            ...prev,
-            [name]: value
-        }));
     };
 
     const handleSubmit = async (e) => {
@@ -136,7 +193,8 @@ const CalendarScheduler = ({
                         month: 'long',
                         day: 'numeric'
                     }),
-                    appointmentTime: selectedTime
+                    appointmentTime: selectedTime,
+                    timeZone: selectedTimeZone
                 });
             } else {
                 // Default behavior if no callback provided
@@ -253,20 +311,35 @@ const CalendarScheduler = ({
                             </div>
                         </div>
                     ) : !selectedTime ? (
-                        // Time Slot Selection
+                        // Time Slot Selection with Time Zone selector
                         <div className="time-slot-view">
+                            <div className="time-zone-selector">
+                                <FaGlobe className="time-zone-icon" />
+                                <select
+                                    value={selectedTimeZone}
+                                    onChange={handleTimeZoneChange}
+                                    className="time-zone-dropdown"
+                                >
+                                    {timeZones.map(zone => (
+                                        <option key={zone.value} value={zone.value}>
+                                            {zone.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <h3>Select a Time Slot</h3>
                             <p className="selected-date">{formatDateDisplay(selectedDate)}</p>
 
                             <div className="time-slots-grid">
                                 {timeSlots.length > 0 ? (
-                                    timeSlots.map((time, index) => (
+                                    timeSlots.map((slot, index) => (
                                         <button
                                             key={index}
-                                            className="time-slot-btn"
-                                            onClick={() => handleTimeClick(time)}
+                                            className={`time-slot-btn ${selectedTime === slot.systemTime ? 'selected' : ''}`}
+                                            onClick={() => handleTimeClick(slot.systemTime)}
                                         >
-                                            {time}
+                                            {slot.displayTime}
                                         </button>
                                     ))
                                 ) : (
@@ -284,13 +357,20 @@ const CalendarScheduler = ({
                             </div>
                         </div>
                     ) : isSuccess ? (
-                        // Success Message
+                        // Success Message showing timezone
                         <div className="success-message">
                             <h3>Appointment Request Sent!</h3>
                             <p>Your appointment request has been sent for:</p>
                             <p className="confirmation-details">
                                 <strong>{formatDateDisplay(selectedDate)}</strong>
-                                {selectedTime && <>, <strong>{selectedTime}</strong></>}
+                                {selectedTime && <>, <strong>
+                                    {convertTimeToTimezone(
+                                        selectedTime,
+                                        'GMT+05:00', // System timezone
+                                        selectedTimeZone
+                                    )}
+                                </strong></>}
+                                {selectedTimeZone && <>, <strong>{selectedTimeZone}</strong></>}
                             </p>
                             <p>{successMessage}</p>
                             <div className="button-container">
@@ -311,7 +391,13 @@ const CalendarScheduler = ({
                             <h3>Confirm Your Appointment</h3>
                             <p className="selected-slot">
                                 {formatDateDisplay(selectedDate)}
-                                {selectedTime && `, ${selectedTime}`}
+                                {selectedTime && `, ${convertTimeToTimezone(
+                                    selectedTime,
+                                    'GMT+05:00', // System timezone
+                                    selectedTimeZone
+                                )
+                                    }`}
+                                {selectedTimeZone && ` (${selectedTimeZone})`}
                             </p>
 
                             <form onSubmit={handleSubmit} className="appointment-form">
@@ -729,6 +815,45 @@ const CalendarScheduler = ({
                     }
                     
                     .confirm-btn, .back-btn {
+                        width: 100%;
+                    }
+                }
+
+                .time-zone-selector {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    background: #f5f5f5;
+                    padding: 10px 15px;
+                    border-radius: 6px;
+                }
+
+                .time-zone-icon {
+                    color: #2A2D7C;
+                    margin-right: 10px;
+                    font-size: 18px;
+                }
+
+                .time-zone-dropdown {
+                    flex: 1;
+                    padding: 8px 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    background: white;
+                    font-size: 14px;
+                }
+
+                @media (max-width: 600px) {
+                    .time-zone-selector {
+                        flex-direction: column;
+                        align-items: flex-start;
+                    }
+                    
+                    .time-zone-icon {
+                        margin-bottom: 8px;
+                    }
+                    
+                    .time-zone-dropdown {
                         width: 100%;
                     }
                 }
