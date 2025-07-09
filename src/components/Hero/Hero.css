@@ -1,13 +1,14 @@
 .hero {
-    background-color: #0099b9 !important; /* Light Grey Background */
-    background-image: url('../../assets/hero-globe.png'); /* Adding the Hero Image */
-    background-position: right bottom; /* Positioning the image */
-    background-repeat: no-repeat; /* Prevent repetition */
-    background-size: contain; /* Ensuring the image fits well */
+    background-color: #0099b9 !important;
+    background-image: url('../../assets/hero.jpeg');
+    background-position: center bottom; /* Changed to center */
+    background-repeat: no-repeat;
+    background-size: cover; /* Changed from 'contain' to 'cover' */
     padding: 5rem 0;
     font-family: 'Plus Jakarta Sans', sans-serif;
-    height: 90vh; /* Full-screen height */
+    height: 90vh;
 }
+
 
 .hero-container {
     max-width: 1200px;
