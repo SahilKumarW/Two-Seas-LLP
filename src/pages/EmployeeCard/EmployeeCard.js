@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
-import { FaPhone, FaEnvelope, FaUserTie, FaBriefcase, FaStar, FaLinkedin } from 'react-icons/fa';
-import { FiGithub } from 'react-icons/fi';
+import { FaFileAlt, FaClipboardCheck, FaHeart, FaCalendarAlt, FaRegHeart, FaStar } from 'react-icons/fa';
 import './EmployeeCard.css';
 
 const EmployeeCard = () => {
-  const defaultProfileImage = 'https://randomuser.me/api/portraits/lego/5.jpg'; // Default image if none provided
+  const [wishlist, setWishlist] = useState({});
+  const [expandedCards, setExpandedCards] = useState({});
 
-  // Enhanced employee data with all admin state properties
+  const toggleCardExpand = (id) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const employees = [
     {
       id: 1,
@@ -18,30 +24,10 @@ const EmployeeCard = () => {
       intro: 'Full-stack developer specializing in scalable cloud applications with 8+ years of industry experience.',
       position: 'Senior Software Engineer',
       skills: ['React', 'Node.js', 'AWS', 'TypeScript'],
-      contact: {
-        phone: '+92 300 1234567',
-        email: 'ali.khan@techsolutions.pk',
-        linkedin: 'alikhan-dev',
-        github: 'alikhan-code'
-      },
-      image: 'https://randomuser.me/api/portraits/men/32.jpg',
-      video: null,
-      interviewVideo: null,
-      showIntroVideo: true,
-      showInterviewVideo: true,
-      showRate: true,
-      showExpertise: true,
-      showVideoSection: true,
-      videoVisibility: {
-        introduction: {
-          hidden: false,
-          collapsed: false
-        },
-        interview: {
-          hidden: false,
-          collapsed: false
-        }
-      }
+      email: 'ali.khan@techsolutions.pk',
+      resumeUrl: 'https://example.com/resumes/ali-khan.pdf',
+      assessmentUrl: 'https://example.com/assessments/ali-khan.pdf',
+      image: 'https://randomuser.me/api/portraits/men/32.jpg'
     },
     {
       id: 2,
@@ -53,30 +39,10 @@ const EmployeeCard = () => {
       intro: 'Award-winning designer passionate about creating intuitive user experiences with a human-centered approach.',
       position: 'Lead UX/UI Designer',
       skills: ['Figma', 'User Research', 'Prototyping', 'Adobe Suite'],
-      contact: {
-        phone: '+92 321 7654321',
-        email: 'fatima.ahmed@creative.pk',
-        linkedin: 'fatimaui',
-        github: 'fatimadesigns'
-      },
-      image: 'https://randomuser.me/api/portraits/women/44.jpg',
-      video: null,
-      interviewVideo: null,
-      showIntroVideo: true,
-      showInterviewVideo: true,
-      showRate: true,
-      showExpertise: true,
-      showVideoSection: true,
-      videoVisibility: {
-        introduction: {
-          hidden: false,
-          collapsed: false
-        },
-        interview: {
-          hidden: false,
-          collapsed: false
-        }
-      }
+      email: 'fatima.ahmed@creative.pk',
+      resumeUrl: 'https://example.com/resumes/fatima-ahmed.pdf',
+      assessmentUrl: 'https://example.com/assessments/fatima-ahmed.pdf',
+      image: 'https://randomuser.me/api/portraits/women/44.jpg'
     },
     {
       id: 3,
@@ -88,30 +54,10 @@ const EmployeeCard = () => {
       intro: 'DevOps specialist focused on building robust infrastructure and automation pipelines.',
       position: 'DevOps Architect',
       skills: ['Docker', 'Kubernetes', 'CI/CD', 'Terraform'],
-      contact: {
-        phone: '+92 345 6789012',
-        email: 'usman.malik@cloudops.pk',
-        linkedin: 'usman-devops',
-        github: 'usmaniac'
-      },
-      image: 'https://randomuser.me/api/portraits/men/67.jpg',
-      video: null,
-      interviewVideo: null,
-      showIntroVideo: true,
-      showInterviewVideo: true,
-      showRate: true,
-      showExpertise: true,
-      showVideoSection: true,
-      videoVisibility: {
-        introduction: {
-          hidden: false,
-          collapsed: false
-        },
-        interview: {
-          hidden: false,
-          collapsed: true
-        }
-      }
+      email: 'usman.malik@cloudops.pk',
+      resumeUrl: 'https://example.com/resumes/usman-malik.pdf',
+      assessmentUrl: 'https://example.com/assessments/usman-malik.pdf',
+      image: 'https://randomuser.me/api/portraits/men/67.jpg'
     },
     {
       id: 4,
@@ -123,176 +69,199 @@ const EmployeeCard = () => {
       intro: 'Data scientist with expertise in predictive modeling and natural language processing applications.',
       position: 'Data Science Lead',
       skills: ['Python', 'Machine Learning', 'TensorFlow', 'Big Data'],
-      contact: {
-        phone: '+92 333 4567890',
-        email: 'ayesha.raza@datascience.pk',
-        linkedin: 'ayesha-ds',
-        github: 'raza-ai'
-      },
-      image: 'https://randomuser.me/api/portraits/women/68.jpg',
-      video: null,
-      interviewVideo: null,
-      showIntroVideo: true,
-      showInterviewVideo: true,
-      showRate: true,
-      showExpertise: true,
-      showVideoSection: true,
-      videoVisibility: {
-        introduction: {
-          hidden: false,
-          collapsed: false
-        },
-        interview: {
-          hidden: false,
-          collapsed: false
-        }
-      }
+      email: 'ayesha.raza@datascience.pk',
+      resumeUrl: 'https://example.com/resumes/ayesha-raza.pdf',
+      assessmentUrl: 'https://example.com/assessments/ayesha-raza.pdf',
+      image: 'https://randomuser.me/api/portraits/women/68.jpg'
+    },
+    {
+      id: 5,
+      name: 'Bilal Hussain',
+      rate: 60,
+      currency: 'USD',
+      experience: '3 years',
+      expertise: 'Mobile Development',
+      intro: 'Cross-platform mobile developer with experience building performant apps for both iOS and Android.',
+      position: 'Mobile Developer',
+      skills: ['Flutter', 'React Native', 'Firebase', 'Swift'],
+      email: 'bilal.hussain@mobile.pk',
+      resumeUrl: 'https://example.com/resumes/bilal-hussain.pdf',
+      assessmentUrl: 'https://example.com/assessments/bilal-hussain.pdf',
+      image: 'https://randomuser.me/api/portraits/men/22.jpg'
+    },
+    {
+      id: 6,
+      name: 'Sana Farooq',
+      rate: 55,
+      currency: 'USD',
+      experience: '2 years',
+      expertise: 'Frontend Development',
+      intro: 'Creative frontend developer passionate about building beautiful, accessible user interfaces.',
+      position: 'Frontend Developer',
+      skills: ['JavaScript', 'Vue.js', 'CSS3', 'Web Accessibility'],
+      email: 'sana.farooq@web.pk',
+      resumeUrl: 'https://example.com/resumes/sana-farooq.pdf',
+      assessmentUrl: 'https://example.com/assessments/sana-farooq.pdf',
+      image: 'https://randomuser.me/api/portraits/women/33.jpg'
+    },
+    {
+      id: 7,
+      name: 'Omar Sheikh',
+      rate: 90,
+      currency: 'USD',
+      experience: '10 years',
+      expertise: 'Cloud Architecture',
+      intro: 'Seasoned cloud architect with extensive experience designing scalable enterprise solutions.',
+      position: 'Cloud Solutions Architect',
+      skills: ['AWS', 'Azure', 'Microservices', 'Serverless'],
+      email: 'omar.sheikh@cloud.pk',
+      resumeUrl: 'https://example.com/resumes/omar-sheikh.pdf',
+      assessmentUrl: 'https://example.com/assessments/omar-sheikh.pdf',
+      image: 'https://randomuser.me/api/portraits/men/55.jpg'
+    },
+    {
+      id: 8,
+      name: 'Zara Iqbal',
+      rate: 50,
+      currency: 'USD',
+      experience: '1 year',
+      expertise: 'Quality Assurance',
+      intro: 'Detail-oriented QA engineer specializing in automated testing and quality processes.',
+      position: 'QA Engineer',
+      skills: ['Selenium', 'Jest', 'Cypress', 'Test Automation'],
+      email: 'zara.iqbal@qa.pk',
+      resumeUrl: 'https://example.com/resumes/zara-iqbal.pdf',
+      assessmentUrl: 'https://example.com/assessments/zara-iqbal.pdf',
+      image: 'https://randomuser.me/api/portraits/women/25.jpg'
     }
   ];
 
-  const handleContact = (method, value) => {
-    if (method === 'phone') {
-      window.open(`tel:${value}`);
-    } else if (method === 'email') {
-      window.open(`mailto:${value}`);
-    } else if (method === 'linkedin') {
-      window.open(`https://linkedin.com/in/${value}`, '_blank');
-    } else if (method === 'github') {
-      window.open(`https://github.com/${value}`, '_blank');
-    }
+  const toggleWishlist = (id) => {
+    setWishlist(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const renderVideoSection = (employee) => {
-    if (!employee.showVideoSection) return null;
+  const handleViewDocument = (url) => {
+    window.open(url, '_blank');
+  };
 
-    return (
-      <div className="video-sections">
-        {employee.showIntroVideo && !employee.videoVisibility.introduction.hidden && (
-          <div className={`video-section ${employee.videoVisibility.introduction.collapsed ? 'collapsed' : ''}`}>
-            <h4 className="section-label">
-              <FaUserTie className="icon" /> Introduction Video
-            </h4>
-            {employee.video ? (
-              <div className="video-container">
-                {/* Video player would go here */}
-                <p>[Introduction Video Player]</p>
-              </div>
-            ) : (
-              <p className="no-video">No introduction video available</p>
-            )}
-          </div>
-        )}
-        
-        {employee.showInterviewVideo && !employee.videoVisibility.interview.hidden && (
-          <div className={`video-section ${employee.videoVisibility.interview.collapsed ? 'collapsed' : ''}`}>
-            <h4 className="section-label">
-              <FaBriefcase className="icon" /> Interview Video
-            </h4>
-            {employee.interviewVideo ? (
-              <div className="video-container">
-                {/* Video player would go here */}
-                <p>[Interview Video Player]</p>
-              </div>
-            ) : (
-              <p className="no-video">No interview video available</p>
-            )}
-          </div>
-        )}
-      </div>
-    );
+  const bookInterview = (email) => {
+    window.open(`mailto:${email}?subject=Interview Request&body=I would like to schedule an interview`, '_blank');
   };
 
   return (
     <div className="employee-portal">
       <header className="portal-header">
-        <h1 className="portal-title">Team Directory</h1>
-        <p className="portal-subtitle">Meet our talented professionals</p>
+        <div className="header-content">
+          <h1 className="portal-title">Talent Nexus</h1>
+          <p className="portal-subtitle">Discover Exceptional Tech Professionals</p>
+          {/* <div className="stats-bar">
+            <div className="stat">
+              <span className="stat-number">{employees.length}</span>
+              <span className="stat-label">Professionals</span>
+            </div>
+          </div> */}
+        </div>
       </header>
 
       <div className="employee-grid">
-        {employees.map(employee => (
-          <div key={employee.id} className="employee-card">
-            <div className="card-gradient-border">
-              <div className="card-content">
+        {employees.map((employee, index) => (
+          <div
+            key={employee.id}
+            className={`employee-card ${expandedCards[employee.id] ? 'expanded' : ''}`}
+            onClick={() => toggleCardExpand(employee.id)}
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            <div className="card-content">
+              <div className="card-background">
                 <div className="employee-profile">
                   <div className="avatar-container">
-                    <img 
-                      src={employee.image || defaultProfileImage} 
-                      alt={employee.name} 
-                      className="employee-avatar" 
-                    />
-                    <div className="experience-badge">{employee.experience}</div>
+                    <div className="avatar-wrapper">
+                      <img
+                        src={employee.image}
+                        alt={employee.name}
+                        className="employee-avatar"
+                      />
+                      <div className="experience-badge">{employee.experience}</div>
+                    </div>
+                    <button
+                      className={`wishlist-button ${wishlist[employee.id] ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleWishlist(employee.id);
+                      }}
+                    >
+                      {wishlist[employee.id] ? <FaHeart /> : <FaRegHeart />}
+                    </button>
                   </div>
                   <div className="profile-info">
                     <h3 className="employee-name">{employee.name}</h3>
                     <p className="employee-position">{employee.position}</p>
-                    {employee.showRate && (
-                      <p className="employee-rate">
-                        Rate: {employee.currency} {employee.rate}/hr
-                      </p>
-                    )}
-                    <div className="social-links">
-                      <button 
-                        className="social-btn linkedin"
-                        onClick={() => handleContact('linkedin', employee.contact.linkedin)}
-                      >
-                        <FaLinkedin />
-                      </button>
-                      {/* <button 
-                        className="social-btn github"
-                        onClick={() => handleContact('github', employee.contact.github)}
-                      >
-                        <FiGithub />
-                      </button> */}
+                    <div className="rating">
+                      <FaStar className="star" />
+                      <span>
+                        {`${Math.min(5, Math.max(4, Math.floor(employee.rate / 20)))}`}.{employee.rate % 20}
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 <div className="employee-intro">
-                  <p>{employee.intro}</p>
+                  <p style={{ color: '#2A2D7C' }}>{employee.intro}</p>
                 </div>
 
-                {employee.showExpertise && (
+                <div className={`expandable-content ${expandedCards[employee.id] ? 'visible' : ''}`}>
                   <div className="expertise-section">
-                    <h4 className="section-label">
-                      <FaStar className="icon" /> {employee.expertise}
-                    </h4>
+                    <h4 className="section-label">Core Expertise</h4>
                     <div className="expertise-tags">
                       {employee.skills.map((skill, index) => (
                         <span key={index} className="skill-tag">{skill}</span>
                       ))}
                     </div>
                   </div>
-                )}
 
-                {renderVideoSection(employee)}
-
-                <div className="contact-section">
-                  <div className="contact-method">
-                    <FaPhone className="contact-icon" />
-                    <span>{employee.contact.phone}</span>
+                  <div className="details-grid">
+                    <div className="detail-item">
+                      <span className="detail-label">Rate</span>
+                      <span className="detail-value">{employee.currency} {employee.rate}/hr</span>
+                    </div>
+                    <div className="detail-item">
+                      <span className="detail-label">Experience</span>
+                      <span className="detail-value">{employee.experience}</span>
+                    </div>
                   </div>
-                  <div className="contact-method">
-                    <FaEnvelope className="contact-icon" />
-                    <span>{employee.contact.email}</span>
-                  </div>
-                </div>
 
-                <div className="action-buttons">
-                  <button 
-                    className="action-btn call"
-                    onClick={() => handleContact('phone', employee.contact.phone)}
-                  >
-                    <FaPhone /> Call
-                  </button>
-                  <button 
-                    className="action-btn email"
-                    onClick={() => handleContact('email', employee.contact.email)}
-                  >
-                    <FaEnvelope /> Email
-                  </button>
+                  <div className="document-buttons">
+                    <button
+                      className="doc-button resume"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewDocument(employee.resumeUrl);
+                      }}
+                    >
+                      <FaFileAlt /> Resume
+                    </button>
+                    <button
+                      className="doc-button assessment"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewDocument(employee.assessmentUrl);
+                      }}
+                    >
+                      <FaClipboardCheck /> Assessment
+                    </button>
+                  </div>
                 </div>
               </div>
+
+              <button
+                className="primary-button book-interview"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  bookInterview(employee.email);
+                }}
+              >
+                <FaCalendarAlt /> Schedule Interview
+              </button>
             </div>
           </div>
         ))}
