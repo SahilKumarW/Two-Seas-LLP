@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaPhone, FaEnvelope, FaUserTie, FaBriefcase, FaStar, FaLinkedin } from 'react-icons/fa';
 import { FiGithub } from 'react-icons/fi';
 import './EmployeeCard.css';
 
 const EmployeeCard = () => {
-  // Enhanced dummy Pakistani employee data
+  const defaultProfileImage = 'https://randomuser.me/api/portraits/lego/5.jpg'; // Default image if none provided
+
+  // Enhanced employee data with all admin state properties
   const employees = [
     {
       id: 1,
       name: 'Ali Khan',
-      position: 'Senior Software Engineer',
+      rate: 75,
+      currency: 'USD',
       experience: '8 years',
-      expertise: ['React', 'Node.js', 'AWS', 'TypeScript'],
+      expertise: 'Full-stack Development',
+      intro: 'Full-stack developer specializing in scalable cloud applications with 8+ years of industry experience.',
+      position: 'Senior Software Engineer',
+      skills: ['React', 'Node.js', 'AWS', 'TypeScript'],
       contact: {
         phone: '+92 300 1234567',
         email: 'ali.khan@techsolutions.pk',
@@ -19,14 +25,34 @@ const EmployeeCard = () => {
         github: 'alikhan-code'
       },
       image: 'https://randomuser.me/api/portraits/men/32.jpg',
-      bio: 'Full-stack developer specializing in scalable cloud applications with 8+ years of industry experience.'
+      video: null,
+      interviewVideo: null,
+      showIntroVideo: true,
+      showInterviewVideo: true,
+      showRate: true,
+      showExpertise: true,
+      showVideoSection: true,
+      videoVisibility: {
+        introduction: {
+          hidden: false,
+          collapsed: false
+        },
+        interview: {
+          hidden: false,
+          collapsed: false
+        }
+      }
     },
     {
       id: 2,
       name: 'Fatima Ahmed',
-      position: 'Lead UX/UI Designer',
+      rate: 65,
+      currency: 'USD',
       experience: '5 years',
-      expertise: ['Figma', 'User Research', 'Prototyping', 'Adobe Suite'],
+      expertise: 'UX/UI Design',
+      intro: 'Award-winning designer passionate about creating intuitive user experiences with a human-centered approach.',
+      position: 'Lead UX/UI Designer',
+      skills: ['Figma', 'User Research', 'Prototyping', 'Adobe Suite'],
       contact: {
         phone: '+92 321 7654321',
         email: 'fatima.ahmed@creative.pk',
@@ -34,44 +60,34 @@ const EmployeeCard = () => {
         github: 'fatimadesigns'
       },
       image: 'https://randomuser.me/api/portraits/women/44.jpg',
-      bio: 'Award-winning designer passionate about creating intuitive user experiences with a human-centered approach.'
+      video: null,
+      interviewVideo: null,
+      showIntroVideo: true,
+      showInterviewVideo: true,
+      showRate: true,
+      showExpertise: true,
+      showVideoSection: true,
+      videoVisibility: {
+        introduction: {
+          hidden: false,
+          collapsed: false
+        },
+        interview: {
+          hidden: false,
+          collapsed: false
+        }
+      }
     },
     {
       id: 3,
-      name: 'Fatima Ahmed',
-      position: 'Lead UX/UI Designer',
-      experience: '5 years',
-      expertise: ['Figma', 'User Research', 'Prototyping', 'Adobe Suite'],
-      contact: {
-        phone: '+92 321 7654321',
-        email: 'fatima.ahmed@creative.pk',
-        linkedin: 'fatimaui',
-        github: 'fatimadesigns'
-      },
-      image: 'https://randomuser.me/api/portraits/women/44.jpg',
-      bio: 'Award-winning designer passionate about creating intuitive user experiences with a human-centered approach.'
-    },
-    {
-      id: 4,
-      name: 'Fatima Ahmed',
-      position: 'Lead UX/UI Designer',
-      experience: '5 years',
-      expertise: ['Figma', 'User Research', 'Prototyping', 'Adobe Suite'],
-      contact: {
-        phone: '+92 321 7654321',
-        email: 'fatima.ahmed@creative.pk',
-        linkedin: 'fatimaui',
-        github: 'fatimadesigns'
-      },
-      image: 'https://randomuser.me/api/portraits/women/44.jpg',
-      bio: 'Award-winning designer passionate about creating intuitive user experiences with a human-centered approach.'
-    },
-    {
-      id: 5,
       name: 'Usman Malik',
-      position: 'DevOps Architect',
+      rate: 80,
+      currency: 'USD',
       experience: '6 years',
-      expertise: ['Docker', 'Kubernetes', 'CI/CD', 'Terraform'],
+      expertise: 'DevOps Engineering',
+      intro: 'DevOps specialist focused on building robust infrastructure and automation pipelines.',
+      position: 'DevOps Architect',
+      skills: ['Docker', 'Kubernetes', 'CI/CD', 'Terraform'],
       contact: {
         phone: '+92 345 6789012',
         email: 'usman.malik@cloudops.pk',
@@ -79,14 +95,34 @@ const EmployeeCard = () => {
         github: 'usmaniac'
       },
       image: 'https://randomuser.me/api/portraits/men/67.jpg',
-      bio: 'DevOps specialist focused on building robust infrastructure and automation pipelines.'
+      video: null,
+      interviewVideo: null,
+      showIntroVideo: true,
+      showInterviewVideo: true,
+      showRate: true,
+      showExpertise: true,
+      showVideoSection: true,
+      videoVisibility: {
+        introduction: {
+          hidden: false,
+          collapsed: false
+        },
+        interview: {
+          hidden: false,
+          collapsed: true
+        }
+      }
     },
     {
-      id: 6,
+      id: 4,
       name: 'Ayesha Raza',
-      position: 'Data Science Lead',
+      rate: 70,
+      currency: 'USD',
       experience: '4 years',
-      expertise: ['Python', 'Machine Learning', 'TensorFlow', 'Big Data'],
+      expertise: 'Data Science',
+      intro: 'Data scientist with expertise in predictive modeling and natural language processing applications.',
+      position: 'Data Science Lead',
+      skills: ['Python', 'Machine Learning', 'TensorFlow', 'Big Data'],
       contact: {
         phone: '+92 333 4567890',
         email: 'ayesha.raza@datascience.pk',
@@ -94,7 +130,23 @@ const EmployeeCard = () => {
         github: 'raza-ai'
       },
       image: 'https://randomuser.me/api/portraits/women/68.jpg',
-      bio: 'Data scientist with expertise in predictive modeling and natural language processing applications.'
+      video: null,
+      interviewVideo: null,
+      showIntroVideo: true,
+      showInterviewVideo: true,
+      showRate: true,
+      showExpertise: true,
+      showVideoSection: true,
+      videoVisibility: {
+        introduction: {
+          hidden: false,
+          collapsed: false
+        },
+        interview: {
+          hidden: false,
+          collapsed: false
+        }
+      }
     }
   ];
 
@@ -110,12 +162,51 @@ const EmployeeCard = () => {
     }
   };
 
+  const renderVideoSection = (employee) => {
+    if (!employee.showVideoSection) return null;
+
+    return (
+      <div className="video-sections">
+        {employee.showIntroVideo && !employee.videoVisibility.introduction.hidden && (
+          <div className={`video-section ${employee.videoVisibility.introduction.collapsed ? 'collapsed' : ''}`}>
+            <h4 className="section-label">
+              <FaUserTie className="icon" /> Introduction Video
+            </h4>
+            {employee.video ? (
+              <div className="video-container">
+                {/* Video player would go here */}
+                <p>[Introduction Video Player]</p>
+              </div>
+            ) : (
+              <p className="no-video">No introduction video available</p>
+            )}
+          </div>
+        )}
+        
+        {employee.showInterviewVideo && !employee.videoVisibility.interview.hidden && (
+          <div className={`video-section ${employee.videoVisibility.interview.collapsed ? 'collapsed' : ''}`}>
+            <h4 className="section-label">
+              <FaBriefcase className="icon" /> Interview Video
+            </h4>
+            {employee.interviewVideo ? (
+              <div className="video-container">
+                {/* Video player would go here */}
+                <p>[Interview Video Player]</p>
+              </div>
+            ) : (
+              <p className="no-video">No interview video available</p>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="employee-portal">
       <header className="portal-header">
         <h1 className="portal-title">Team Directory</h1>
         <p className="portal-subtitle">Meet our talented professionals</p>
-        {/* <div className="header-accent"></div> */}
       </header>
 
       <div className="employee-grid">
@@ -125,12 +216,21 @@ const EmployeeCard = () => {
               <div className="card-content">
                 <div className="employee-profile">
                   <div className="avatar-container">
-                    <img src={employee.image} alt={employee.name} className="employee-avatar" />
+                    <img 
+                      src={employee.image || defaultProfileImage} 
+                      alt={employee.name} 
+                      className="employee-avatar" 
+                    />
                     <div className="experience-badge">{employee.experience}</div>
                   </div>
                   <div className="profile-info">
                     <h3 className="employee-name">{employee.name}</h3>
                     <p className="employee-position">{employee.position}</p>
+                    {employee.showRate && (
+                      <p className="employee-rate">
+                        Rate: {employee.currency} {employee.rate}/hr
+                      </p>
+                    )}
                     <div className="social-links">
                       <button 
                         className="social-btn linkedin"
@@ -138,30 +238,34 @@ const EmployeeCard = () => {
                       >
                         <FaLinkedin />
                       </button>
-                      <button 
+                      {/* <button 
                         className="social-btn github"
                         onClick={() => handleContact('github', employee.contact.github)}
                       >
                         <FiGithub />
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>
 
-                <div className="employee-bio">
-                  <p>{employee.bio}</p>
+                <div className="employee-intro">
+                  <p>{employee.intro}</p>
                 </div>
 
-                <div className="expertise-section">
-                  <h4 className="section-label">
-                    <FaStar className="icon" /> Core Expertise
-                  </h4>
-                  <div className="expertise-tags">
-                    {employee.expertise.map((skill, index) => (
-                      <span key={index} className="skill-tag">{skill}</span>
-                    ))}
+                {employee.showExpertise && (
+                  <div className="expertise-section">
+                    <h4 className="section-label">
+                      <FaStar className="icon" /> {employee.expertise}
+                    </h4>
+                    <div className="expertise-tags">
+                      {employee.skills.map((skill, index) => (
+                        <span key={index} className="skill-tag">{skill}</span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
+
+                {renderVideoSection(employee)}
 
                 <div className="contact-section">
                   <div className="contact-method">
