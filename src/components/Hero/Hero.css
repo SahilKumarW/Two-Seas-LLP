@@ -1,6 +1,6 @@
 .hero {
     background-color: #0099b9 !important;
-    background-image: url('../../assets/hero.jpeg');
+    background-image: url('../../assets/hero-img.jpeg');
     background-position: center bottom; /* Changed to center */
     background-repeat: no-repeat;
     background-size: cover; /* Changed from 'contain' to 'cover' */
