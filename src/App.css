@@ -34,18 +34,23 @@ section {
   padding: 4rem 0;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   color: var(--secondary);
   margin-bottom: 1rem;
 }
 
 p {
   margin-bottom: 1rem;
-  color: var(--gray);
+  color: #2A2D7C;
 }
 
 /* Button Styles */
-.cta-button, .solution-link, .profile-link {
+.cta-button,
+.solution-link,
+.profile-link {
   background-color: var(--primary);
   color: #18c4cb;
   border: none;
@@ -58,12 +63,15 @@ p {
   display: inline-block;
 }
 
-.cta-button:hover, .solution-link:hover, .profile-link:hover {
+.cta-button:hover,
+.solution-link:hover,
+.profile-link:hover {
   background-color: #d4d7dc;
   transform: translateY(-2px);
 }
 
-.solution-link, .profile-link {
+.solution-link,
+.profile-link {
   background-color: transparent;
   color: var(--primary);
   padding: 0.5rem 0;
@@ -72,7 +80,7 @@ p {
 /* Navbar Styles */
 .navbar {
   background-color: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 1rem 0;
   position: sticky;
   top: 0;
@@ -137,7 +145,9 @@ p {
 }
 
 /* Grid Layouts */
-.testimonial-grid, .profile-grid, .industry-grid {
+.testimonial-grid,
+.profile-grid,
+.industry-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
@@ -145,11 +155,14 @@ p {
 }
 
 /* Card Styles */
-.testimonial-card, .profile-card, .solution-card, .industry-card {
+.testimonial-card,
+.profile-card,
+.solution-card,
+.industry-card {
   background-color: white;
   border-radius: 8px;
   padding: 2rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Process Steps */
@@ -212,13 +225,13 @@ p {
 }
 
 .footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 1rem;
   text-align: center;
 }
 
 .footer-bottom p {
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
 }
 

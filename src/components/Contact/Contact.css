@@ -2,7 +2,7 @@
 :root {
   --teal: #17c4cb;
   /* Primary teal */
-  --blue: #393c69;
+  --blue: #2A2D7C;
   /* Primary blue */
   --light-teal: #a0e9ec;
   /* Light teal */
@@ -65,7 +65,7 @@
 }
 
 .title-blue {
-  color: var(--blue);
+  color: #2A2D7C;
 }
 
 /* New Grid for Calendly and Form */

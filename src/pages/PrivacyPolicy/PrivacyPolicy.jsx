@@ -9,8 +9,8 @@ const PrivacyPolicy = () => {
         <style>
           {`
             :root {
-              --teal: #17c4cb;
-              --blue: #393c69;
+              --teal: #06a3c2;
+              --blue: #2A2D7C;
             }
           `}
         </style>
