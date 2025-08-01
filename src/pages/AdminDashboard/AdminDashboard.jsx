@@ -879,7 +879,7 @@ const AdminDashboard = () => {
 
 
         {/* Niche Selection Section */}
-        <div className="niche-section">
+        {/* <div className="niche-section">
           <div className="section-header">
             <h3 className="section-title">Niche Management</h3>
           </div>
@@ -946,7 +946,7 @@ const AdminDashboard = () => {
               }}
             />
           )}
-        </div>
+        </div> */}
 
         {/* Video Section */}
         {admin.showVideoSection ? (

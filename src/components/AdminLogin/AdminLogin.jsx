@@ -18,7 +18,7 @@ const AdminLogin = () => {
         if (email === "admin@twoseas.org" && password === "TwoSeas123") {
             console.log('Login successful');
             // In a real app, you would set some authentication state or token here
-            navigate('/admin-dashboard'); // Redirect to admin dashboard
+            navigate('/admin-welcome'); // Redirect to admin dashboard
         } else {
             setError('Invalid email or password');
         }

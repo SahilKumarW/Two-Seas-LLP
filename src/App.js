@@ -31,6 +31,7 @@ import AddNewOpening from "./pages/AddNewOpening/AddNewOpening.jsx";
 import EmployeeCard from "./pages/EmployeeCard/EmployeeCard.js";
 import ClientDiary from "./pages/ClientDiary/ClientDiary.jsx";
 import NicheManagement from "./pages/NicheManagement/NicheManagement.jsx";
+import AdminWelcome from "./pages/AdminWelcome/AdminWelcome.jsx";
 
 function Layout() {
   const location = useLocation();
@@ -77,6 +78,7 @@ function Layout() {
         <Route path="/employee-diary" element={<EmployeeCard/>} />
         <Route path="/client-diary" element={<ClientDiary/>} />
         <Route path="/employee-niche-assignment" element={<NicheManagement/>} />
+        <Route path="/admin-welcome" element={<AdminWelcome/>} />
 
       </Routes>
 
