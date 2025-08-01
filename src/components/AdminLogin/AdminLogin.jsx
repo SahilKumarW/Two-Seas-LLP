@@ -1,17 +1,27 @@
 // src/components/AdminLogin.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './AdminLogin.css';
 import logo from '../../assets/Two Seas Logo.png';
 
 const AdminLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Handle login logic here
-        console.log('Login submitted:', { email, password });
+        setError(''); // Clear any previous errors
+        
+        // Check credentials
+        if (email === "admin@twoseas.org" && password === "TwoSeas123") {
+            console.log('Login successful');
+            // In a real app, you would set some authentication state or token here
+            navigate('/admin-dashboard'); // Redirect to admin dashboard
+        } else {
+            setError('Invalid email or password');
+        }
     };
 
     return (
@@ -28,6 +38,7 @@ const AdminLogin = () => {
                 {/* Login form */}
                 <div className="login-form-container">
                     <h2 className="login-title">Login to Admin Panel</h2>
+                    {error && <div className="error-message">{error}</div>}
                     <form onSubmit={handleSubmit} className="admin-login-form">
                         <div className="form-group">
                             <label htmlFor="email">Email</label>
@@ -53,9 +64,6 @@ const AdminLogin = () => {
                         </div>
                         <button type="submit" className="admin-login-button">Login</button>
                     </form>
-                    <p className="admin-toggle-text">
-                        Don't have an account? <Link to="/admin-signup" className="admin-toggle-link">Sign up</Link>
-                    </p>
                 </div>
             </div>
         </div>
