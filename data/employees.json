@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "name": "Ali Khan",
+    "rate": 75,
+    "currency": "USD",
+    "experience": "8 years",
+    "expertise": "Full-stack Development",
+    "intro": "Full-stack developer specializing in scalable cloud applications...",
+    "image": "https://randomuser.me/api/portraits/men/32.jpg"
+  }
+  // ... other employees
+]
