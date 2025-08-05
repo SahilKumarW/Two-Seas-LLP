@@ -33,7 +33,7 @@ const ProcessSection = () => {
                     </div>
                     <ul className="step-content">
                         <li>Based on client needs, our HR team either selects and filters talent from our existing pool or, if necessary, re-advertises to find the right candidates with the exact qualifications desired by the clients.</li>
-                        <li>Our latest pool includes thousands of candidates from whom only the top matches are recommended to the clients. Ensuring the saving of time and effort.</li>
+                        <li>Our latest pool includes hundreds of candidates from whom only the top matches are recommended to the clients. Ensuring saving of time and effort.</li>
                         <li>Our complete profile is created with a recruiter assessment, and reference input which is made available to our clients.</li>
                     </ul>
                 </div>
@@ -47,7 +47,7 @@ const ProcessSection = () => {
                         <h3>Interview</h3>
                     </div>
                     <ul className="step-content">
-                        <li>Once you have selected a candidate of your preference, we will arrange for the interviews, helping you control the employee through our methods of overseeing.</li>
+                        <li>Once you have selected a candidate of your preference, we will arrange for the interviews. Eventually; helping you control the employee through our methods of overseeing.</li>
                     </ul>
                 </div>
             </div>

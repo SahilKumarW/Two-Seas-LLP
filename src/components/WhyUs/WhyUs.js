@@ -42,7 +42,7 @@ const WhyUs = () => {
                     <div className="benefit-card">
                         <h3>Help in Scaling and Expanding</h3>
                         <p>We help our clients expand their team over time finding the right talent gradually to ensure corporate level expansion.</p>
-                        <p className="card-detail">Performance metrics such as KPI's and ROI's are constantly measured and delivered to our clients by our dedicated account managers.</p>
+                        <p className="card-detail">Performance metrics such as KPI's are constantly measured and delivered to our clients by our dedicated account managers.</p>
                     </div>
 
                     <div className="benefit-card">

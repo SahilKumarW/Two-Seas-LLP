@@ -3,14 +3,26 @@ import { FaCalendarAlt, FaChevronLeft, FaChevronRight, FaClock, FaGlobe } from '
 import { niches } from '../pages/AdminDashboard/constants';
 
 const timeZones = [
-    { value: 'GMT-12:00', label: 'GMT-12:00 (International Date Line West)' },
-    { value: 'GMT-08:00', label: 'GMT-08:00 (Pacific Time)' },
-    { value: 'GMT-05:00', label: 'GMT-05:00 (Eastern Time)' },
-    { value: 'GMT+00:00', label: 'GMT+00:00 (London)' },
-    { value: 'GMT+01:00', label: 'GMT+01:00 (Central European Time)' },
+    // USA Time Zones
+    { value: 'GMT-10:00', label: 'GMT-10:00 (Hawaii-Aleutian Time)' },
+    { value: 'GMT-08:00', label: 'GMT-08:00 (Pacific Time - US & Canada)' },
+    { value: 'GMT-07:00', label: 'GMT-07:00 (Mountain Time - US & Canada)' },
+    { value: 'GMT-06:00', label: 'GMT-06:00 (Central Time - US & Canada)' },
+    { value: 'GMT-05:00', label: 'GMT-05:00 (Eastern Time - US & Canada)' },
+    
+    // UK
+    { value: 'GMT+00:00', label: 'GMT+00:00 (London, UK)' },
+    
+    // Pakistan
     { value: 'GMT+05:00', label: 'GMT+05:00 (Pakistan Standard Time)' },
-    { value: 'GMT+08:00', label: 'GMT+08:00 (China Standard Time)' },
-    { value: 'GMT+10:00', label: 'GMT+10:00 (Australian Eastern Time)' },
+    
+    // UAE
+    { value: 'GMT+04:00', label: 'GMT+04:00 (Dubai, UAE)' },
+    
+    // Australia
+    { value: 'GMT+08:00', label: 'GMT+08:00 (Western Australia)' },
+    { value: 'GMT+09:30', label: 'GMT+09:30 (Central Australia)' },
+    { value: 'GMT+10:00', label: 'GMT+10:00 (Eastern Australia)' }
 ];
 
 const CalendarScheduler = ({
@@ -38,7 +50,6 @@ const CalendarScheduler = ({
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [timeSlots, setTimeSlots] = useState([]);
 
-    // Utility function to convert times between timezones
     const convertTimeToTimezone = (time, fromTimezone, toTimezone) => {
         const offsetMap = {
             'GMT-12:00': -12,
@@ -55,20 +66,15 @@ const CalendarScheduler = ({
         const toOffset = offsetMap[toTimezone] || 0;
         const diff = toOffset - fromOffset;
 
-        // Extract hour from time string (format: "H:00 AM/PM")
         const [hourStr, period] = time.split(/[: ]/);
         let hour = parseInt(hourStr);
 
         if (period === 'PM' && hour !== 12) hour += 12;
         if (period === 'AM' && hour === 12) hour = 0;
 
-        // Apply timezone difference
         hour += diff;
-
-        // Normalize hour (0-23)
         hour = (hour + 24) % 24;
 
-        // Convert back to 12-hour format
         let newPeriod = hour >= 12 ? 'PM' : 'AM';
         let newHour = hour > 12 ? hour - 12 : hour;
         if (newHour === 0) newHour = 12;
@@ -84,7 +90,6 @@ const CalendarScheduler = ({
         }));
     };
 
-    // Generate days for the current month view
     const generateDays = (month, year) => {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
@@ -128,7 +133,6 @@ const CalendarScheduler = ({
         return false;
     };
 
-    // Modified to handle timezone conversion
     const generateTimeSlots = (date, timeZone) => {
         if (!date) return [];
 
@@ -143,16 +147,15 @@ const CalendarScheduler = ({
             const displayHour = hour > 12 ? hour - 12 : hour;
             const timeString = `${displayHour}:00 ${period}`;
 
-            // Convert to user's selected timezone
             const userTimeString = convertTimeToTimezone(
                 timeString,
-                'GMT+05:00', // System timezone (adjust to your server's timezone)
+                'GMT+05:00',
                 timeZone
             );
 
             slots.push({
-                systemTime: timeString,  // Store original time
-                displayTime: userTimeString // Time to show user
+                systemTime: timeString,
+                displayTime: userTimeString
             });
         }
 
@@ -198,7 +201,6 @@ const CalendarScheduler = ({
                     timeZone: selectedTimeZone
                 });
             } else {
-                // Default behavior if no callback provided
                 const subject = `Appointment Request - ${userDetails.company || userDetails.name}`;
                 const body = `Company: ${userDetails.company}%0D%0AWebsite: ${userDetails.website || 'N/A'}%0D%0AName: ${userDetails.name}%0D%0AEmail: ${userDetails.email}%0D%0APhone: ${userDetails.phone}%0D%0A%0D%0ARequested Appointment Time:%0D%0A${selectedDate.toLocaleDateString()} at ${selectedTime}%0D%0A%0D%0AAdditional Details:%0D%0A${userDetails.details}%0D%0A%0D%0A`;
                 window.open(`mailto:?subject=${subject}&body=${body}`);
@@ -260,32 +262,36 @@ const CalendarScheduler = ({
 
             <div className="scheduler-container">
                 <div className="scheduler-card">
-                    <div className="scheduler-icon">
-                        {!selectedDate ? <FaCalendarAlt /> : <FaClock />}
-                    </div>
-
                     {!selectedDate ? (
                         // Calendar View
                         <div className="calendar-view">
-                            <div className="calendar-header">
-                                <button
-                                    className="month-nav-btn"
-                                    onClick={() => changeMonth(-1)}
-                                    aria-label="Previous month"
-                                >
-                                    <FaChevronLeft />
-                                </button>
-                                <h3>{monthName} {currentYear}</h3>
-                                <button
-                                    className="month-nav-btn"
-                                    onClick={() => changeMonth(1)}
-                                    aria-label="Next month"
-                                >
-                                    <FaChevronRight />
-                                </button>
+                            {/* Calendar Icon (now above the month navigation) */}
+                            <div className="scheduler-icon">
+                                <FaCalendarAlt />
+                            </div>
+                            {/* Fixed Header */}
+                            <div className="calendar-header-fixed">
+                                <div className="calendar-header">
+                                    <button
+                                        className="month-nav-btn"
+                                        onClick={() => changeMonth(-1)}
+                                        aria-label="Previous month"
+                                    >
+                                        <FaChevronLeft />
+                                    </button>
+                                    <h3>{monthName} {currentYear}</h3>
+                                    <button
+                                        className="month-nav-btn"
+                                        onClick={() => changeMonth(1)}
+                                        aria-label="Next month"
+                                    >
+                                        <FaChevronRight />
+                                    </button>
+                                </div>
                             </div>
 
-                            <div className="calendar-grid">
+                            {/* Scrollable Calendar Grid */}
+                            <div className="calendar-grid-container">
                                 <div className="day-names">
                                     {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
                                         <div key={day} className="day-name">{day}</div>
@@ -313,7 +319,7 @@ const CalendarScheduler = ({
                             </div>
                         </div>
                     ) : !selectedTime ? (
-                        // Time Slot Selection with Time Zone selector
+                        // Time Slot Selection
                         <div className="time-slot-view">
                             <div className="time-zone-selector">
                                 <FaGlobe className="time-zone-icon" />
@@ -359,7 +365,7 @@ const CalendarScheduler = ({
                             </div>
                         </div>
                     ) : isSuccess ? (
-                        // Success Message showing timezone
+                        // Success Message
                         <div className="success-message">
                             <h3>Appointment Request Sent!</h3>
                             <p>Your appointment request has been sent for:</p>
@@ -368,7 +374,7 @@ const CalendarScheduler = ({
                                 {selectedTime && <>, <strong>
                                     {convertTimeToTimezone(
                                         selectedTime,
-                                        'GMT+05:00', // System timezone
+                                        'GMT+05:00',
                                         selectedTimeZone
                                     )}
                                 </strong></>}
@@ -395,7 +401,7 @@ const CalendarScheduler = ({
                                 {formatDateDisplay(selectedDate)}
                                 {selectedTime && `, ${convertTimeToTimezone(
                                     selectedTime,
-                                    'GMT+05:00', // System timezone
+                                    'GMT+05:00',
                                     selectedTimeZone
                                 )
                                     }`}
@@ -450,7 +456,6 @@ const CalendarScheduler = ({
                                     />
                                 </div>
 
-                                {/* Add this new form group */}
                                 <div className="form-group">
                                     <label htmlFor="website">Company Website</label>
                                     <input
@@ -559,17 +564,29 @@ const CalendarScheduler = ({
                     margin: 0 auto;
                 }
                 
+                .calendar-header-fixed {
+                    position: sticky;
+                    top: 0;
+                    // background: white;
+                    z-index: 10;
+                    padding: 10px 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                }
+                
                 .calendar-header {
                     display: flex;
-                    justify-content: space-between;
                     align-items: center;
-                    margin-bottom: 1rem;
+                    gap: 15px;
+                    flex-grow: 1;
                 }
                 
                 .calendar-header h3 {
                     margin: 0;
                     color: #2A2D7C;
                     font-size: 1.2rem;
+                    white-space: nowrap;
                 }
                 
                 .month-nav-btn {
@@ -585,12 +602,17 @@ const CalendarScheduler = ({
                     color: #06a3c2;
                 }
                 
-                .calendar-grid {
-                    display: flex;
-                    flex-direction: column;
+                .calendar-grid-container {
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    padding-bottom: 10px;
                 }
                 
                 .day-names {
+                    position: sticky;
+                    top: 60px;
+                    background: white;
+                    z-index: 9;
                     display: grid;
                     grid-template-columns: repeat(7, 1fr);
                     text-align: center;
@@ -601,12 +623,14 @@ const CalendarScheduler = ({
                 
                 .day-name {
                     padding: 0.5rem;
+                    min-width: 40px;
                 }
                 
                 .days-grid {
                     display: grid;
                     grid-template-columns: repeat(7, 1fr);
                     gap: 5px;
+                    min-width: 300px;
                 }
                 
                 .day-cell {
@@ -619,7 +643,8 @@ const CalendarScheduler = ({
                     cursor: pointer;
                     transition: all 0.2s;
                     position: relative;
-                    padding: 0.5rem;
+                    padding: 0.2rem;
+                    min-height: 40px;
                 }
                 
                 .day-cell:not(.empty):not(.disabled):hover {
@@ -636,7 +661,7 @@ const CalendarScheduler = ({
                 }
                 
                 .day-number {
-                    font-size: 1rem;
+                    font-size: 0.9rem;
                     font-weight: bold;
                 }
                 
@@ -815,13 +840,73 @@ const CalendarScheduler = ({
                     background-color: #1a1c52;
                 }
                 
+                /* Time Zone Selector */
+                .time-zone-selector {
+                    display: flex;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    background: #f5f5f5;
+                    padding: 10px 15px;
+                    border-radius: 6px;
+                }
+                
+                .time-zone-icon {
+                    color: #2A2D7C;
+                    margin-right: 10px;
+                    font-size: 18px;
+                }
+                
+                .time-zone-dropdown {
+                    flex: 1;
+                    padding: 8px 12px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    background: white;
+                    font-size: 14px;
+                }
+                
+                /* Mobile Responsive Styles */
                 @media (max-width: 600px) {
                     .scheduler-container {
                         padding: 1rem;
                     }
                     
+                    .calendar-header-fixed {
+                        padding: 8px 0;
+                    }
+                    
+                    .calendar-header h3 {
+                        font-size: 1rem;
+                    }
+                    
+                    .month-nav-btn {
+                        padding: 5px;
+                    }
+                    
+                    .day-names {
+                        top: 50px;
+                        font-size: 0.8rem;
+                    }
+                    
+                    .day-cell {
+                        min-height: 35px;
+                    }
+                    
+                    .day-number {
+                        font-size: 0.8rem;
+                    }
+                    
+                    .booked-indicator {
+                        font-size: 0.5rem;
+                    }
+                    
                     .time-slots-grid {
                         grid-template-columns: repeat(2, 1fr);
+                    }
+                    
+                    .time-slot-btn {
+                        padding: 8px;
+                        font-size: 0.8rem;
                     }
                     
                     .form-buttons {
@@ -832,33 +917,7 @@ const CalendarScheduler = ({
                     .confirm-btn, .back-btn {
                         width: 100%;
                     }
-                }
-
-                .time-zone-selector {
-                    display: flex;
-                    align-items: center;
-                    margin-bottom: 20px;
-                    background: #f5f5f5;
-                    padding: 10px 15px;
-                    border-radius: 6px;
-                }
-
-                .time-zone-icon {
-                    color: #2A2D7C;
-                    margin-right: 10px;
-                    font-size: 18px;
-                }
-
-                .time-zone-dropdown {
-                    flex: 1;
-                    padding: 8px 12px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    background: white;
-                    font-size: 14px;
-                }
-
-                @media (max-width: 600px) {
+                    
                     .time-zone-selector {
                         flex-direction: column;
                         align-items: flex-start;

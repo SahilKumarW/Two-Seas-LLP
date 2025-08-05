@@ -37,7 +37,7 @@ const BookCall = () => {
                 {/* Right Section - Form */}
                 <div className="right-section">
                     <h2 style={{ textAlign: 'center', color: '#2A2D7C', marginTop: '20px' }} className="company-name">Two Seas LLP</h2>
-                    <p style={{ textAlign: 'center' }} className="form-subtitle">Fill in the details below to schedule a call.</p>
+                    <p style={{ textAlign: 'center' }} className="form-subtitle">Fill in the details below and our team will be in touch.</p>
 
                     <form onSubmit={handleSubmit} className="form">
                         <div className="form-group">

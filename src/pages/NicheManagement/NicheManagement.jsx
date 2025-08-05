@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { niches } from '../AdminDashboard/constants';
-import { employees as initialEmployees } from '../EmployeeCard/EmployeeCard';
+import { useEmployees } from '../EmployeeCard/EmployeeCard'; // Modified import
 import './NicheManagement.css';
 
 const NicheManagement = () => {
+  // Get employees from the hook instead of direct import
+  const { employees: initialEmployees } = useEmployees();
   const [employees, setEmployees] = useState(initialEmployees);
   const [selectedNiche, setSelectedNiche] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');

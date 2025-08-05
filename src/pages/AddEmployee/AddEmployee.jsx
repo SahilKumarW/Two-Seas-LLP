@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AddEmployee.css';
 import { currencies, navItems } from '../AdminDashboard/constants';
+import { db, collection, addDoc } from '../../firebase';
 
 const AddEmployee = () => {
     const navigate = useNavigate();
@@ -12,13 +13,10 @@ const AddEmployee = () => {
         experience: '',
         expertise: '',
         intro: '',
-        image: null,
-        introVideo: null,
-        interviewVideo: null,
-        resume: null,
-        report: null
+        image: null, // Will store as Base64
     });
-
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState(null);
     const [selectedNiche, setSelectedNiche] = useState('');
     const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
 
@@ -28,10 +26,6 @@ const AddEmployee = () => {
     }));
 
     const fileInputRef = useRef(null);
-    const introVideoRef = useRef(null);
-    const interviewVideoRef = useRef(null);
-    const resumeRef = useRef(null);
-    const reportRef = useRef(null);
     const currencyDropdownRef = useRef(null);
 
     const handleInputChange = (e) => {
@@ -39,48 +33,64 @@ const AddEmployee = () => {
         setEmployee({ ...employee, [name]: value });
     };
 
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validate image size (max 500KB)
+        if (file.size > 500000) {
+            alert('Image must be smaller than 500KB');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setEmployee({ ...employee, image: event.target.result });
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handleCurrencySelect = (currency) => {
         setEmployee({ ...employee, currency: currency.code });
         setShowCurrencyDropdown(false);
     };
 
-    const handlePhotoUpload = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                setEmployee({ ...employee, image: event.target.result });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleFileUpload = (e, type) => {
-        const file = e.target.files[0];
-        if (file) {
-            if (type === 'introVideo' || type === 'interviewVideo') {
-                const videoUrl = URL.createObjectURL(file);
-                setEmployee({ ...employee, [type]: videoUrl });
-            } else {
-                setEmployee({ ...employee, [type]: file });
-            }
-        }
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Employee data:', employee);
-        console.log('Selected niche:', selectedNiche);
-        alert('Employee added successfully!');
-        navigate('/admin-dashboard');
+        setIsSubmitting(true);
+        setSubmitError(null);
+
+        try {
+            // Prepare employee data
+            const employeeData = {
+                name: employee.name,
+                rate: parseFloat(employee.rate),
+                currency: employee.currency,
+                experience: employee.experience,
+                expertise: employee.expertise,
+                intro: employee.intro,
+                imageBase64: employee.image,
+                niche: selectedNiche,
+                createdAt: new Date(),
+                status: 'active'
+            };
+
+            // Add to Firestore
+            await addDoc(collection(db, "employees"), employeeData);
+            alert('Employee added successfully!');
+            navigate('/admin-dashboard');
+        } catch (error) {
+            console.error('Error adding employee: ', error);
+            setSubmitError('Failed to add employee. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (
-                currencyDropdownRef.current &&
-                !currencyDropdownRef.current.contains(event.target)
-            ) {
+            if (currencyDropdownRef.current && 
+                !currencyDropdownRef.current.contains(event.target)) {
                 setShowCurrencyDropdown(false);
             }
         };
@@ -90,7 +100,6 @@ const AddEmployee = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
-
 
     return (
         <div className="add-employee-page">
@@ -143,12 +152,12 @@ const AddEmployee = () => {
                                     <input
                                         type="file"
                                         ref={fileInputRef}
-                                        onChange={handlePhotoUpload}
+                                        onChange={handleImageUpload}
                                         accept="image/*"
                                         style={{ display: 'none' }}
                                     />
                                 </div>
-                                <p className="image-upload-hint">High resolution recommended (500x500px)</p>
+                                <p className="image-upload-hint">Max 500KB, high resolution recommended (500x500px)</p>
                             </div>
 
                             <div className="profile-details">
@@ -282,161 +291,6 @@ const AddEmployee = () => {
                         <div className="card-header">
                             <div className="form-card-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#2A2D7C" />
-                                </svg>
-                            </div>
-                            <h2>Documents & Media</h2>
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Resume/CV</label>
-                                <div className="file-upload-card">
-                                    <div className="file-upload-content">
-                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#2A2D7C" fillOpacity="0.1" />
-                                            <path d="M14 2V8H20" fill="#06a3c2" fillOpacity="0.3" />
-                                            <path d="M16 13H8V11H16V13Z" fill="#2A2D7C" fillOpacity="0.5" />
-                                            <path d="M16 17H8V15H16V17Z" fill="#2A2D7C" fillOpacity="0.5" />
-                                            <path d="M10 9H9V10H10V9Z" fill="#2A2D7C" fillOpacity="0.5" />
-                                        </svg>
-                                        <div className="file-upload-info">
-                                            <h4>{employee.resume ? employee.resume.name : 'Upload Resume'}</h4>
-                                            <p>{employee.resume ? `${(employee.resume.size / 1024).toFixed(1)} KB` : 'PDF, DOC, DOCX'}</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        className="file-upload-btn"
-                                        onClick={() => resumeRef.current.click()}
-                                    >
-                                        {employee.resume ? 'Change' : 'Browse'}
-                                    </button>
-                                    <input
-                                        type="file"
-                                        ref={resumeRef}
-                                        onChange={(e) => handleFileUpload(e, 'resume')}
-                                        accept=".pdf,.doc,.docx"
-                                        style={{ display: 'none' }}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Assessment Report</label>
-                                <div className="file-upload-card">
-                                    <div className="file-upload-content">
-                                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#2A2D7C" fillOpacity="0.1" />
-                                            <path d="M14 2V8H20" fill="#06a3c2" fillOpacity="0.3" />
-                                            <path d="M16 13H8V11H16V13Z" fill="#2A2D7C" fillOpacity="0.5" />
-                                            <path d="M16 17H8V15H16V17Z" fill="#2A2D7C" fillOpacity="0.5" />
-                                            <path d="M10 9H9V10H10V9Z" fill="#2A2D7C" fillOpacity="0.5" />
-                                        </svg>
-                                        <div className="file-upload-info">
-                                            <h4>{employee.report ? employee.report.name : 'Upload Report'}</h4>
-                                            <p>{employee.report ? `${(employee.report.size / 1024).toFixed(1)} KB` : 'PDF, DOC, DOCX'}</p>
-                                        </div>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        className="file-upload-btn"
-                                        onClick={() => reportRef.current.click()}
-                                    >
-                                        {employee.report ? 'Change' : 'Browse'}
-                                    </button>
-                                    <input
-                                        type="file"
-                                        ref={reportRef}
-                                        onChange={(e) => handleFileUpload(e, 'report')}
-                                        accept=".pdf,.doc,.docx"
-                                        style={{ display: 'none' }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="form-row">
-                            <div className="form-group">
-                                <label>Introduction Video</label>
-                                <div className="video-upload-card">
-                                    {employee.introVideo ? (
-                                        <div className="video-preview-container">
-                                            <video controls src={employee.introVideo} className="video-preview" />
-                                            <button
-                                                type="button"
-                                                className="change-video-btn"
-                                                onClick={() => introVideoRef.current.click()}
-                                            >
-                                                Change Video
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div
-                                            className="video-upload-placeholder"
-                                            onClick={() => introVideoRef.current.click()}
-                                        >
-                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M17 10.5V7C17 5.895 16.105 5 15 5H5C3.895 5 3 5.895 3 7V17C3 18.105 3.895 19 5 19H15C16.105 19 17 18.105 17 17V13.5L21 17.5V6.5L17 10.5Z" fill="#2A2D7C" fillOpacity="0.1" />
-                                                <path d="M10.8 13.4V10.6L13.6 12L10.8 13.4Z" fill="#2A2D7C" fillOpacity="0.5" />
-                                            </svg>
-                                            <h4>Upload Introduction Video</h4>
-                                            <p>MP4, MOV, AVI</p>
-                                            <input
-                                                type="file"
-                                                ref={introVideoRef}
-                                                onChange={(e) => handleFileUpload(e, 'introVideo')}
-                                                accept="video/*"
-                                                style={{ display: 'none' }}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Interview Video</label>
-                                <div className="video-upload-card">
-                                    {employee.interviewVideo ? (
-                                        <div className="video-preview-container">
-                                            <video controls src={employee.interviewVideo} className="video-preview" />
-                                            <button
-                                                type="button"
-                                                className="change-video-btn"
-                                                onClick={() => interviewVideoRef.current.click()}
-                                            >
-                                                Change Video
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div
-                                            className="video-upload-placeholder"
-                                            onClick={() => interviewVideoRef.current.click()}
-                                        >
-                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M17 10.5V7C17 5.895 16.105 5 15 5H5C3.895 5 3 5.895 3 7V17C3 18.105 3.895 19 5 19H15C16.105 19 17 18.105 17 17V13.5L21 17.5V6.5L17 10.5Z" fill="#2A2D7C" fillOpacity="0.1" />
-                                                <path d="M10.8 13.4V10.6L13.6 12L10.8 13.4Z" fill="#2A2D7C" fillOpacity="0.5" />
-                                            </svg>
-                                            <h4>Upload Interview Video</h4>
-                                            <p>MP4, MOV, AVI</p>
-                                            <input
-                                                type="file"
-                                                ref={interviewVideoRef}
-                                                onChange={(e) => handleFileUpload(e, 'interviewVideo')}
-                                                accept="video/*"
-                                                style={{ display: 'none' }}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="form-card">
-                        <div className="card-header">
-                            <div className="form-card-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M17 3H20C21.1 3 22 3.9 22 5V19C22 20.1 21.1 21 20 21H4C2.9 21 2 20.1 2 19V5C2 3.9 3 3 4 3H7C7 1.34 8.34 0 10 0C11.66 0 13 1.34 13 3H17ZM10 2C9.45 2 9 2.45 9 3C9 3.55 9.45 4 10 4C10.55 4 11 3.55 11 3C11 2.45 10.55 2 10 2Z" fill="#2A2D7C" />
                                 </svg>
                             </div>
@@ -463,17 +317,38 @@ const AddEmployee = () => {
                         </div>
                     </div>
 
+                    {submitError && (
+                        <div className="form-error">
+                            {submitError}
+                        </div>
+                    )}
+
                     <div className="form-actions">
-                        <button type="button" className="cancel-btn" onClick={() => navigate('/admin-dashboard')}>
+                        <button
+                            type="button"
+                            className="cancel-btn"
+                            onClick={() => navigate('/admin-dashboard')}
+                            disabled={isSubmitting}
+                        >
                             Discard
                         </button>
-                        <button type="submit" className="submit-add-employee">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3Z" fill="white" />
-                                <path d="M12 19C10.34 19 9 17.66 9 16C9 14.34 10.34 13 12 13C13.66 13 15 14.34 15 16C15 17.66 13.66 19 12 19Z" fill="#2A2D7C" />
-                                <path d="M12 16C12.552 16 13 15.552 13 15C13 14.448 12.552 14 12 14C11.448 14 11 14.448 11 15C11 15.552 11.448 16 12 16Z" fill="#2A2D7C" />
-                            </svg>
-                            Complete Onboarding
+                        <button
+                            type="submit"
+                            className="submit-add-employee"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? (
+                                'Uploading...'
+                            ) : (
+                                <>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M17 3H5C3.89 3 3 3.9 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V7L17 3Z" fill="white" />
+                                        <path d="M12 19C10.34 19 9 17.66 9 16C9 14.34 10.34 13 12 13C13.66 13 15 14.34 15 16C15 17.66 13.66 19 12 19Z" fill="#2A2D7C" />
+                                        <path d="M12 16C12.552 16 13 15.552 13 15C13 14.448 12.552 14 12 14C11.448 14 11 14.448 11 15C11 15.552 11.448 16 12 16Z" fill="#2A2D7C" />
+                                    </svg>
+                                    Complete Onboarding
+                                </>
+                            )}
                         </button>
                     </div>
                 </form>

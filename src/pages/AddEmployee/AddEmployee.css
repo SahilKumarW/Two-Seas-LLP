@@ -597,3 +597,18 @@
     width: 100%;
   }
 }
+
+.form-error {
+    color: #ff4444;
+    background-color: #ffebee;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #ffcdd2;
+}
+
+.submit-add-employee:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

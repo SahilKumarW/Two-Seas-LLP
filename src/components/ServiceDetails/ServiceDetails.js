@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SEASProcessFlow from "../../pages/HowWeWork/components/SEASProcessFlow";
 import "./ServiceDetails.css";
@@ -8,16 +8,18 @@ const ServiceDetails = () => {
     const navigate = useNavigate();
     const { service } = state || {};
 
+    // Scroll to top when service changes
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [service]);
+
     if (!service) {
         navigate('/services');
         return null;
     }
 
     const handleBookConsultation = () => {
-        // You can replace this with your actual booking logic
         console.log("Booking consultation for", service.title);
-        // Or navigate to a booking page:
-        // navigate('/book-consultation', { state: { service } });
     };
 
     return (
@@ -38,7 +40,10 @@ const ServiceDetails = () => {
                 
                 <button 
                     className="back-button"
-                    onClick={() => navigate('/services')}
+                    onClick={() => {
+                        window.scrollTo(0, 0); // Scroll to top before navigating
+                        navigate('/services');
+                    }}
                 >
                     Back to Services
                 </button>

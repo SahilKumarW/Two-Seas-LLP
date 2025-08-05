@@ -1,149 +1,12 @@
 import React, { useState } from 'react';
 import { FaFileAlt, FaClipboardCheck, FaHeart, FaCalendarAlt, FaRegHeart, FaStar } from 'react-icons/fa';
 import './EmployeeCard.css';
-
-export const employees = [
-  {
-    id: 1,
-    name: 'Ali Khan',
-    rate: 75,
-    currency: 'USD',
-    experience: '8 years',
-    expertise: 'Full-stack Development',
-    intro: 'Full-stack developer specializing in scalable cloud applications with 8+ years of industry experience.',
-    position: 'Senior Software Engineer',
-    skills: ['React', 'Node.js', 'AWS', 'TypeScript'],
-    email: 'ali.khan@techsolutions.pk',
-    resumeUrl: 'https://example.com/resumes/ali-khan.pdf',
-    assessmentUrl: 'https://example.com/assessments/ali-khan.pdf',
-    image: 'https://randomuser.me/api/portraits/men/32.jpg',
-    nicheId: 1, // Assigned to Web Development niche
-    status: 'active'
-  },
-  {
-    id: 2,
-    name: 'Fatima Ahmed',
-    rate: 65,
-    currency: 'USD',
-    experience: '5 years',
-    expertise: 'UX/UI Design',
-    intro: 'Award-winning designer passionate about creating intuitive user experiences with a human-centered approach.',
-    position: 'Lead UX/UI Designer',
-    skills: ['Figma', 'User Research', 'Prototyping', 'Adobe Suite'],
-    email: 'fatima.ahmed@creative.pk',
-    resumeUrl: 'https://example.com/resumes/fatima-ahmed.pdf',
-    assessmentUrl: 'https://example.com/assessments/fatima-ahmed.pdf',
-    image: 'https://randomuser.me/api/portraits/women/44.jpg',
-    nicheId: 2, // Assigned to Design niche
-    status: 'active'
-  },
-  {
-    id: 3,
-    name: 'Usman Malik',
-    rate: 80,
-    currency: 'USD',
-    experience: '6 years',
-    expertise: 'DevOps Engineering',
-    intro: 'DevOps specialist focused on building robust infrastructure and automation pipelines.',
-    position: 'DevOps Architect',
-    skills: ['Docker', 'Kubernetes', 'CI/CD', 'Terraform'],
-    email: 'usman.malik@cloudops.pk',
-    resumeUrl: 'https://example.com/resumes/usman-malik.pdf',
-    assessmentUrl: 'https://example.com/assessments/usman-malik.pdf',
-    image: 'https://randomuser.me/api/portraits/men/67.jpg',
-    nicheId: 3, // Assigned to DevOps niche
-    status: 'active'
-  },
-  {
-    id: 4,
-    name: 'Ayesha Raza',
-    rate: 70,
-    currency: 'USD',
-    experience: '4 years',
-    expertise: 'Data Science',
-    intro: 'Data scientist with expertise in predictive modeling and natural language processing applications.',
-    position: 'Data Science Lead',
-    skills: ['Python', 'Machine Learning', 'TensorFlow', 'Big Data'],
-    email: 'ayesha.raza@datascience.pk',
-    resumeUrl: 'https://example.com/resumes/ayesha-raza.pdf',
-    assessmentUrl: 'https://example.com/assessments/ayesha-raza.pdf',
-    image: 'https://randomuser.me/api/portraits/women/68.jpg',
-    nicheId: 4, // Assigned to Data Science niche
-    status: 'active'
-  },
-  {
-    id: 5,
-    name: 'Bilal Hussain',
-    rate: 60,
-    currency: 'USD',
-    experience: '3 years',
-    expertise: 'Mobile Development',
-    intro: 'Cross-platform mobile developer with experience building performant apps for both iOS and Android.',
-    position: 'Mobile Developer',
-    skills: ['Flutter', 'React Native', 'Firebase', 'Swift'],
-    email: 'bilal.hussain@mobile.pk',
-    resumeUrl: 'https://example.com/resumes/bilal-hussain.pdf',
-    assessmentUrl: 'https://example.com/assessments/bilal-hussain.pdf',
-    image: 'https://randomuser.me/api/portraits/men/22.jpg',
-    nicheId: null, // Unassigned
-    status: 'active'
-  },
-  {
-    id: 6,
-    name: 'Sana Farooq',
-    rate: 55,
-    currency: 'USD',
-    experience: '2 years',
-    expertise: 'Frontend Development',
-    intro: 'Creative frontend developer passionate about building beautiful, accessible user interfaces.',
-    position: 'Frontend Developer',
-    skills: ['JavaScript', 'Vue.js', 'CSS3', 'Web Accessibility'],
-    email: 'sana.farooq@web.pk',
-    resumeUrl: 'https://example.com/resumes/sana-farooq.pdf',
-    assessmentUrl: 'https://example.com/assessments/sana-farooq.pdf',
-    image: 'https://randomuser.me/api/portraits/women/33.jpg',
-    nicheId: 1, // Assigned to Web Development niche
-    status: 'active'
-  },
-  {
-    id: 7,
-    name: 'Omar Sheikh',
-    rate: 90,
-    currency: 'USD',
-    experience: '10 years',
-    expertise: 'Cloud Architecture',
-    intro: 'Seasoned cloud architect with extensive experience designing scalable enterprise solutions.',
-    position: 'Cloud Solutions Architect',
-    skills: ['AWS', 'Azure', 'Microservices', 'Serverless'],
-    email: 'omar.sheikh@cloud.pk',
-    resumeUrl: 'https://example.com/resumes/omar-sheikh.pdf',
-    assessmentUrl: 'https://example.com/assessments/omar-sheikh.pdf',
-    image: 'https://randomuser.me/api/portraits/men/55.jpg',
-    nicheId: 3, // Assigned to DevOps niche
-    status: 'hidden'
-  },
-  {
-    id: 8,
-    name: 'Zara Iqbal',
-    rate: 50,
-    currency: 'USD',
-    experience: '1 year',
-    expertise: 'Quality Assurance',
-    intro: 'Detail-oriented QA engineer specializing in automated testing and quality processes.',
-    position: 'QA Engineer',
-    skills: ['Selenium', 'Jest', 'Cypress', 'Test Automation'],
-    email: 'zara.iqbal@qa.pk',
-    resumeUrl: 'https://example.com/resumes/zara-iqbal.pdf',
-    assessmentUrl: 'https://example.com/assessments/zara-iqbal.pdf',
-    image: 'https://randomuser.me/api/portraits/women/25.jpg',
-    nicheId: null, // Unassigned
-    status: 'active'
-  }
-];
+import { useEmployees } from '../../hooks/useEmployees';
 
 const EmployeeCard = () => {
   const [wishlist, setWishlist] = useState({});
   const [expandedCards, setExpandedCards] = useState({});
+  const { employees, loading, error } = useEmployees();
 
   const toggleCardExpand = (id) => {
     setExpandedCards(prev => ({
@@ -157,11 +20,47 @@ const EmployeeCard = () => {
   };
 
   const handleViewDocument = (url) => {
+    if (!url || url === '') {
+      alert('Document not available');
+      return;
+    }
     window.open(url, '_blank');
   };
 
   const bookInterview = (email) => {
+    if (!email || email === '') {
+      alert('Email not available');
+      return;
+    }
     window.open(`mailto:${email}?subject=Interview Request&body=I would like to schedule an interview`, '_blank');
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Loading professionals...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error-container">
+        <p>Error loading professionals: {error}</p>
+      </div>
+    );
+  }
+
+  // Filter out hidden employees
+  const visibleEmployees = employees.filter(emp => emp.status !== 'hidden');
+
+  // Helper function to calculate rating
+  const calculateRating = (rate) => {
+    if (!rate) return '4.5';
+    const wholeNumber = Math.min(5, Math.max(4, Math.floor(rate / 20)));
+    const decimal = rate % 20;
+    return `${wholeNumber}.${decimal}`;
   };
 
   return (
@@ -170,17 +69,11 @@ const EmployeeCard = () => {
         <div className="header-content">
           <h1 className="portal-title">Talent Nexus</h1>
           <p className="portal-subtitle">Discover Exceptional Tech Professionals</p>
-          {/* <div className="stats-bar">
-            <div className="stat">
-              <span className="stat-number">{employees.length}</span>
-              <span className="stat-label">Professionals</span>
-            </div>
-          </div> */}
         </div>
       </header>
 
       <div className="employee-grid">
-        {employees.map((employee, index) => (
+        {visibleEmployees.map((employee, index) => (
           <div
             key={employee.id}
             className={`employee-card ${expandedCards[employee.id] ? 'expanded' : ''}`}
@@ -193,9 +86,12 @@ const EmployeeCard = () => {
                   <div className="avatar-container">
                     <div className="avatar-wrapper">
                       <img
-                        src={employee.image}
+                        src={employee.image || 'https://via.placeholder.com/150'}
                         alt={employee.name}
                         className="employee-avatar"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/150';
+                        }}
                       />
                       <div className="experience-badge">{employee.experience}</div>
                     </div>
@@ -214,9 +110,7 @@ const EmployeeCard = () => {
                     <p className="employee-position">{employee.position}</p>
                     <div className="rating">
                       <FaStar className="star" />
-                      <span>
-                        {`${Math.min(5, Math.max(4, Math.floor(employee.rate / 20)))}`}.{employee.rate % 20}
-                      </span>
+                      <span>{calculateRating(employee.rate)}</span>
                     </div>
                   </div>
                 </div>
@@ -229,20 +123,22 @@ const EmployeeCard = () => {
                   <div className="expertise-section">
                     <h4 className="section-label">Core Expertise</h4>
                     <div className="expertise-tags">
-                      {employee.skills.map((skill, index) => (
+                      {employee.skills?.map((skill, index) => (
                         <span key={index} className="skill-tag">{skill}</span>
-                      ))}
+                      )) || <span className="skill-tag">No skills listed</span>}
                     </div>
                   </div>
 
                   <div className="details-grid">
                     <div className="detail-item">
                       <span className="detail-label">Rate</span>
-                      <span className="detail-value">{employee.currency} {employee.rate}/hr</span>
+                      <span className="detail-value">
+                        {employee.currency || 'USD'} {employee.rate || 'N/A'}/hr
+                      </span>
                     </div>
                     <div className="detail-item">
                       <span className="detail-label">Experience</span>
-                      <span className="detail-value">{employee.experience}</span>
+                      <span className="detail-value">{employee.experience || 'N/A'}</span>
                     </div>
                   </div>
 
@@ -286,4 +182,5 @@ const EmployeeCard = () => {
   );
 };
 
+export { useEmployees };
 export default EmployeeCard;

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './Careers.css';
+import ApplicationForm from './ApplicationForm';
 import { jobOpenings } from '../../jobsData';
 import { FaLinkedin, FaBriefcase } from 'react-icons/fa';
 
@@ -10,6 +11,7 @@ const Careers = () => {
     const [activeJob, setActiveJob] = useState(null);
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobDetails, setShowJobDetails] = useState(false);
+    const [showApplicationForm, setShowApplicationForm] = useState(false);
 
     const handleFileChange = (e) => {
         setSelectedFile(e.target.files?.[0] || null);
@@ -57,32 +59,35 @@ const Careers = () => {
     const handleJobClick = (job) => {
         setSelectedJob(job);
         setShowJobDetails(true);
-        // Add a new entry to the history stack
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         window.history.pushState({ showDetails: true }, '', window.location.pathname);
     };
 
     const handleBackToJobs = () => {
         setShowJobDetails(false);
-        // Replace current history entry to prevent double-back
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         window.history.replaceState({ showDetails: false }, '', window.location.pathname);
     };
 
     useEffect(() => {
-        // Handle browser back/forward buttons
         const handlePopState = (event) => {
             setShowJobDetails(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         window.addEventListener('popstate', handlePopState);
-        
+
         return () => {
             window.removeEventListener('popstate', handlePopState);
         };
     }, []);
 
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [showJobDetails]);
+
     return (
         <div className="careers-root">
-            {/* Enhanced Header Section */}
             <header className="careers-header">
                 <div className="header-content">
                     <div className="title-container">
@@ -102,7 +107,7 @@ const Careers = () => {
                     </p>
                 </div>
             </header>
-            {/* Job Openings Section */}
+
             <section className="openings-section">
                 <div className="section-container">
                     <h2 className="section-title">OUR OPENINGS</h2>
@@ -199,7 +204,10 @@ const Careers = () => {
 
                                 <div className="apply-actions">
                                     <div className="apply-options">
-                                        <button className="apply-btn apply-direct">
+                                        <button
+                                            className="apply-btn apply-direct"
+                                            onClick={() => setShowApplicationForm(true)}
+                                        >
                                             Apply for this Position
                                         </button>
                                         <a
@@ -223,7 +231,7 @@ const Careers = () => {
                                     <div className="back-button-container">
                                         <button
                                             className="back-button"
-                                            onClick={() => setShowJobDetails(false)}
+                                            onClick={handleBackToJobs}
                                         >
                                             ← Back to Jobs
                                         </button>
@@ -232,8 +240,39 @@ const Careers = () => {
                             </div>
                         </div>
                     )}
+                    {showApplicationForm && (
+                        <ApplicationForm
+                            jobTitle={selectedJob.title}
+                            onClose={() => setShowApplicationForm(false)}
+                        />
+                    )}
                 </div>
             </section>
+
+            <style jsx>{`
+                .back-button {
+                    padding: 12px 24px;
+                    background-color: #2A2D7C;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    transition: background-color 0.3s;
+                    margin-top: 20px;
+                }
+                
+                .back-button:hover {
+                    background-color: #1a1c52;
+                }
+                
+                .back-button-container {
+                    display: flex;
+                    justify-content: center;
+                    width: 100%;
+                    margin-top: 20px;
+                }
+            `}</style>
         </div>
     );
 };

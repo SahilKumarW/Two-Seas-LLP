@@ -59,7 +59,7 @@ const Navbar = () => {
             icon: "💻",
             desc: "Technical experts for your digital infrastructure.",
             details: {
-                description: "We provide back end/front-end software engineers, voice engineers, application and game developers, cyber security specialists as well as technical support professionals to our clients.",
+                description: "We provide back end/front-end software engineers, voice engineers, application developers, cyber security specialists as well as technical support professionals to our clients.",
                 // hiringProcess: "IT candidates complete coding challenges and infrastructure troubleshooting scenarios."
             }
         }
