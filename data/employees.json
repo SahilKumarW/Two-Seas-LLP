@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Ali Khan",
+    "rate": 75,
+    "currency": "USD",
+    "experience": "8 years",
+    "expertise": "Full-stack Development",
+    "intro": "Full-stack developer specializing in scalable cloud applications...",
+    "position": "Software Engineer",
+    "skills": ["React", "Node.js"],
+    "email": "ali.khan@example.com",
+    "image": "https://randomuser.me/api/portraits/men/32.jpg",
+    "status": "active"
+  },
+  {
+    "id": 2,
+    "name": "Fatima Ahmed",
+    "rate": 65,
+    "currency": "USD",
+    "experience": "5 years",
+    "expertise": "UX/UI Design",
+    "intro": "Award-winning designer passionate about creating intuitive user experiences...",
+    "position": "Lead UX Designer",
+    "skills": ["Figma", "User Research"],
+    "email": "fatima@example.com",
+    "image": "https://randomuser.me/api/portraits/women/44.jpg",
+    "status": "active"
+  }
+]
