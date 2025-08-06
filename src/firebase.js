@@ -1,3 +1,4 @@
+// src/firebase.js
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
@@ -13,19 +14,8 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const storage = getStorage(app);
+const db = getFirestore(app);
 
-console.log("ENV Project ID:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
-
-export { 
-  db,
-  storage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  collection,
-  addDoc
-};
+export { storage, db, ref, uploadBytes, getDownloadURL, collection, addDoc };
