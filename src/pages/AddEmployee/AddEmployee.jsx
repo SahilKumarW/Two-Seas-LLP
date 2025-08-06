@@ -14,6 +14,8 @@ const AddEmployee = () => {
         expertise: '',
         intro: '',
         image: null, // Will store as Base64
+        interviewVideoLink: '',
+        introductionVideoLink: ''
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
@@ -71,6 +73,8 @@ const AddEmployee = () => {
                 intro: employee.intro,
                 imageBase64: employee.image,
                 niche: selectedNiche,
+                interviewVideoLink: employee.interviewVideoLink,
+                introductionVideoLink: employee.introductionVideoLink,
                 createdAt: new Date(),
                 status: 'active'
             };
@@ -100,6 +104,14 @@ const AddEmployee = () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    // Function to extract YouTube video ID from URL
+    const extractYouTubeId = (url) => {
+        if (!url) return '';
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    };
 
     return (
         <div className="add-employee-page">
@@ -314,6 +326,75 @@ const AddEmployee = () => {
                                     ))}
                                 </select>
                             </div>
+                        </div>
+                    </div>
+
+                    <div className="form-card">
+                        <div className="card-header">
+                            <div className="form-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17 10.5V7C17 5.9 16.1 5 15 5H5C3.9 5 3 5.9 3 7V17C3 18.1 3.9 19 5 19H15C16.1 19 17 18.1 17 17V13.5L21 17.5V6.5L17 10.5Z" fill="#2A2D7C"/>
+                                </svg>
+                            </div>
+                            <h2>Video Links</h2>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Introduction Video (YouTube Link)</label>
+                            <div className="input-with-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B"/>
+                                </svg>
+                                <input
+                                    type="url"
+                                    name="introductionVideoLink"
+                                    value={employee.introductionVideoLink}
+                                    onChange={handleInputChange}
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                />
+                            </div>
+                            {employee.introductionVideoLink && extractYouTubeId(employee.introductionVideoLink) && (
+                                <div className="video-preview">
+                                    <iframe
+                                        width="100%"
+                                        height="200"
+                                        src={`https://www.youtube.com/embed/${extractYouTubeId(employee.introductionVideoLink)}`}
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        title="Introduction video preview"
+                                    ></iframe>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Interview Video (YouTube Link)</label>
+                            <div className="input-with-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B"/>
+                                </svg>
+                                <input
+                                    type="url"
+                                    name="interviewVideoLink"
+                                    value={employee.interviewVideoLink}
+                                    onChange={handleInputChange}
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                />
+                            </div>
+                            {employee.interviewVideoLink && extractYouTubeId(employee.interviewVideoLink) && (
+                                <div className="video-preview">
+                                    <iframe
+                                        width="100%"
+                                        height="200"
+                                        src={`https://www.youtube.com/embed/${extractYouTubeId(employee.interviewVideoLink)}`}
+                                        frameBorder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        title="Interview video preview"
+                                    ></iframe>
+                                </div>
+                            )}
                         </div>
                     </div>
 
