@@ -248,8 +248,8 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           right: 1.5rem;
           background: #fff;
           border: 1px solid #e0e3f1;
-          width: 36px;
-          height: 36px;
+          width: 48px;
+          height: 48px;
           border-radius: 50%;
           display: flex;
           align-items: center;
