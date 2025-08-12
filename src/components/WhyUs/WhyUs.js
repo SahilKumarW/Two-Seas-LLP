@@ -36,7 +36,7 @@ const WhyUs = () => {
 
                     <div className="benefit-card">
                         <h3>Professionals to Oversee Staff</h3>
-                        <p>Our Ex-Military Officers oversee the workforce on ground to ensure transparency, availability, and best practices.</p>
+                        <p>Our Ex-Military Officers deploy quality assurance checks to ensure transparency, availability, and best practices.</p>
                     </div>
 
                     <div className="benefit-card">

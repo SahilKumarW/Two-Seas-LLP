@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import './Contact.css';
-import logo from '../../assets/Two Seas Logo.png'; // Adjust path as needed
-import CalendarScheduler from '../../components/CalendarScheduler'; // Import the custom scheduler
+import logo from '../../assets/Two Seas Logo.png';
+import CalendarScheduler from '../../components/CalendarScheduler';
+import emailjs from 'emailjs-com';
 
 const Contact = () => {
     const [formData, setFormData] = useState({
@@ -19,21 +20,39 @@ const Contact = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("Form data submitted:", formData);
-        alert('Thank you for your message! We will get back to you shortly.');
-        setFormData({
-            name: '',
-            companyName: '',
-            phone: '',
-            email: '',
-            message: ''
+
+        emailjs.send(
+            'service_wjrb0qk', // Your EmailJS Service ID
+            'template_4jdr7t9', // Replace with your EmailJS Template ID
+            {
+                name: formData.name,
+                companyName: formData.companyName,
+                phone: formData.phone,
+                email: formData.email,
+                message: formData.message,
+                time: new Date().toLocaleString()
+            },
+            'vkVckeGL1JQx-x4_q' // Replace with your EmailJS Public Key
+        )
+        .then((result) => {
+            console.log('Email sent successfully!', result.text);
+            alert('Thank you for your message! We will get back to you shortly.');
+            setFormData({
+                name: '',
+                companyName: '',
+                phone: '',
+                email: '',
+                message: ''
+            });
+        })
+        .catch((error) => {
+            console.error('Error sending email:', error.text);
+            alert('Something went wrong. Please try again later.');
         });
     };
 
-    // Handler for when the scheduling form is submitted
     const handleScheduleSubmit = async (appointmentData) => {
         try {
-            // Combine contact form data with appointment data
             const fullData = {
                 ...appointmentData,
                 contactInfo: {
@@ -45,12 +64,7 @@ const Contact = () => {
             };
 
             console.log("Scheduling data:", fullData);
-
-            // Here you would typically send to your API
-            // await api.scheduleAppointment(fullData);
-
-            // For now, we'll use the email fallback from the CalendarScheduler
-            return false; // Return false to let the component handle its default behavior
+            return false; 
         } catch (error) {
             console.error('Error scheduling appointment:', error);
             throw error;
@@ -59,7 +73,6 @@ const Contact = () => {
 
     return (
         <div className="contact-page-wrapper">
-            {/* Header section */}
             <div className="contact-header">
                 <div className="logo-container">
                     <img
@@ -78,28 +91,21 @@ const Contact = () => {
                 </h1>
             </div>
 
-            {/* Main content: Scheduler + Form */}
             <div className="contact-content-grid">
-                {/* Left Side: Custom Scheduler Integration */}
                 <div className="calendly-section">
                     <h2 className="section-title-alt">Schedule Your Call</h2>
                     <p className="section-subtitle-alt">
                         Your path to building/scaling a thriving business begins here.
                     </p>
-                    {/* <div className="custom-scheduler-container"> */}
                     <CalendarScheduler
                         onScheduleSubmit={handleScheduleSubmit}
-                        // title="Book a Strategy Call"
                         submitButtonText="Confirm Appointment"
                         successMessage="We'll contact you shortly to confirm your appointment time."
                     />
-                    {/* </div> */}
                 </div>
 
-                {/* Right Side: Contact Form */}
                 <form className="contact-form" onSubmit={handleSubmit}>
                     <h2 className="form-title">Fill in the Form Below</h2>
-                    {/* Input Fields */}
                     <div className="contact-card">
                         <div className="input-grid">
                             <div className="input-pair">
@@ -152,7 +158,6 @@ const Contact = () => {
                         </div>
                     </div>
 
-                    {/* Message Box */}
                     <div className="contact-card">
                         <h2 className="section-title">Message / Query</h2>
                         <textarea
@@ -166,12 +171,10 @@ const Contact = () => {
                         />
                     </div>
 
-                    {/* Submit Button */}
                     <button type="submit" className="submit-btn">
                         Send Message <span className="btn-wave">→</span>
                     </button>
 
-                    {/* Contact Options */}
                     <div className="contact-options-single">
                         <div className="contact-method">
                             <div className="method-icon blue-bg">✉️</div>

@@ -3,7 +3,7 @@ import './WhatsAppChat.css'; // We'll create this next
 import { FaWhatsapp } from 'react-icons/fa';
 
 const WhatsAppChat = () => {
-  const phoneNumber = '923347777506';
+  const phoneNumber = '923349999780';
   const message = 'Hello Two Seas! I want to enquire about your services.'; // Default message
 
   const handleClick = () => {

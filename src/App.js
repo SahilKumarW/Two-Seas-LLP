@@ -32,6 +32,9 @@ import EmployeeCard from "./pages/EmployeeCard/EmployeeCard.js";
 import ClientDiary from "./pages/ClientDiary/ClientDiary.jsx";
 import NicheManagement from "./pages/NicheManagement/NicheManagement.jsx";
 import AdminWelcome from "./pages/AdminWelcome/AdminWelcome.jsx";
+import AdminMeetingsView from "./components/AdminMeetingView/AdminMeetingsView.js";
+import BlockedSlotsManager from "./components/BlockedSlotsManager/BlockedSlotsManager.js";
+import Tracking from "./components/Tracking.js";
 
 function Layout() {
   const location = useLocation();
@@ -43,49 +46,52 @@ function Layout() {
 
   return (
     <>
-      {!isBookCallPage && !isAdminLoginPage && <Navbar />}
+      <Tracking>
+        {!isBookCallPage && !isAdminLoginPage && <Navbar />}
 
-      <Routes>
-        <Route path="/" element={
-          <>
-            <Hero />
-            <WhoWeAre />
-            <Services />
-            <WhyUs />
-            <TalentSolutions />
-            {/* <TalentComparison />
+        <Routes>
+          <Route path="/" element={
+            <>
+              <Hero />
+              <WhoWeAre />
+              <Services />
+              <WhyUs />
+              <TalentSolutions />
+              {/* <TalentComparison />
             <Testimonials />
             <Solutions />
             <Industries />
             <Difference /> */}
-            <CTA />
-          </>
-        } />
-        <Route path="/process" element={<Process />} />
-        <Route path="/book-call" element={<BookCall />} />
-        <Route path="/contact-us" element={<Contact />} />
-        <Route path="/careers" element={<Careers />} />
-        <Route path="/how-we-work" element={<HowWeWork />} />
-        <Route path="/admin-login" element={<AdminLogin />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/managed-services" element={<ManagedServices />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/services/:serviceId" element={<ServiceDetails />} />
-        <Route path="/profile/:id" element={<ProfilePage />} />
-        <Route path="/admin-dashboard/add-employee" element={<AddEmployee />} />
-        <Route path="/careers/add-new-opening" element={<AddNewOpening />} />
-        <Route path="/employee-diary" element={<EmployeeCard/>} />
-        <Route path="/client-diary" element={<ClientDiary/>} />
-        <Route path="/employee-niche-assignment" element={<NicheManagement/>} />
-        <Route path="/admin-welcome" element={<AdminWelcome/>} />
+              <CTA />
+            </>
+          } />
+          <Route path="/process" element={<Process />} />
+          <Route path="/book-call" element={<BookCall />} />
+          <Route path="/contact-us" element={<Contact />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/how-we-work" element={<HowWeWork />} />
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/managed-services" element={<ManagedServices />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/:serviceId" element={<ServiceDetails />} />
+          <Route path="/profile/:id" element={<ProfilePage />} />
+          <Route path="/admin-dashboard/add-employee" element={<AddEmployee />} />
+          <Route path="/careers/add-new-opening" element={<AddNewOpening />} />
+          <Route path="/employee-diary" element={<EmployeeCard />} />
+          <Route path="/client-diary" element={<ClientDiary />} />
+          <Route path="/employee-niche-assignment" element={<NicheManagement />} />
+          <Route path="/admin-welcome" element={<AdminWelcome />} />
+          <Route path="/view-meetings" element={<AdminMeetingsView />} />
+          <Route path="/slots-manager" element={<BlockedSlotsManager />} />
+        </Routes>
 
-      </Routes>
+        {/* Add WhatsAppChat component here */}
+        {!isAdminDashboardPage && <WhatsAppChat />}
 
-      {/* Add WhatsAppChat component here */}
-      {!isAdminDashboardPage && <WhatsAppChat />}
-
-      {!isBookCallPage && !isAdminLoginPage && <Footer />}
+        {!isBookCallPage && !isAdminLoginPage && <Footer />}
+      </Tracking>
     </>
   );
 }

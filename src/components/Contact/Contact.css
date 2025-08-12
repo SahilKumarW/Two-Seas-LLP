@@ -126,9 +126,9 @@
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.8rem;
   /* Space between form sections */
-  /* height: 920.01px; */
+  height: 920.01px;
 }
 
 .form-title {
@@ -381,6 +381,7 @@
 
   .contact-form {
     padding: 2rem;
+    height: auto;
   }
 
   .input-pair {
@@ -419,7 +420,8 @@
 
 /* Adjust the calendly-section to work with our custom scheduler */
 .calendly-section {
-  padding: 20px;
+  padding: 2rem;
+  height: 920.01px;
 }
 
 /* Ensure the scheduler fits well in the grid layout */

@@ -120,7 +120,7 @@ function getStepDescription(step) {
         "Advertising of positions is done on multiple platforms.",
         "Each candidate undergoes rigorous screening for qualifications.",
         "Shortlisted candidates complete multiple interview rounds.",
-        "We verify all references and background information.",
+        "We verify background information and references.",
         "Successful candidates join our exclusive talent pool."
     ];
     return descriptions[step];

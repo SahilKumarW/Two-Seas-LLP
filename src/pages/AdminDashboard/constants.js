@@ -19,7 +19,7 @@ export const currencies = [
 
 export const navItems = [
   "Sales & Marketing",
-  "Untitled Professionals",
+  "Virtual Professionals",
   "IT and Telecom",
   "Contact Centre",
   "Accounting & Finance",
@@ -30,7 +30,7 @@ export const navItems = [
 
 export const niches = [
   { id: 1, name: 'Sales & Marketing' },
-  { id: 2, name: 'Untitled Professionals' },
+  { id: 2, name: 'Virtual Professionals' },
   { id: 3, name: 'IT and Telecom' },
   { id: 4, name: 'Contact Centre' },
   { id: 5, name: 'Accounting & Finance' },

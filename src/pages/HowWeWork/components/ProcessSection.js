@@ -19,7 +19,7 @@ const ProcessSection = () => {
                         <h3>Meeting</h3>
                     </div>
                     <ul className="step-content">
-                        <li>Our account manager takes a zoom call with you to identify your needs, time zone, company culture, nature of expansion, and quality of talent that you require.</li>
+                        <li>Our account manager takes a zoom call with you to identify your needs, time zone, company culture, nature of expansion, and quality of talent that is required.</li>
                     </ul>
                 </div>
 
@@ -32,7 +32,7 @@ const ProcessSection = () => {
                         <h3>Selection</h3>
                     </div>
                     <ul className="step-content">
-                        <li>Based on client needs, our HR team either selects and filters talent from our existing pool or, if necessary, re-advertises to find the right candidates with the exact qualifications desired by the clients.</li>
+                        <li>Based on client needs, our HR team either selects and filters talent from our existing pool or, if necessary, re-advertises to find the right candidates with the exact qualifications desired by the client.</li>
                         <li>Our latest pool includes hundreds of candidates from whom only the top matches are recommended to the clients. Ensuring saving of time and effort.</li>
                         <li>Our complete profile is created with a recruiter assessment, and reference input which is made available to our clients.</li>
                     </ul>

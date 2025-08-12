@@ -107,7 +107,14 @@ const Navbar = () => {
                 </button>
 
                 <div className={`nav-links ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-                    <Link to="/" className={`nav-link ${isActive('/') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link
+                        to="/"
+                        className={`nav-link ${isActive('/') ? 'white-text' : ''}`}
+                        onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            window.scrollTo(0, 0);
+                        }}
+                    >
                         Home
                     </Link>
 
@@ -136,20 +143,47 @@ const Navbar = () => {
                         )}
                     </div>
 
-                    <Link to="/how-we-work" className={`nav-link ${isActive('/how-we-work') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link
+                        to="/how-we-work"
+                        className={`nav-link ${isActive('/how-we-work') ? 'white-text' : ''}`}
+                        onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            window.scrollTo(0, 0);
+                        }}
+                    >
                         How We Work
                     </Link>
 
-                    <Link to="/contact-us" className={`nav-link ${isActive('/contact-us') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link
+                        to="/contact-us"
+                        className={`nav-link ${isActive('/contact-us') ? 'white-text' : ''}`}
+                        onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            window.scrollTo(0, 0);
+                        }}
+                    >
                         Contact Us
                     </Link>
 
-                    <Link to="/careers" className={`nav-link careers-link ${isActive('/careers') ? 'white-text' : ''}`} onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link
+                        to="/careers"
+                        className={`nav-link careers-link ${isActive('/careers') ? 'white-text' : ''}`}
+                        onClick={() => {
+                            // Close mobile menu
+                            setIsMobileMenuOpen(false);
+
+                            // Scroll to top
+                            window.scrollTo(0, 0);
+
+                            // Dispatch custom event to notify Careers component
+                            window.dispatchEvent(new CustomEvent('careersLinkClicked'));
+                        }}
+                    >
                         Careers
                     </Link>
                 </div>
             </div>
-        </nav>
+        </nav >
     );
 };
 

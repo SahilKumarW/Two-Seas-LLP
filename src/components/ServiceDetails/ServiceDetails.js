@@ -29,16 +29,18 @@ const ServiceDetails = () => {
 
             <SEASProcessFlow />
             <p>{service.details.hiringProcess}</p>
-            
+
             <div className="action-buttons-container">
-                <button 
+                <button
                     className="consultation-button"
                     onClick={handleBookConsultation}
                 >
-                    Book Yourself a Free Consultation
+                    {service.title?.toLowerCase() === "sales & marketing"
+                        ? "Find Your Next Best Hire"
+                        : "Book Yourself a Free Consultation"}
                 </button>
-                
-                <button 
+
+                <button
                     className="back-button"
                     onClick={() => {
                         window.scrollTo(0, 0); // Scroll to top before navigating

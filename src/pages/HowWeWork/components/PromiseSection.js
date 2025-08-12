@@ -6,7 +6,7 @@ const PromiseSection = () => {
         {
             icon: <FaChartLine />,
             title: "Activity Tracking",
-            description: "Automatic productivity insights, including team work hours, activity levels, task distribution, and screenshots, are readily made available to our clients ensuring transparency and visibility for both us and you."
+            description: "Automatic productivity insights, including team work hours, activity levels, task distribution, and screenshots are readily made available to our clients ensuring transparency and visibility for both us and you."
         },
         {
             icon: <FaShieldAlt />,
@@ -16,7 +16,7 @@ const PromiseSection = () => {
         {
             icon: <FaUsers />,
             title: "Staff Engagement",
-            description: "We own our employees and keep them motivated and engaged. Our team enjoys regular movie nights, work-cations, and outings. We believe in building a high-performance team, both on and off-site."
+            description: "We own our employees and keep them motivated and engaged. Our team enjoys regular movie nights and outings. We believe in building a high-performance team, both on and off-site."
         },
         {
             icon: <FaHandshake />,
@@ -26,12 +26,12 @@ const PromiseSection = () => {
         {
             icon: <FaAward />,
             title: "Employee Recognition",
-            description: "Longevity is a core value of our company. We reward 6-month and 1-year tenure completions with financial bonuses, gifts, and professional validation."
+            description: "Longevity is a core value of our company. We reward 6-month and 1-year tenure completions with financial bonuses/professional validation and/or gifts."
         },
         {
             icon: <FaHeadset />,
             title: "Operational Support",
-            description: "When operational challenges arise within your remote unit, you won't be left in the dark. Our dedicated account managers are available via call, email, or text to ensure seamless operations."
+            description: "Facing a teething issue you cannot seem to solve? Something has become a recurring problem? Give us a call or leave a text and we will sort it for you."
         }
     ];
 

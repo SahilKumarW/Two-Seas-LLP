@@ -86,6 +86,20 @@ const Careers = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [showJobDetails]);
 
+    useEffect(() => {
+        const resetToAllJobs = () => {
+            setShowJobDetails(false);
+            setSelectedJob(null);
+            setShowApplicationForm(false);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.addEventListener('careersLinkClicked', resetToAllJobs);
+        return () => {
+            window.removeEventListener('careersLinkClicked', resetToAllJobs);
+        };
+    }, []);
+
     return (
         <div className="careers-root">
             <header className="careers-header">
