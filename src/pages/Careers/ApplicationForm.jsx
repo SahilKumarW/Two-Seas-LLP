@@ -25,7 +25,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
@@ -86,7 +86,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     />
                     <label htmlFor="name">Full Name*</label>
                   </div>
-                  
+
                   <div className="form-group floating-label">
                     <input
                       type="email"
@@ -99,7 +99,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     />
                     <label htmlFor="email">Email*</label>
                   </div>
-                  
+
                   <div className="form-group floating-label">
                     <input
                       type="tel"
@@ -130,7 +130,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                       <label htmlFor="linkedin">LinkedIn Profile</label>
                     </div>
                   </div>
-                  
+
                   <div className="form-group floating-label with-icon">
                     <div className="input-container">
                       <FaBriefcase className="input-icon" />
@@ -145,7 +145,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                       <label htmlFor="portfolio">Portfolio/Website</label>
                     </div>
                   </div>
-                  
+
                   <div className="form-group file-upload">
                     <label className="file-label">Resume/CV*</label>
                     <label className="upload-label">
@@ -258,6 +258,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           color: #2A2D7C;
           transition: all 0.3s;
           box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+          z-index: 10;
         }
 
         .close-btn:hover {
