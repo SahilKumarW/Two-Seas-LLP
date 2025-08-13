@@ -431,6 +431,32 @@
   gap: 30px;
 }
 
+.logo-container {
+    transition: transform 0.3s ease;
+    margin-bottom: 1.5rem;
+    background: transparent !important; /* Ensure no background */
+    box-shadow: none !important; /* Remove any shadow */
+}
+
+.logo-container:hover {
+    transform: scale(1.05);
+    background: transparent !important;
+}
+
+.contact-logo {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(23, 196, 203, 0.3));
+    transition: all 0.3s ease;
+    background: transparent; /* Ensure logo itself has no background */
+}
+
+.contact-logo:hover {
+    filter: drop-shadow(0 4px 8px rgba(23, 196, 203, 0.4));
+    background: transparent;
+}
+
 @media (max-width: 1024px) {
   .contact-content-grid {
     grid-template-columns: 1fr;

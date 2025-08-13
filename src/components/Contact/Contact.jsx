@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Added for navigation
 import './Contact.css';
 import logo from '../../assets/Two Seas Logo.png';
 import CalendarScheduler from '../../components/CalendarScheduler';
 import emailjs from 'emailjs-com';
 
 const Contact = () => {
+    const navigate = useNavigate(); // Initialize navigate
+
     const [formData, setFormData] = useState({
         name: '',
         companyName: '',
@@ -12,6 +15,10 @@ const Contact = () => {
         email: '',
         message: ''
     });
+
+    const handleLogoClick = () => {
+        navigate('/'); // Navigate to home when logo is clicked
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -74,7 +81,7 @@ const Contact = () => {
     return (
         <div className="contact-page-wrapper">
             <div className="contact-header">
-                <div className="logo-container">
+                <div className="logo-container" onClick={handleLogoClick} style={{ cursor: 'pointer' }}>
                     <img
                         src={logo}
                         alt="Two Seas LLP Logo"
