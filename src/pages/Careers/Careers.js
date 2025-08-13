@@ -116,8 +116,7 @@ const Careers = () => {
                     </div>
 
                     <p className="header-subtext">
-                        We're looking for curious minds, creative thinkers, and passionate problem-solvers.
-                        Tell us why you're a perfect fit!
+                        We look for geeks, professionals, creative engagers, and the passionately positive.
                     </p>
                 </div>
             </header>

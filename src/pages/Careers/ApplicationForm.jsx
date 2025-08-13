@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaFileUpload, FaLinkedin, FaBriefcase, FaCheck, FaTimes } from 'react-icons/fa';
+import { FaFileUpload, FaLinkedin, FaCheck, FaTimes, FaVideo, FaCamera } from 'react-icons/fa';
 
 const ApplicationForm = ({ jobTitle, onClose }) => {
   const [formData, setFormData] = useState({
@@ -7,7 +7,8 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
     email: '',
     phone: '',
     linkedin: '',
-    portfolio: '',
+    video: null,
+    photo: null,
     coverLetter: '',
     resume: null
   });
@@ -32,12 +33,33 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
     }, 1500);
   };
 
+  // Color theme variables
+  const colors = {
+    primary: '#2A2D7C',
+    secondary: '#06A3C2',
+    accent: '#4CAF50',
+    background: '#F9FAFF',
+    border: '#E0E3F1',
+    textPrimary: '#2A2D7C',
+    textSecondary: '#6A6D9E',
+    textHint: '#A7AACB',
+    success: '#4CAF50',
+    error: '#F44336'
+  };
+
   return (
     <div className="application-modal">
       <div className="application-container">
         {/* Header Section */}
         <div className="application-header">
-          <button className="close-btn" onClick={onClose}>
+          <button
+            className="close-btn"
+            onClick={onClose}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              onClose();
+            }}
+          >
             <FaTimes />
           </button>
           <div className="header-content">
@@ -71,101 +93,119 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="application-form">
-              <div className="form-grid">
-                {/* Left Column */}
-                <div className="form-column">
-                  <div className="form-group floating-label">
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      placeholder=" "
-                    />
-                    <label htmlFor="name">Full Name*</label>
-                  </div>
-
-                  <div className="form-group floating-label">
-                    <input
-                      type="email"
-                      name="email"
-                      id="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder=" "
-                    />
-                    <label htmlFor="email">Email*</label>
-                  </div>
-
-                  <div className="form-group floating-label">
-                    <input
-                      type="tel"
-                      name="phone"
-                      id="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                      placeholder=" "
-                    />
-                    <label htmlFor="phone">Phone*</label>
-                  </div>
+              {/* First Row - Full Name and LinkedIn */}
+              <div className="form-row">
+                <div className="form-group floating-label half-width">
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    placeholder=" "
+                  />
+                  <label htmlFor="name">Full Name*</label>
                 </div>
 
-                {/* Right Column */}
-                <div className="form-column">
-                  <div className="form-group floating-label with-icon">
-                    <div className="input-container">
-                      <FaLinkedin className="input-icon" />
-                      <input
-                        type="url"
-                        name="linkedin"
-                        id="linkedin"
-                        value={formData.linkedin}
-                        onChange={handleChange}
-                        placeholder=" "
-                      />
-                      <label htmlFor="linkedin">LinkedIn Profile</label>
-                    </div>
-                  </div>
-
-                  <div className="form-group floating-label with-icon">
-                    <div className="input-container">
-                      <FaBriefcase className="input-icon" />
-                      <input
-                        type="url"
-                        name="portfolio"
-                        id="portfolio"
-                        value={formData.portfolio}
-                        onChange={handleChange}
-                        placeholder=" "
-                      />
-                      <label htmlFor="portfolio">Portfolio/Website</label>
-                    </div>
-                  </div>
-
-                  <div className="form-group file-upload">
-                    <label className="file-label">Resume/CV*</label>
-                    <label className="upload-label">
-                      <FaFileUpload className="upload-icon" />
-                      <span>{formData.resume ? formData.resume.name : 'Choose File'}</span>
-                      <input
-                        type="file"
-                        name="resume"
-                        onChange={handleChange}
-                        accept=".pdf,.doc,.docx"
-                        required
-                      />
-                    </label>
-                    <p className="file-hint">PDF, DOC, or DOCX (Max 5MB)</p>
+                <div className="form-group floating-label with-icon half-width">
+                  <div className="input-container">
+                    <FaLinkedin className="input-icon" />
+                    <input
+                      type="url"
+                      name="linkedin"
+                      id="linkedin"
+                      value={formData.linkedin}
+                      onChange={handleChange}
+                      placeholder=" "
+                    />
+                    <label htmlFor="linkedin">LinkedIn Profile</label>
                   </div>
                 </div>
               </div>
 
-              {/* Full Width Fields */}
+              {/* Second Row - Email and Phone */}
+              <div className="form-row">
+                <div className="form-group floating-label half-width">
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    placeholder=" "
+                  />
+                  <label htmlFor="email">Email*</label>
+                </div>
+
+                <div className="form-group floating-label half-width">
+                  <input
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    required
+                    placeholder=" "
+                  />
+                  <label htmlFor="phone">Phone*</label>
+                </div>
+              </div>
+
+              {/* Third Row - Video and Photo Upload */}
+              <div className="form-row">
+                <div className="form-group file-upload half-width">
+                  <label className="file-label">Video Introduction</label>
+                  <label className="upload-label">
+                    <FaVideo className="upload-icon" />
+                    <span>{formData.video ? formData.video.name : 'Upload Video (Max 50MB)'}</span>
+                    <input
+                      type="file"
+                      name="video"
+                      onChange={handleChange}
+                      accept="video/*"
+                    />
+                  </label>
+                  <p className="file-hint">MP4, MOV, or AVI (Max 50MB)</p>
+                </div>
+
+                <div className="form-group file-upload half-width">
+                  <label className="file-label">Profile Photo</label>
+                  <label className="upload-label">
+                    <FaCamera className="upload-icon" />
+                    <span>{formData.photo ? formData.photo.name : 'Upload Photo (Max 5MB)'}</span>
+                    <input
+                      type="file"
+                      name="photo"
+                      onChange={handleChange}
+                      accept="image/*"
+                    />
+                  </label>
+                  <p className="file-hint">JPG, PNG (Max 5MB)</p>
+                </div>
+              </div>
+
+              {/* Resume Upload - Full Width */}
+              <div className="form-group file-upload full-width">
+                <label className="file-label">RESUME / CV*</label>
+                <label className="upload-label">
+                  <FaFileUpload className="upload-icon" />
+                  <span>{formData.resume ? formData.resume.name : 'Choose File'}</span>
+                  <input
+                    type="file"
+                    name="resume"
+                    onChange={handleChange}
+                    accept=".pdf,.doc,.docx"
+                    required
+                  />
+                </label>
+                <p className="file-hint">PDF, DOC, or DOCX (Max 5MB)</p>
+              </div>
+
+              {/* Cover Letter - Full Width */}
               <div className="form-group floating-label full-width">
+                <label className="file-label">COVER LETTER</label>
                 <textarea
                   name="coverLetter"
                   id="coverLetter"
@@ -174,7 +214,6 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                   required
                   placeholder=" "
                 ></textarea>
-                <label htmlFor="coverLetter">Cover Letter*</label>
                 <div className="char-count">{formData.coverLetter.length}/1000</div>
               </div>
 
@@ -232,7 +271,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         .application-header {
           padding: 2.5rem 3rem 1.5rem;
           position: relative;
-          background: linear-gradient(135deg, #f9faff 0%, #f0f3ff 100%);
+          background: linear-gradient(135deg, ${colors.background} 0%, #f0f3ff 100%);
           border-radius: 20px 20px 0 0;
         }
 
@@ -247,7 +286,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           top: 1.5rem;
           right: 1.5rem;
           background: #fff;
-          border: 1px solid #e0e3f1;
+          border: 1px solid ${colors.border};
           width: 48px;
           height: 48px;
           border-radius: 50%;
@@ -255,7 +294,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          color: #2A2D7C;
+          color: ${colors.primary};
           transition: all 0.3s;
           box-shadow: 0 2px 5px rgba(0,0,0,0.05);
           z-index: 10;
@@ -264,11 +303,11 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         .close-btn:hover {
           background: #f5f7ff;
           transform: rotate(90deg);
-          color: #06a3c2;
+          color: ${colors.secondary};
         }
 
         .application-title {
-          color: #2A2D7C;
+          color: ${colors.primary};
           font-size: 1.8rem;
           font-weight: 700;
           margin: 0 0 0.5rem;
@@ -276,14 +315,14 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         }
 
         .application-subtitle {
-          color: #6a6d9e;
+          color: ${colors.textSecondary};
           font-size: 1rem;
           margin: 0 0 1.5rem;
           font-weight: 500;
         }
 
         .highlight {
-          color: #06a3c2;
+          color: ${colors.secondary};
           font-weight: 700;
         }
 
@@ -297,14 +336,14 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
 
         .divider-line {
           height: 2px;
-          background: linear-gradient(to right, transparent, #06a3c2, transparent);
+          background: linear-gradient(to right, transparent, ${colors.secondary}, transparent);
           flex: 1;
         }
 
         .divider-dot {
           width: 6px;
           height: 6px;
-          background: #06a3c2;
+          background: ${colors.secondary};
           border-radius: 50%;
           margin: 0 10px;
         }
@@ -313,26 +352,22 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           padding: 2rem 3rem 3rem;
         }
 
-        .form-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+        .form-row {
+          display: flex;
           gap: 1.5rem;
           margin-bottom: 1.5rem;
         }
 
-        .form-column {
-          display: flex;
-          flex-direction: column;
-          gap: 1.5rem;
+        .half-width {
+          width: 50%;
+        }
+
+        .full-width {
+          width: 100%;
         }
 
         .form-group {
           position: relative;
-          margin-bottom: 1rem;
-        }
-
-        .form-group.full-width {
-          grid-column: span 2;
         }
 
         /* Floating Label Styles */
@@ -345,11 +380,11 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           top: 18px;
           left: 20px;
           font-size: 0.9375rem;
-          color: #6a6d9e;
+          color: ${colors.textSecondary};
           font-weight: 500;
           pointer-events: none;
           transition: all 0.2s ease;
-          background: #f9faff;
+          background: ${colors.background};
           padding: 0 5px;
           border-radius: 4px;
         }
@@ -362,12 +397,12 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         .floating-label textarea {
           width: 100%;
           padding: 1.25rem 1.5rem;
-          border: 1px solid #e0e3f1;
+          border: 1px solid ${colors.border};
           border-radius: 10px;
           font-size: 0.9375rem;
           transition: all 0.3s;
-          background: #f9faff;
-          color: #2A2D7C;
+          background: ${colors.background};
+          color: ${colors.textPrimary};
         }
 
         .with-icon input {
@@ -378,7 +413,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         .floating-label textarea:focus,
         .floating-label input:not(:placeholder-shown),
         .floating-label textarea:not(:placeholder-shown) {
-          border-color: #06a3c2;
+          border-color: ${colors.secondary};
           box-shadow: 0 0 0 3px rgba(6, 163, 194, 0.1);
         }
 
@@ -389,7 +424,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           top: -10px;
           left: 15px;
           font-size: 0.75rem;
-          color: #06a3c2;
+          color: ${colors.secondary};
           background: white;
         }
 
@@ -401,12 +436,13 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         textarea {
           min-height: 160px;
           resize: vertical;
+          margin-top: 0.5rem;
         }
 
         .char-count {
           text-align: right;
           font-size: 0.75rem;
-          color: #a7aacb;
+          color: ${colors.textHint};
           margin-top: 0.25rem;
         }
 
@@ -419,7 +455,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           left: 1.5rem;
           top: 50%;
           transform: translateY(-50%);
-          color: #6a6d9e;
+          color: ${colors.textSecondary};
           font-size: 1rem;
         }
 
@@ -431,8 +467,10 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           display: block;
           font-size: 0.875rem;
           font-weight: 600;
-          color: #2A2D7C;
+          color: ${colors.textPrimary};
           margin-bottom: 0.5rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
 
         .upload-label {
@@ -440,25 +478,25 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           align-items: center;
           gap: 0.75rem;
           padding: 1rem 1.5rem;
-          border: 1px dashed #e0e3f1;
+          border: 1px dashed ${colors.border};
           border-radius: 10px;
-          background: #f9faff;
+          background: ${colors.background};
           cursor: pointer;
           transition: all 0.3s;
         }
 
         .upload-label:hover {
-          border-color: #06a3c2;
+          border-color: ${colors.secondary};
           background: rgba(6, 163, 194, 0.05);
         }
 
         .upload-icon {
-          color: #06a3c2;
+          color: ${colors.secondary};
           font-size: 1.25rem;
         }
 
         .upload-label span {
-          color: #2A2D7C;
+          color: ${colors.textPrimary};
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -471,7 +509,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
 
         .file-hint {
           font-size: 0.75rem;
-          color: #a7aacb;
+          color: ${colors.textHint};
           margin-top: 0.5rem;
         }
 
@@ -483,7 +521,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         }
 
         .submit-btn {
-          background: linear-gradient(135deg, #2A2D7C 0%, #06a3c2 100%);
+          background: linear-gradient(135deg, ${colors.primary} 0%, ${colors.secondary} 100%);
           color: white;
           border: none;
           padding: 1.125rem 2.5rem;
@@ -509,7 +547,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         }
 
         .submit-btn:disabled {
-          background: #e0e3f1;
+          background: ${colors.border};
           cursor: not-allowed;
           transform: none;
           box-shadow: none;
@@ -531,7 +569,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
 
         .disclaimer {
           font-size: 0.75rem;
-          color: #a7aacb;
+          color: ${colors.textHint};
           margin-top: 1.5rem;
           text-align: center;
           max-width: 400px;
@@ -539,7 +577,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         }
 
         .disclaimer a {
-          color: #06a3c2;
+          color: ${colors.secondary};
           text-decoration: none;
           transition: all 0.2s;
         }
@@ -569,7 +607,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          color: #4CAF50;
+          color: ${colors.accent};
           font-size: 2.5rem;
           animation: scaleIn 0.5s ease-out;
         }
@@ -580,21 +618,21 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         }
 
         .success-state h3 {
-          color: #2A2D7C;
+          color: ${colors.textPrimary};
           font-size: 1.75rem;
           margin-bottom: 1.5rem;
           font-weight: 700;
         }
 
         .success-message {
-          color: #6a6d9e;
+          color: ${colors.textSecondary};
           margin-bottom: 0.75rem;
           line-height: 1.6;
           max-width: 400px;
         }
 
         .return-btn {
-          background: #06a3c2;
+          background: ${colors.secondary};
           color: white;
           border: none;
           padding: 1rem 2.5rem;
@@ -623,13 +661,13 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
             padding: 1.5rem;
           }
           
-          .form-grid {
-            grid-template-columns: 1fr;
+          .form-row {
+            flex-direction: column;
             gap: 1rem;
           }
           
-          .form-group.full-width {
-            grid-column: span 1;
+          .half-width {
+            width: 100%;
           }
         }
 

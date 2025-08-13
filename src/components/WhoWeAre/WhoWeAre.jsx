@@ -1,6 +1,7 @@
 import React from "react";
 import "./WhoWeAre.css";
 import whoWeAreImage from "../../assets/who-we-are2.jpeg";
+import { Link } from 'react-router-dom';
 
 const WhoWeAre = () => {
     return (
@@ -24,9 +25,9 @@ const WhoWeAre = () => {
                     <p className="who-we-are-description">
                         We emphasize transparency and best practices at our end utilizing tools to monitor and motivate our workforce.
                     </p>
-                    <button className="who-we-are-button">
+                    <Link to="/schedule-appointment" className="who-we-are-button">
                         Book a Demo
-                    </button>
+                    </Link>
                 </div>
             </div>
         </section>

@@ -35,6 +35,7 @@ import AdminWelcome from "./pages/AdminWelcome/AdminWelcome.jsx";
 import AdminMeetingsView from "./components/AdminMeetingView/AdminMeetingsView.js";
 import BlockedSlotsManager from "./components/BlockedSlotsManager/BlockedSlotsManager.js";
 import Tracking from "./components/Tracking.js";
+import CalendarScheduler from "./components/CalendarScheduler.jsx";
 
 function Layout() {
   const location = useLocation();
@@ -85,6 +86,7 @@ function Layout() {
           <Route path="/admin-welcome" element={<AdminWelcome />} />
           <Route path="/view-meetings" element={<AdminMeetingsView />} />
           <Route path="/slots-manager" element={<BlockedSlotsManager />} />
+          <Route path="/schedule-appointment" element={<CalendarScheduler />} />          
         </Routes>
 
         {/* Add WhatsAppChat component here */}

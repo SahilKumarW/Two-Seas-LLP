@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SEASProcessFlow from "../../pages/HowWeWork/components/SEASProcessFlow";
 import "./ServiceDetails.css";
 
@@ -20,6 +20,7 @@ const ServiceDetails = () => {
 
     const handleBookConsultation = () => {
         console.log("Booking consultation for", service.title);
+        navigate('/schedule-appointment');
     };
 
     return (

@@ -576,11 +576,11 @@ const CalendarScheduler = ({
     return (
         <div className="calendar-scheduler">
             <div className="scheduler-header">
-                <h2 style={{ color: '#06a3c2' }}>{title}</h2>
+                <h2 style={{ color: '#06a3c2', marginTop: '1.5rem'}}>{title}</h2>
                 <div className="header-divider"></div>
             </div>
 
-            <div className="scheduler-container">
+            <div className="scheduler-container" style={{marginBottom: '2rem'}}>
                 <div className="scheduler-card">
                     {!selectedDate ? (
                         // Calendar View
