@@ -112,7 +112,7 @@ const Contact = () => {
                 </div>
 
                 <form className="contact-form" onSubmit={handleSubmit}>
-                    <h2 className="form-title">Fill in the Form Below</h2>
+                    <h2 className="form-title">Fill in the Form Below and our Team will be in Touch!</h2>
                     <div className="contact-card">
                         <div className="input-grid">
                             <div className="input-pair">

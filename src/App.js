@@ -36,6 +36,7 @@ import AdminMeetingsView from "./components/AdminMeetingView/AdminMeetingsView.j
 import BlockedSlotsManager from "./components/BlockedSlotsManager/BlockedSlotsManager.js";
 import Tracking from "./components/Tracking.js";
 import CalendarScheduler from "./components/CalendarScheduler.jsx";
+import EmployeeDetail from "./components/EmployeeDetail/EmployeeDetail.jsx";
 
 function Layout() {
   const location = useLocation();
@@ -72,7 +73,7 @@ function Layout() {
           <Route path="/careers" element={<Careers />} />
           <Route path="/how-we-work" element={<HowWeWork />} />
           <Route path="/admin-login" element={<AdminLogin />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
           <Route path="/managed-services" element={<ManagedServices />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/services" element={<Services />} />
@@ -86,7 +87,8 @@ function Layout() {
           <Route path="/admin-welcome" element={<AdminWelcome />} />
           <Route path="/view-meetings" element={<AdminMeetingsView />} />
           <Route path="/slots-manager" element={<BlockedSlotsManager />} />
-          <Route path="/schedule-appointment" element={<CalendarScheduler />} />          
+          <Route path="/schedule-appointment" element={<CalendarScheduler />} />
+          <Route path="/employee/:id" element={<EmployeeDetail />} />          
         </Routes>
 
         {/* Add WhatsAppChat component here */}

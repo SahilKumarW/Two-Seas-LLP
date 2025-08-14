@@ -13,14 +13,18 @@ const AddEmployee = () => {
         experience: '',
         expertise: '',
         intro: '',
-        image: null, // Will store as Base64
+        image: null,
         interviewVideoLink: '',
-        introductionVideoLink: ''
+        introductionVideoLink: '',
+        resumeLink: '', // Changed from resumeFile to resumeLink
+        assessmentLink: '' // Changed from assessmentFile to assessmentLink
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const [selectedNiche, setSelectedNiche] = useState('');
     const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [uploadStatus, setUploadStatus] = useState(''); // For tracking upload status
 
     const niches = navItems.map((item, index) => ({
         id: `niche-${index}`,
@@ -52,9 +56,9 @@ const AddEmployee = () => {
         reader.readAsDataURL(file);
     };
 
-    const handleCurrencySelect = (currency) => {
-        setEmployee({ ...employee, currency: currency.code });
-        setShowCurrencyDropdown(false);
+    const validateGoogleDriveLink = (url) => {
+        if (!url) return true;
+        return url.includes('drive.google.com') || url.includes('docs.google.com');
     };
 
     const handleSubmit = async (e) => {
@@ -63,6 +67,20 @@ const AddEmployee = () => {
         setSubmitError(null);
 
         try {
+            // Validate required fields
+            if (!employee.name || !employee.rate || !selectedNiche) {
+                throw new Error('Please fill in all required fields');
+            }
+
+            // Validate Google Drive links
+            if (!validateGoogleDriveLink(employee.resumeLink)) {
+                throw new Error('Please provide a valid Google Drive link for the resume');
+            }
+
+            if (!validateGoogleDriveLink(employee.assessmentLink)) {
+                throw new Error('Please provide a valid Google Drive link for the assessment');
+            }
+
             // Prepare employee data
             const employeeData = {
                 name: employee.name,
@@ -76,24 +94,40 @@ const AddEmployee = () => {
                 interviewVideoLink: employee.interviewVideoLink,
                 introductionVideoLink: employee.introductionVideoLink,
                 createdAt: new Date(),
-                status: 'active'
+                status: 'active',
+                resume: {
+                    type: 'google_drive',
+                    link: employee.resumeLink,
+                    accessedAt: new Date()
+                },
+                assessment: {
+                    type: 'google_drive',
+                    link: employee.assessmentLink,
+                    accessedAt: new Date()
+                }
             };
 
             // Add to Firestore
             await addDoc(collection(db, "employees"), employeeData);
+
             alert('Employee added successfully!');
-            navigate('/admin-dashboard');
+            navigate('/employee-diary');
         } catch (error) {
             console.error('Error adding employee: ', error);
-            setSubmitError('Failed to add employee. Please try again.');
+            setSubmitError(error.message || 'Failed to add employee. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    const handleCurrencySelect = (currency) => {
+        setEmployee({ ...employee, currency: currency.code });
+        setShowCurrencyDropdown(false);
+    };
+
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (currencyDropdownRef.current && 
+            if (currencyDropdownRef.current &&
                 !currencyDropdownRef.current.contains(event.target)) {
                 setShowCurrencyDropdown(false);
             }
@@ -333,7 +367,7 @@ const AddEmployee = () => {
                         <div className="card-header">
                             <div className="form-card-icon">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17 10.5V7C17 5.9 16.1 5 15 5H5C3.9 5 3 5.9 3 7V17C3 18.1 3.9 19 5 19H15C16.1 19 17 18.1 17 17V13.5L21 17.5V6.5L17 10.5Z" fill="#2A2D7C"/>
+                                    <path d="M17 10.5V7C17 5.9 16.1 5 15 5H5C3.9 5 3 5.9 3 7V17C3 18.1 3.9 19 5 19H15C16.1 19 17 18.1 17 17V13.5L21 17.5V6.5L17 10.5Z" fill="#2A2D7C" />
                                 </svg>
                             </div>
                             <h2>Video Links</h2>
@@ -343,7 +377,7 @@ const AddEmployee = () => {
                             <label>Introduction Video (YouTube Link)</label>
                             <div className="input-with-icon">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B"/>
+                                    <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B" />
                                 </svg>
                                 <input
                                     type="url"
@@ -372,7 +406,7 @@ const AddEmployee = () => {
                             <label>Interview Video (YouTube Link)</label>
                             <div className="input-with-icon">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B"/>
+                                    <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B" />
                                 </svg>
                                 <input
                                     type="url"
@@ -404,6 +438,55 @@ const AddEmployee = () => {
                         </div>
                     )}
 
+                    {/* Add this new form card for file uploads */}
+                    {/* Updated Documents form card */}
+                    <div className="form-card">
+                        <div className="card-header">
+                            <div className="form-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#2A2D7C" />
+                                    <path d="M16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="#2A2D7C" />
+                                </svg>
+                            </div>
+                            <h2>Documents</h2>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Resume (Google Drive Link)</label>
+                            <div className="input-with-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#64748B" />
+                                    <path d="M16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="#64748B" />
+                                </svg>
+                                <input
+                                    type="url"
+                                    name="resumeLink"
+                                    value={employee.resumeLink}
+                                    onChange={handleInputChange}
+                                    placeholder="https://drive.google.com/..."
+                                />
+                            </div>
+                            <p className="file-hint">Paste the shareable Google Drive link</p>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Assessment Report (Google Drive Link)</label>
+                            <div className="input-with-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#64748B" />
+                                    <path d="M16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="#64748B" />
+                                </svg>
+                                <input
+                                    type="url"
+                                    name="assessmentLink"
+                                    value={employee.assessmentLink}
+                                    onChange={handleInputChange}
+                                    placeholder="https://drive.google.com/..."
+                                />
+                            </div>
+                            <p className="file-hint">Paste the shareable Google Drive link</p>
+                        </div>
+                    </div>
                     <div className="form-actions">
                         <button
                             type="button"
@@ -433,6 +516,21 @@ const AddEmployee = () => {
                         </button>
                     </div>
                 </form>
+                {/* Add this section to show upload status */}
+                {uploadStatus && (
+                    <div className="upload-status">
+                        <div className="status-message">{uploadStatus}</div>
+                        {uploadProgress > 0 && (
+                            <div className="progress-container">
+                                <div
+                                    className="progress-bar"
+                                    style={{ width: `${uploadProgress}%` }}
+                                ></div>
+                                <span>{Math.round(uploadProgress)}%</span>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

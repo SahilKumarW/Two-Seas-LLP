@@ -1,7 +1,7 @@
 .navbar {
     width: 100%;
     background-color: #06a3c2 !important;
-    /* height: 99px; */
+    height: 107.9px;
     padding: 1.5rem 0;
     font-family: 'Inter', sans-serif;
     display: flex;
@@ -16,8 +16,8 @@
     /* This centers items vertically */
     max-width: 1200px;
     width: 100%;
-    /* margin: 0 auto; */
-    padding: 0 2rem;
+    margin: 0 auto;
+    padding: 0 1.2rem;
     height: 100%;
     /* Take full height of navbar */
 }

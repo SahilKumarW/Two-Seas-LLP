@@ -8,7 +8,7 @@ const AdminWelcome = () => {
     const navigate = useNavigate();
 
     const menuItems = [
-        { id: 1, title: 'View Dashboard', icon: '📊', path: '/admin-dashboard' },
+        // { id: 1, title: 'View Dashboard', icon: '📊', path: '/admin-dashboard' },
         { id: 2, title: 'Add Employee', icon: '👤', path: '/admin-dashboard/add-employee' },
         { id: 3, title: 'View Employees', icon: '👥', path: '/employee-diary' },
         { id: 4, title: 'Client Management', icon: '🤝', path: '/client-diary' }

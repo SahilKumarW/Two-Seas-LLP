@@ -16,57 +16,46 @@ const EMAILJS_SERVICE_ID = 'service_wjrb0qk';
 const EMAILJS_TEMPLATE_ID = 'template_177shrs';
 const EMAILJS_PUBLIC_KEY = 'vkVckeGL1JQx-x4_q';
 
+// Updated time zones with more city-specific options
 export const timeZones = [
-    { value: 'Pacific/Midway', label: '(GMT-11:00) Midway Island' },
-    { value: 'Pacific/Honolulu', label: '(GMT-10:00) Hawaii' },
-    { value: 'America/Anchorage', label: '(GMT-09:00) Alaska' },
-    { value: 'America/Los_Angeles', label: '(GMT-08:00) Pacific Time (US & Canada)' },
-    { value: 'America/Denver', label: '(GMT-07:00) Mountain Time (US & Canada)' },
-    { value: 'America/Chicago', label: '(GMT-06:00) Central Time (US & Canada)' },
-    { value: 'America/New_York', label: '(GMT-05:00) Eastern Time (US & Canada)' },
-    { value: 'America/Caracas', label: '(GMT-04:30) Caracas' },
-    { value: 'America/Halifax', label: '(GMT-04:00) Atlantic Time (Canada)' },
-    { value: 'America/St_Johns', label: '(GMT-03:30) Newfoundland' },
-    { value: 'America/Argentina/Buenos_Aires', label: '(GMT-03:00) Buenos Aires' },
-    { value: 'Atlantic/Azores', label: '(GMT-01:00) Azores' },
-    { value: 'Europe/London', label: '(GMT+00:00) London' },
-    { value: 'Europe/Berlin', label: '(GMT+01:00) Berlin' },
-    { value: 'Europe/Helsinki', label: '(GMT+02:00) Helsinki' },
-    { value: 'Asia/Baghdad', label: '(GMT+03:00) Baghdad' },
-    { value: 'Asia/Tehran', label: '(GMT+03:30) Tehran' },
-    { value: 'Asia/Dubai', label: '(GMT+04:00) Dubai' },
-    { value: 'Asia/Karachi', label: '(GMT+05:00) Karachi' },
-    { value: 'Asia/Kolkata', label: '(GMT+05:30) Kolkata' },
-    { value: 'Asia/Dhaka', label: '(GMT+06:00) Dhaka' },
-    { value: 'Asia/Bangkok', label: '(GMT+07:00) Bangkok' },
-    { value: 'Asia/Shanghai', label: '(GMT+08:00) Beijing' },
-    { value: 'Asia/Tokyo', label: '(GMT+09:00) Tokyo' },
-    { value: 'Australia/Sydney', label: '(GMT+10:00) Sydney' },
-    { value: 'Pacific/Auckland', label: '(GMT+12:00) Auckland' },
+    { value: 'Pacific/Midway', label: 'Midway Island (GMT-11:00)' },
+    { value: 'Pacific/Honolulu', label: 'Honolulu (GMT-10:00)' },
+    { value: 'America/Anchorage', label: 'Anchorage (GMT-09:00)' },
+    { value: 'America/Los_Angeles', label: 'Los Angeles (GMT-08:00)' },
+    { value: 'America/Denver', label: 'Denver (GMT-07:00)' },
+    { value: 'America/Chicago', label: 'Chicago (GMT-06:00)' },
+    { value: 'America/New_York', label: 'New York (GMT-05:00)' },
+    { value: 'America/Caracas', label: 'Caracas (GMT-04:30)' },
+    { value: 'America/Halifax', label: 'Halifax (GMT-04:00)' },
+    { value: 'America/St_Johns', label: 'St. Johns (GMT-03:30)' },
+    { value: 'America/Argentina/Buenos_Aires', label: 'Buenos Aires (GMT-03:00)' },
+    { value: 'Atlantic/Azores', label: 'Azores (GMT-01:00)' },
+    { value: 'Europe/London', label: 'London (GMT+00:00)' },
+    { value: 'Europe/Berlin', label: 'Berlin (GMT+01:00)' },
+    { value: 'Europe/Paris', label: 'Paris (GMT+01:00)' },
+    { value: 'Europe/Moscow', label: 'Moscow (GMT+03:00)' },
+    { value: 'Asia/Dubai', label: 'Dubai (GMT+04:00)' },
+    { value: 'Asia/Karachi', label: 'Karachi (GMT+05:00)' },
+    { value: 'Asia/Kolkata', label: 'Kolkata (GMT+05:30)' },
+    { value: 'Asia/Dhaka', label: 'Dhaka (GMT+06:00)' },
+    { value: 'Asia/Bangkok', label: 'Bangkok (GMT+07:00)' },
+    { value: 'Asia/Shanghai', label: 'Shanghai (GMT+08:00)' },
+    { value: 'Asia/Tokyo', label: 'Tokyo (GMT+09:00)' },
+    { value: 'Australia/Sydney', label: 'Sydney (GMT+10:00)' },
+    { value: 'Pacific/Auckland', label: 'Auckland (GMT+12:00)' },
 ];
 
-// const timeZones = [
-//     // USA Time Zones
-//     { value: 'GMT-10:00', label: 'GMT-10:00 (Hawaii-Aleutian Time)' },
-//     { value: 'GMT-08:00', label: 'GMT-08:00 (Pacific Time - US & Canada)' },
-//     { value: 'GMT-07:00', label: 'GMT-07:00 (Mountain Time - US & Canada)' },
-//     { value: 'GMT-06:00', label: 'GMT-06:00 (Central Time - US & Canada)' },
-//     { value: 'GMT-05:00', label: 'GMT-05:00 (Eastern Time - US & Canada)' },
-
-//     // UK
-//     { value: 'GMT+00:00', label: 'GMT+00:00 (London, UK)' },
-
-//     // Pakistan
-//     { value: 'GMT+05:00', label: 'GMT+05:00 (Pakistan Standard Time)' },
-
-//     // UAE
-//     { value: 'GMT+04:00', label: 'GMT+04:00 (Dubai, UAE)' },
-
-//     // Australia
-//     { value: 'GMT+08:00', label: 'GMT+08:00 (Western Australia)' },
-//     { value: 'GMT+09:30', label: 'GMT+09:30 (Central Australia)' },
-//     { value: 'GMT+10:00', label: 'GMT+10:00 (Eastern Australia)' }
-// ];
+// Popular cities for quick selection
+const popularCities = [
+    { value: 'America/New_York', label: 'New York' },
+    { value: 'America/Los_Angeles', label: 'Los Angeles' },
+    { value: 'Europe/London', label: 'London' },
+    { value: 'Europe/Paris', label: 'Paris' },
+    { value: 'Asia/Dubai', label: 'Dubai' },
+    { value: 'Asia/Karachi', label: 'Karachi' },
+    { value: 'Asia/Tokyo', label: 'Tokyo' },
+    { value: 'Australia/Sydney', label: 'Sydney' }
+];
 
 const CalendarScheduler = ({
     onDateSelected,
@@ -100,6 +89,57 @@ const CalendarScheduler = ({
     const [blockedSlots, setBlockedSlots] = useState([]);
     const [userLocation, setUserLocation] = useState(null);
     const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+    const [showWorldClock, setShowWorldClock] = useState(false);
+    const [worldClocks, setWorldClocks] = useState([]);
+
+    // Add a popular city to world clocks
+    const addWorldClock = (timezone) => {
+        if (!worldClocks.some(clock => clock.timezone === timezone)) {
+            const newClock = {
+                timezone,
+                label: timeZones.find(tz => tz.value === timezone)?.label || timezone,
+                time: ''
+            };
+            setWorldClocks([...worldClocks, newClock]);
+        }
+    };
+
+    // Remove a world clock
+    const removeWorldClock = (timezone) => {
+        setWorldClocks(worldClocks.filter(clock => clock.timezone !== timezone));
+    };
+
+    // Update world clock times
+    useEffect(() => {
+        if (worldClocks.length === 0) return;
+
+        const updateWorldClocks = () => {
+            const updatedClocks = worldClocks.map(clock => {
+                try {
+                    const now = new Date();
+                    const formatter = new Intl.DateTimeFormat("en-US", {
+                        timeZone: clock.timezone,
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                        hour12: true
+                    });
+                    return {
+                        ...clock,
+                        time: formatter.format(now)
+                    };
+                } catch (error) {
+                    console.error("Error updating world clock:", error);
+                    return clock;
+                }
+            });
+            setWorldClocks(updatedClocks);
+        };
+
+        updateWorldClocks(); // initial update
+        const timer = setInterval(updateWorldClocks, 1000);
+        return () => clearInterval(timer);
+    }, [worldClocks]);
 
     const detectUserLocation = async () => {
         setIsDetectingLocation(true);
@@ -119,6 +159,10 @@ const CalendarScheduler = ({
             // If we got a timezone from IP, set it
             if (ipData.timezone && timeZones.some(tz => tz.value === ipData.timezone)) {
                 setSelectedTimeZone(ipData.timezone);
+                // Add to world clocks if not already there
+                if (!worldClocks.some(clock => clock.timezone === ipData.timezone)) {
+                    addWorldClock(ipData.timezone);
+                }
             }
 
         } catch (error) {
@@ -132,6 +176,9 @@ const CalendarScheduler = ({
 
             if (browserTimezone && timeZones.some(tz => tz.value === browserTimezone)) {
                 setSelectedTimeZone(browserTimezone);
+                if (!worldClocks.some(clock => clock.timezone === browserTimezone)) {
+                    addWorldClock(browserTimezone);
+                }
             }
         } finally {
             setIsDetectingLocation(false);
@@ -152,6 +199,7 @@ const CalendarScheduler = ({
                         hour: "2-digit",
                         minute: "2-digit",
                         second: "2-digit",
+                        hour12: true
                     });
                     setCurrentTime(formatter.format(now));
                 } catch (error) {
@@ -576,11 +624,11 @@ const CalendarScheduler = ({
     return (
         <div className="calendar-scheduler">
             <div className="scheduler-header">
-                <h2 style={{ color: '#06a3c2', marginTop: '1.5rem'}}>{title}</h2>
+                <h2 style={{ color: '#06a3c2', marginTop: '1.5rem' }}>{title}</h2>
                 <div className="header-divider"></div>
             </div>
 
-            <div className="scheduler-container" style={{marginBottom: '2rem'}}>
+            <div className="scheduler-container" style={{ marginBottom: '2rem' }}>
                 <div className="scheduler-card">
                     {!selectedDate ? (
                         // Calendar View
@@ -640,7 +688,6 @@ const CalendarScheduler = ({
                         </div>
                     ) : !selectedTime ? (
                         // Time Slot Selection
-
                         <div className="time-slot-view">
                             <div className="time-zone-selector">
                                 <FaGlobe className="time-zone-icon" />
@@ -662,12 +709,59 @@ const CalendarScheduler = ({
                                     ))}
                                 </select>
                                 {isDetectingLocation && <FaSpinner className="spinner" />}
+                                <button
+                                    className="world-clock-toggle"
+                                    onClick={() => setShowWorldClock(!showWorldClock)}
+                                >
+                                    {showWorldClock ? 'Hide Clocks' : 'Show World Clocks'}
+                                </button>
                             </div>
+
+                            {showWorldClock && (
+                                <div className="world-clock-container">
+                                    <div className="world-clock-header">
+                                        <h4>World Clocks</h4>
+                                        <div className="world-clock-actions">
+                                            <select
+                                                value=""
+                                                onChange={(e) => addWorldClock(e.target.value)}
+                                                className="add-clock-dropdown"
+                                            >
+                                                <option value="">Add a city...</option>
+                                                {popularCities.map(city => (
+                                                    <option key={city.value} value={city.value}>
+                                                        {city.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="world-clocks-grid">
+                                        {worldClocks.map((clock, index) => (
+                                            <div key={index} className="world-clock-item">
+                                                <div className="world-clock-city">
+                                                    {clock.label.split(' (')[0]}
+                                                </div>
+                                                <div className="world-clock-time">
+                                                    {clock.time || '--:-- --'}
+                                                </div>
+                                                <button
+                                                    className="remove-clock-btn"
+                                                    onClick={() => removeWorldClock(clock.timezone)}
+                                                    title="Remove clock"
+                                                >
+                                                    ×
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <h3>Select a Time Slot</h3>
                             <p className="selected-date">{formatDateDisplay(selectedDate)}</p>
                             <div className="current-time-display">
-                                <FaClock /> Current time in {selectedTimeZone}: <strong>{currentTime}</strong>
+                                <FaClock /> Current time in {selectedTimeZone.split('/')[1] || selectedTimeZone}: <strong>{currentTime}</strong>
                             </div>
 
                             <div className="time-slots-grid">
@@ -1499,6 +1593,117 @@ const CalendarScheduler = ({
                     
                     .time-zone-dropdown {
                         width: 100%;
+                    }
+                }
+
+                .world-clock-container {
+                    background: #f9f9f9;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin-bottom: 20px;
+                    border: 1px solid #eee;
+                }
+
+                .world-clock-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                }
+
+                .world-clock-header h4 {
+                    margin: 0;
+                    color: #2A2D7C;
+                }
+
+                .add-clock-dropdown {
+                    padding: 6px 10px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    font-size: 14px;
+                }
+
+                .world-clocks-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                    gap: 10px;
+                }
+
+                .world-clock-item {
+                    background: white;
+                    padding: 10px;
+                    border-radius: 6px;
+                    border: 1px solid #ddd;
+                    position: relative;
+                }
+
+                .world-clock-city {
+                    font-weight: bold;
+                    font-size: 0.9rem;
+                    margin-bottom: 5px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .world-clock-time {
+                    font-family: monospace;
+                    font-size: 1rem;
+                    color: #2A2D7C;
+                }
+
+                .remove-clock-btn {
+                    position: absolute;
+                    top: 2px;
+                    right: 2px;
+                    background: none;
+                    border: none;
+                    color: #999;
+                    cursor: pointer;
+                    font-size: 1rem;
+                    padding: 2px 5px;
+                }
+
+                .remove-clock-btn:hover {
+                    color: #f44336;
+                }
+
+                .world-clock-toggle {
+                    background: #2A2D7C;
+                    color: white;
+                    border: none;
+                    border-radius: 4px;
+                    padding: 8px 12px;
+                    font-size: 0.9rem;
+                    cursor: pointer;
+                    margin-left: 10px;
+                    transition: background 0.2s;
+                }
+
+                .world-clock-toggle:hover {
+                    background: #1a1c52;
+                }
+
+                /* Responsive adjustments */
+                @media (max-width: 600px) {
+                    .world-clocks-grid {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+
+                    .world-clock-toggle {
+                        padding: 6px 8px;
+                        font-size: 0.8rem;
+                        margin-left: 5px;
+                    }
+
+                    .time-zone-selector {
+                        flex-wrap: wrap;
+                    }
+
+                    .time-zone-dropdown {
+                        order: 3;
+                        width: 100%;
+                        margin-top: 8px;
                     }
                 }
             `}</style>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FaFileAlt, FaClipboardCheck, FaHeart, FaCalendarAlt, FaRegHeart, FaStar, FaPlay } from 'react-icons/fa';
+import { FaFileAlt, FaClipboardCheck, FaHeart, FaCalendarAlt, FaRegHeart, FaStar, FaPlay, FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
 import './EmployeeCard.css';
 import { db } from '../../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { niches } from '../AdminDashboard/constants';
+import { Link } from 'react-router-dom';
 
 export const useEmployees = () => {
   const [employees, setEmployees] = useState([]);
@@ -38,6 +39,12 @@ const EmployeeCard = () => {
   const [expandedCards, setExpandedCards] = useState({});
   const [selectedNiche, setSelectedNiche] = useState('All');
   const [miniPlayerUrl, setMiniPlayerUrl] = useState(null);
+  const [viewerState, setViewerState] = useState({
+    isOpen: false,
+    document: null,
+    type: '',
+    isLoading: true
+  });
 
   // Add 'All' option to the niches
   const allNiches = [{ id: 'All', name: 'All' }, ...niches];
@@ -84,6 +91,44 @@ const EmployeeCard = () => {
       return;
     }
     window.open(`mailto:${email}?subject=Interview Request&body=I would like to schedule an interview`, '_blank');
+  };
+
+  const getEmbedUrl = (url) => {
+    if (!url) return null;
+    // Convert Google Drive view URL to embed URL
+    if (url.includes('drive.google.com')) {
+      const fileId = url.match(/\/d\/([^\/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
+      if (fileId) {
+        return `https://drive.google.com/file/d/${fileId}/preview`;
+      }
+    }
+    return url;
+  };
+
+  const openDocument = (doc, type, e) => {
+    e.stopPropagation();
+    setViewerState({
+      isOpen: true,
+      document: doc,
+      type,
+      isLoading: true
+    });
+  };
+
+  const closeDocument = () => {
+    setViewerState(prev => ({ ...prev, isOpen: false }));
+  };
+
+  const handleIframeLoad = () => {
+    setViewerState(prev => ({ ...prev, isLoading: false }));
+  };
+
+  const getDocumentTitle = () => {
+    switch(viewerState.type) {
+      case 'resume': return 'Resume Document';
+      case 'assessment': return 'Assessment Report';
+      default: return 'Document Viewer';
+    }
   };
 
   if (loading) {
@@ -152,25 +197,15 @@ const EmployeeCard = () => {
                               e.target.src = 'https://via.placeholder.com/150';
                             }}
                           />
-                          {/* <div className="experience-badge">{employee.experience}</div> */}
                         </div>
-                        {/* <button
-                          className={`wishlist-button ${wishlist[employee.id] ? 'active' : ''}`}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleWishlist(employee.id);
-                          }}
-                        >
-                          {wishlist[employee.id] ? <FaHeart /> : <FaRegHeart />}
-                        </button> */}
                       </div>
                       <div className="profile-info">
-                        <h3 className="employee-name">{employee.name}</h3>
+                        <h3 className="employee-name">
+                          <Link to={`/employee/${employee.id}`} className="employee-link">
+                            {employee.name}
+                          </Link>
+                        </h3>                        
                         <p className="employee-position">{employee.expertise}</p>
-                        {/* <div className="rating">
-                          <FaStar className="star" />
-                          <span>{calculateRating(employee.rate)}</span>
-                        </div> */}
                       </div>
                     </div>
 
@@ -178,21 +213,27 @@ const EmployeeCard = () => {
                       <p style={{ color: '#2A2D7C' }}>{employee.intro}</p>
                     </div>
 
-                    <div className={`expandable-content ${expandedCards[employee.id] ? 'visible' : ''}`}>
-                      {/* {videoId && (
-                        <div className="video-preview">
-                          <iframe
-                            width="100%"
-                            height="200"
-                            src={`https://www.youtube.com/embed/${videoId}`}
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            title={`${employee.name} introduction`}
-                          ></iframe>
-                        </div>
-                      )} */}
+                    {/* Document Buttons - Always Visible (Moved outside expandable-content) */}
+                    <div className="document-buttons-container">
+                      {employee.resume && (
+                        <button
+                          className="document-button resume-button"
+                          onClick={(e) => openDocument(employee.resume, 'resume', e)}
+                        >
+                          <FaFileAlt className="document-icon" /> View Resume
+                        </button>
+                      )}
+                      {employee.assessment && (
+                        <button
+                          className="document-button assessment-btn"
+                          onClick={(e) => openDocument(employee.assessment, 'assessment', e)}
+                        >
+                          <FaClipboardCheck className="document-icon" /> View Assessment
+                        </button>
+                      )}
+                    </div>
 
+                    <div className={`expandable-content ${expandedCards[employee.id] ? 'visible' : ''}`}>
                       <div className="expertise-section">
                         <h4 className="section-label">Core Expertise</h4>
                         <div className="expertise-tags-container">
@@ -243,13 +284,6 @@ const EmployeeCard = () => {
                       </div>
                     </div>
                   </div>
-
-                  {/* <button
-                    className="primary-button book-interview"
-                    onClick={(e) => handleScheduleInterview(employee.email, e)}
-                  >
-                    <FaCalendarAlt /> Schedule Interview
-                  </button> */}
                 </div>
               </div>
             );
@@ -274,6 +308,55 @@ const EmployeeCard = () => {
               allowFullScreen
             ></iframe>
             <button className="close-mini-player" onClick={() => setMiniPlayerUrl(null)}>×</button>
+          </div>
+        </div>
+      )}
+
+      {/* Document Viewer Modal */}
+      {viewerState.isOpen && (
+        <div className="document-viewer">
+          <div className="viewer-overlay" onClick={closeDocument}></div>
+          
+          <div className="viewer-container">
+            <div className="viewer-header" style={{ backgroundColor: '#2a2d7c' }}>
+              <h3 style={{ color: 'white' }}>{getDocumentTitle()}</h3>
+              
+              <div className="viewer-actions">
+                <a 
+                  href={viewerState.document.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="external-link"
+                  title="Open in new tab"
+                >
+                  <FaExternalLinkAlt color="white" />
+                </a>
+                <button 
+                  onClick={closeDocument} 
+                  className="close-button"
+                  aria-label="Close document viewer"
+                >
+                  <FaTimes color="white" />
+                </button>
+              </div>
+            </div>
+
+            <div className="viewer-content">
+              {viewerState.isLoading && (
+                <div className="viewer-loading">
+                  <div className="loading-spinner"></div>
+                  <p>Loading document...</p>
+                </div>
+              )}
+              
+              <iframe
+                src={getEmbedUrl(viewerState.document.link)}
+                title={getDocumentTitle()}
+                className={`document-iframe ${viewerState.isLoading ? 'loading' : ''}`}
+                allow="fullscreen"
+                onLoad={handleIframeLoad}
+              />
+            </div>
           </div>
         </div>
       )}
