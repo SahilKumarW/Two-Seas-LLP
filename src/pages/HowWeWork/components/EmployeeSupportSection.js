@@ -81,7 +81,7 @@ const EmployeeSupportSection = () => {
             const subject = `Appointment Request - ${userDetails.company || userDetails.name}`;
             const body = `Company: ${userDetails.company}%0D%0AName: ${userDetails.name}%0D%0AEmail: ${userDetails.email}%0D%0APhone: ${userDetails.phone}%0D%0ANiche: ${userDetails.niche}%0D%0A%0D%0ARequested Appointment Time:%0D%0A${selectedDate}${selectedTime ? ` at ${selectedTime}` : ''}%0D%0A%0D%0AAdditional Notes:%0D%0A${userDetails.notes}%0D%0A%0D%0A`;
 
-            window.open(`mailto:sales@twoseas.org?subject=${subject}&body=${body}`);
+            window.open(`mailto:contact@twoseas.org?subject=${subject}&body=${body}`);
 
             setUserDetails({
                 name: '',

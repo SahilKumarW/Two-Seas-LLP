@@ -79,6 +79,13 @@
   /* Align items to the top */
 }
 
+.niche-select {
+    color: white;
+}
+.niche-select option {
+    color: black; /* Keeps dropdown list readable */
+}
+
 /* Calendly Section Styling */
 .calendly-section {
   padding: 2rem;
@@ -168,6 +175,7 @@
   color: var(--text);
   font-size: 1rem;
   transition: all 0.3s ease;
+  color: white;
 }
 
 /* Disable all autofill backgrounds and colors */

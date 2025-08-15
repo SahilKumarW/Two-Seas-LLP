@@ -28,6 +28,7 @@ const BookCall = () => {
     "TikTok",
     "Snapchat",
     "Two Seas Marketing",
+    "Referral",
     "Others"
   ];
 
@@ -71,15 +72,37 @@ const BookCall = () => {
 
             <form onSubmit={handleSubmit} className="form">
               <div className="form-group">
-                <label>Full Name*</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your name"
-                  required
-                />
+                <label>Where did you hear about us?*</label>
+                <div className="radio-group">
+                  {hearAboutOptions.map((option, index) => (
+                    <div key={index} className="radio-option-container">
+                      <div className="radio-option">
+                        <input
+                          type="radio"
+                          id={`hearAbout-${index}`}
+                          name="hearAbout"
+                          value={option}
+                          checked={formData.hearAbout === option}
+                          onChange={handleChange}
+                          required
+                        />
+                        <label htmlFor={`hearAbout-${index}`}>{option}</label>
+                      </div>
+                      {(option === "Referral" || option === "Others") &&
+                        formData.hearAbout === option && (
+                          <input
+                            type="text"
+                            name="hearAboutOther"
+                            value={formData.hearAboutOther}
+                            onChange={handleChange}
+                            placeholder="Please specify"
+                            required
+                            className="other-input"
+                          />
+                        )}
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div className="form-group">
@@ -165,7 +188,7 @@ const BookCall = () => {
                     </div>
                   ))}
                 </div>
-                {formData.hearAbout === "Others" && (
+                {(formData.hearAbout === "Others" || formData.hearAbout === "Referral") && (
                   <input
                     type="text"
                     name="hearAboutOther"

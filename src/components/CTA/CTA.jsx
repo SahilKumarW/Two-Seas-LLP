@@ -11,7 +11,7 @@ const CTA = () => {
                 <button className="cta-button" onClick={() => navigate("/contact-us")}>
                     Contact Us
                 </button>
-                <button className="cta-button secondary">
+                <button className="cta-button secondary" onClick={() => navigate("/schedule-appointment")}>
                     Book a Free Consultation
                 </button>
             </div>

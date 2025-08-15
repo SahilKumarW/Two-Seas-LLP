@@ -1,23 +1,26 @@
+import { niches } from '../../pages/AdminDashboard/constants';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Added for navigation
+import { useNavigate } from 'react-router-dom';
 import './Contact.css';
 import logo from '../../assets/Two Seas Logo.png';
 import CalendarScheduler from '../../components/CalendarScheduler';
 import emailjs from 'emailjs-com';
 
 const Contact = () => {
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
         name: '',
         companyName: '',
+        companyWebsite: '',
+        niche: '',
         phone: '',
         email: '',
         message: ''
     });
 
     const handleLogoClick = () => {
-        navigate('/'); // Navigate to home when logo is clicked
+        navigate('/');
     };
 
     const handleChange = (e) => {
@@ -29,33 +32,37 @@ const Contact = () => {
         e.preventDefault();
 
         emailjs.send(
-            'service_wjrb0qk', // Your EmailJS Service ID
-            'template_4jdr7t9', // Replace with your EmailJS Template ID
+            'service_wjrb0qk',
+            'template_4jdr7t9',
             {
                 name: formData.name,
                 companyName: formData.companyName,
+                companyWebsite: formData.companyWebsite,
+                niche: formData.niche,
                 phone: formData.phone,
                 email: formData.email,
                 message: formData.message,
                 time: new Date().toLocaleString()
             },
-            'vkVckeGL1JQx-x4_q' // Replace with your EmailJS Public Key
+            'vkVckeGL1JQx-x4_q'
         )
-        .then((result) => {
-            console.log('Email sent successfully!', result.text);
-            alert('Thank you for your message! We will get back to you shortly.');
-            setFormData({
-                name: '',
-                companyName: '',
-                phone: '',
-                email: '',
-                message: ''
+            .then((result) => {
+                console.log('Email sent successfully!', result.text);
+                alert('Thank you for your message! We will get back to you shortly.');
+                setFormData({
+                    name: '',
+                    companyName: '',
+                    companyWebsite: '',
+                    niche: '',
+                    phone: '',
+                    email: '',
+                    message: ''
+                });
+            })
+            .catch((error) => {
+                console.error('Error sending email:', error.text);
+                alert('Something went wrong. Please try again later.');
             });
-        })
-        .catch((error) => {
-            console.error('Error sending email:', error.text);
-            alert('Something went wrong. Please try again later.');
-        });
     };
 
     const handleScheduleSubmit = async (appointmentData) => {
@@ -65,13 +72,15 @@ const Contact = () => {
                 contactInfo: {
                     name: formData.name,
                     companyName: formData.companyName,
+                    companyWebsite: formData.companyWebsite,
+                    niche: formData.niche,
                     email: formData.email,
                     phone: formData.phone
                 }
             };
 
             console.log("Scheduling data:", fullData);
-            return false; 
+            return false;
         } catch (error) {
             console.error('Error scheduling appointment:', error);
             throw error;
@@ -115,6 +124,7 @@ const Contact = () => {
                     <h2 className="form-title">Fill in the Form Below and our Team will be in Touch!</h2>
                     <div className="contact-card">
                         <div className="input-grid">
+                            {/* Row 1: Name + Email */}
                             <div className="input-pair">
                                 <div className="input-container">
                                     <input
@@ -129,16 +139,18 @@ const Contact = () => {
                                 </div>
                                 <div className="input-container">
                                     <input
-                                        type="text"
-                                        name="companyName"
-                                        placeholder="Company Name"
-                                        value={formData.companyName}
+                                        type="email"
+                                        name="email"
+                                        placeholder="Email"
+                                        value={formData.email}
                                         onChange={handleChange}
                                         className="contact-input"
                                         required
                                     />
                                 </div>
                             </div>
+
+                            {/* Row 2: Phone + Company Name */}
                             <div className="input-pair">
                                 <div className="input-container">
                                     <input
@@ -152,17 +164,49 @@ const Contact = () => {
                                 </div>
                                 <div className="input-container">
                                     <input
-                                        type="email"
-                                        name="email"
-                                        placeholder="Email"
-                                        value={formData.email}
+                                        type="text"
+                                        name="companyName"
+                                        placeholder="Company Name"
+                                        value={formData.companyName}
                                         onChange={handleChange}
                                         className="contact-input"
                                         required
                                     />
                                 </div>
                             </div>
+
+                            {/* Row 3: Company Website + Niche */}
+                            <div className="input-pair">
+                                <div className="input-container">
+                                    <input
+                                        type="url"
+                                        name="companyWebsite"
+                                        placeholder="Company Website"
+                                        value={formData.companyWebsite}
+                                        onChange={handleChange}
+                                        className="contact-input"
+                                    />
+                                </div>
+                                <div className="input-container">
+                                    <select
+                                        name="niche"
+                                        value={formData.niche}
+                                        onChange={handleChange}
+                                        className="contact-input"
+                                        required
+                                    >
+                                        <option value="">Select Niche of Hiring</option>
+                                        {niches.map((n) => (
+                                            <option key={n.id} value={n.name}>
+                                                {n.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
                         </div>
+
                     </div>
 
                     <div className="contact-card">

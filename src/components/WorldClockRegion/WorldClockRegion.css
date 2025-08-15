@@ -1,0 +1,141 @@
+.world-clock-container {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.world-clock-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+    padding: 5px 0;
+}
+
+.world-clock-header h4 {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+    flex: 1;
+    min-width: 100%;
+}
+
+.time-format-toggle {
+    display: flex;
+    gap: 5px;
+    margin-right: 10px;
+}
+
+.time-format-toggle button {
+    padding: 4px 8px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.time-format-toggle button.active {
+    background: #2A2D7C;
+    color: white;
+    border-color: #2A2D7C;
+}
+
+.add-clock-dropdown {
+    flex: 1;
+    min-width: 200px;
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+}
+
+.world-clock-region {
+    margin-bottom: 15px;
+}
+
+.region-title {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    position: sticky;
+    top: 50px;
+    background: white;
+    padding: 3px 0;
+    z-index: 1;
+}
+
+.world-clock-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.world-clock-city {
+    font-size: 0.9rem;
+    color: #333;
+    flex: 1;
+}
+
+.world-clock-time {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: #2A2D7C;
+    min-width: 60px;
+    text-align: right;
+    margin: 0 10px;
+}
+
+.remove-clock-btn {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0 5px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.remove-clock-btn:hover {
+    background: #f5f5f5;
+    color: #f44336;
+}
+
+@media (max-width: 600px) {
+    .world-clock-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .time-format-toggle {
+        margin-right: 0;
+        margin-bottom: 10px;
+        justify-content: center;
+    }
+    
+    .add-clock-dropdown {
+        min-width: 100%;
+    }
+}

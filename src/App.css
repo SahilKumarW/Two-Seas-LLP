@@ -51,7 +51,7 @@ p {
 .cta-button,
 .solution-link,
 .profile-link {
-  background-color: var(--primary);
+  background-color: #09034b;
   color: #ffffff;
   border: none;
   padding: 0.8rem 1.5rem;
@@ -188,7 +188,7 @@ p {
 
 /* Footer Styles */
 .footer {
-  background-color: var(--secondary);
+  background-color: #06a3c2;
   color: white;
 }
 

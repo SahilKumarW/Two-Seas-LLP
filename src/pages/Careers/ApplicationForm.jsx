@@ -1,5 +1,300 @@
-import React, { useState } from 'react';
-import { FaFileUpload, FaLinkedin, FaCheck, FaTimes, FaVideo, FaCamera } from 'react-icons/fa';
+import React, { useState, useRef, useEffect } from 'react';
+import { FaFileUpload, FaLinkedin, FaCheck, FaTimes, FaVideo, FaCamera, FaMicrophone, FaUpload, FaStop } from 'react-icons/fa';
+import ConfirmDialog from '../../components/ConfirmDialog';
+
+const VideoRecorderOverlay = ({ onComplete, onClose }) => {
+  const [countdown, setCountdown] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const videoRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const streamRef = useRef(null);
+  const timerRef = useRef(null);
+
+  const MAX_RECORDING_TIME = 90; // 90 seconds maximum
+
+  const startCountdown = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+      streamRef.current = stream;
+      videoRef.current.srcObject = stream;
+      videoRef.current.play();
+      setCountdown(5); // Start with 3 second countdown
+    } catch (err) {
+      console.error("Error accessing camera:", err);
+      onClose();
+      alert("Could not access camera. Please check permissions.");
+    }
+  };
+
+  const startRecording = () => {
+    if (!streamRef.current) {
+      console.error("No stream available to record");
+      return;
+    }
+
+    try {
+      mediaRecorderRef.current = new MediaRecorder(streamRef.current, {
+        mimeType: 'video/webm'
+      });
+
+      const chunks = [];
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        onComplete(blob);
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+
+      // Start timer to track recording duration
+      timerRef.current = setInterval(() => {
+        setRecordingTime(prevTime => {
+          if (prevTime >= MAX_RECORDING_TIME) {
+            stopRecording();
+            return MAX_RECORDING_TIME;
+          }
+          return prevTime + 1;
+        });
+      }, 1000);
+    } catch (err) {
+      console.error("Error starting recording:", err);
+      onClose();
+      alert("Failed to start recording. Please try again.");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      clearInterval(timerRef.current);
+      mediaRecorderRef.current.stop();
+      cleanup();
+    }
+  };
+
+  const cleanup = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+    }
+    setIsRecording(false);
+    setCountdown(null);
+    setRecordingTime(0);
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+  };
+
+  useEffect(() => {
+    if (countdown === 0) {
+      startRecording();
+    } else if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
+
+  useEffect(() => {
+    startCountdown();
+    return cleanup;
+  }, []);
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="recorder-overlay">
+      <div className="recorder-container">
+        <button className="close-btn" onClick={onClose}>
+          <FaTimes />
+        </button>
+
+        <video ref={videoRef} muted className="camera-preview" />
+
+        {countdown !== null && countdown > 0 ? (
+          <div className="countdown">
+            <div className="countdown-number">{countdown}</div>
+            <div className="countdown-text">Recording starts in...</div>
+          </div>
+        ) : null}
+
+        {isRecording && (
+          <div className="recording-info">
+            <div className="recording-indicator">
+              <div className="recording-dot"></div>
+              <span>REC</span>
+            </div>
+            <div className="recording-timer">{formatTime(recordingTime)} / {formatTime(MAX_RECORDING_TIME)}</div>
+          </div>
+        )}
+
+        {isRecording && (
+          <div className="controls">
+            <button className="stop-btn" onClick={stopRecording}>
+              <FaStop /> Stop Recording
+            </button>
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        .recorder-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.9);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+        }
+        
+        .recorder-container {
+          position: relative;
+          width: 90%;
+          max-width: 800px;
+          background: #111;
+          border-radius: 10px;
+          overflow: hidden;
+        }
+        
+        .close-btn {
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          color: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 10;
+          transition: all 0.2s;
+        }
+        
+        .close-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .camera-preview {
+          width: 100%;
+          max-height: 70vh;
+          display: block;
+          background: #000;
+        }
+        
+        .countdown {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          text-align: center;
+          color: white;
+        }
+        
+        .countdown-number {
+          font-size: 72px;
+          font-weight: bold;
+          color: #ff4757;
+          text-shadow: 0 0 10px rgba(255, 71, 87, 0.7);
+        }
+        
+        .countdown-text {
+          font-size: 18px;
+          margin-top: 10px;
+        }
+        
+        .recording-info {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+        }
+        
+        .recording-indicator {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(255, 0, 0, 0.3);
+          padding: 5px 10px;
+          border-radius: 4px;
+          color: white;
+          font-weight: bold;
+        }
+        
+        .recording-dot {
+          width: 10px;
+          height: 10px;
+          background: #ff4757;
+          border-radius: 50%;
+          animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.3; }
+          100% { opacity: 1; }
+        }
+        
+        .recording-timer {
+          color: white;
+          font-weight: bold;
+          background: rgba(0, 0, 0, 0.5);
+          padding: 5px 10px;
+          border-radius: 4px;
+        }
+        
+        .controls {
+          position: absolute;
+          bottom: 20px;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: center;
+        }
+        
+        .stop-btn {
+          background: #ff4757;
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 50px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          transition: all 0.2s;
+        }
+        
+        .stop-btn:hover {
+          background: #ff6b81;
+          transform: translateY(-2px);
+        }
+      `}</style>
+    </div>
+  );
+};
 
 const ApplicationForm = ({ jobTitle, onClose }) => {
   const [formData, setFormData] = useState({
@@ -8,12 +303,19 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
     phone: '',
     linkedin: '',
     video: null,
+    videoBlob: null,
     photo: null,
     coverLetter: '',
-    resume: null
+    resume: null,
+    videoSource: 'upload'
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [showCamera, setShowCamera] = useState(false);
+  const [recordAttempts, setRecordAttempts] = useState(0); // Tracks recording count
+  const [showConfirmReRecord, setShowConfirmReRecord] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -21,16 +323,129 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
       ...prev,
       [name]: files ? files[0] : value
     }));
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  const handleSubmit = (e) => {
+  const handleVideoSourceChange = (source) => {
+    setFormData(prev => ({ ...prev, videoSource: source }));
+    setErrors(prev => ({ ...prev, video: '' }));
+  };
+
+  const handleRecordingComplete = (blob) => {
+    setFormData(prev => ({
+      ...prev,
+      videoBlob: blob,
+      video: new File([blob], 'recorded-video.webm', { type: 'video/webm' })
+    }));
+    setShowCamera(false);
+  };
+
+  // Re-record click handler
+  const handleReRecord = () => {
+    if (recordAttempts >= 3) return; // limit reached
+    setShowConfirmReRecord(true); // open our styled dialog
+  };
+
+  const confirmReRecordAction = () => {
+    setFormData(prev => ({ ...prev, videoBlob: null, video: null }));
+    setShowCamera(true);
+    setRecordAttempts(prev => prev + 1);
+    setShowConfirmReRecord(false);
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Full name is required';
+      isValid = false;
+    }
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+      isValid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email';
+      isValid = false;
+    }
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+      isValid = false;
+    }
+    if (formData.videoSource === 'upload' && !formData.video) {
+      newErrors.video = 'Video introduction is required';
+      isValid = false;
+    }
+    if (formData.videoSource === 'record' && !formData.videoBlob) {
+      newErrors.video = 'Please record a video introduction';
+      isValid = false;
+    }
+    if (!formData.photo) {
+      newErrors.photo = 'Profile photo is required';
+      isValid = false;
+    }
+    if (!formData.resume) {
+      newErrors.resume = 'Resume is required';
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      // Handle validation errors
+      return;
+    }
+
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      // Create FormData object
+      const formDataToSend = new FormData();
+
+      // Append all form fields
+      formDataToSend.append('name', formData.name);
+      formDataToSend.append('email', formData.email);
+      formDataToSend.append('phone', formData.phone);
+      formDataToSend.append('linkedin', formData.linkedin);
+      formDataToSend.append('coverLetter', formData.coverLetter);
+
+      // Append files
+      if (formData.video) {
+        formDataToSend.append('video', formData.video);
+      }
+      if (formData.photo) {
+        formDataToSend.append('photo', formData.photo);
+      }
+      if (formData.resume) {
+        formDataToSend.append('resume', formData.resume);
+      }
+
+      // Send to your backend API
+      const response = await fetch('YOUR_API_ENDPOINT', {
+        method: 'POST',
+        body: formDataToSend,
+        // Don't set Content-Type header - browser will set it automatically
+        // with the correct boundary for multipart/form-data
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const result = await response.json();
       setIsSuccess(true);
-    }, 1500);
+
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('There was an error submitting your application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   // Color theme variables
@@ -95,7 +510,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
             <form onSubmit={handleSubmit} className="application-form">
               {/* First Row - Full Name and LinkedIn */}
               <div className="form-row">
-                <div className="form-group floating-label half-width">
+                <div className={`form-group floating-label half-width ${errors.name ? 'has-error' : ''}`}>
                   <input
                     type="text"
                     name="name"
@@ -106,6 +521,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     placeholder=" "
                   />
                   <label htmlFor="name">Full Name*</label>
+                  {errors.name && <span className="error-message">{errors.name}</span>}
                 </div>
 
                 <div className="form-group floating-label with-icon half-width">
@@ -126,7 +542,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
 
               {/* Second Row - Email and Phone */}
               <div className="form-row">
-                <div className="form-group floating-label half-width">
+                <div className={`form-group floating-label half-width ${errors.email ? 'has-error' : ''}`}>
                   <input
                     type="email"
                     name="email"
@@ -137,9 +553,10 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     placeholder=" "
                   />
                   <label htmlFor="email">Email*</label>
+                  {errors.email && <span className="error-message">{errors.email}</span>}
                 </div>
 
-                <div className="form-group floating-label half-width">
+                <div className={`form-group floating-label half-width ${errors.phone ? 'has-error' : ''}`}>
                   <input
                     type="tel"
                     name="phone"
@@ -150,44 +567,157 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     placeholder=" "
                   />
                   <label htmlFor="phone">Phone*</label>
+                  {errors.phone && <span className="error-message">{errors.phone}</span>}
                 </div>
               </div>
 
-              {/* Third Row - Video and Photo Upload */}
-              <div className="form-row">
-                <div className="form-group file-upload half-width">
-                  <label className="file-label">Video Introduction</label>
-                  <label className="upload-label">
-                    <FaVideo className="upload-icon" />
-                    <span>{formData.video ? formData.video.name : 'Upload Video (Max 50MB)'}</span>
-                    <input
-                      type="file"
-                      name="video"
-                      onChange={handleChange}
-                      accept="video/*"
-                    />
-                  </label>
-                  <p className="file-hint">MP4, MOV, or AVI (Max 50MB)</p>
+              {/* Video Introduction Section */}
+              <div className="form-group">
+                <label className="file-label">Video Introduction*</label>
+
+                {/* Toggle between upload or record */}
+                <div className="video-source-toggle">
+                  <button
+                    type="button"
+                    className={`toggle-option ${formData.videoSource === 'upload' ? 'active' : ''}`}
+                    onClick={() => handleVideoSourceChange('upload')}
+                  >
+                    Upload Video
+                  </button>
+                  <span className="toggle-separator">OR</span>
+                  <button
+                    type="button"
+                    className={`toggle-option ${formData.videoSource === 'record' ? 'active' : ''}`}
+                    onClick={() => handleVideoSourceChange('record')}
+                  >
+                    Record Video (Upto 90s)
+                  </button>
                 </div>
 
-                <div className="form-group file-upload half-width">
-                  <label className="file-label">Profile Photo</label>
-                  <label className="upload-label">
+                {/* Upload mode */}
+                {formData.videoSource === 'upload' && (
+                  <div className={`file-upload ${errors.video ? 'has-error' : ''}`}>
+                    <label className="upload-label">
+                      <span className="upload-content">
+                        <FaVideo className="upload-icon" />
+                        {formData.video ? formData.video.name : 'Upload Video (Max 50MB)'}
+                      </span>
+                      <input
+                        type="file"
+                        name="video"
+                        onChange={handleChange}
+                        accept="video/*"
+                      />
+                    </label>
+                    {errors.video && <span className="error-message">{errors.video}</span>}
+                    <p className="file-hint">MP4, MOV, or AVI (Max 50MB)</p>
+                  </div>
+                )}
+
+                {/* Record mode */}
+                {formData.videoSource === 'record' && (
+                  <div className={`video-recorder ${errors.video ? 'has-error' : ''}`}>
+
+                    {/* If no recording yet */}
+                    {!formData.videoBlob && !formData.video && (
+                      <button
+                        type="button"
+                        className="start-recording-btn"
+                        onClick={() => setShowCamera(true)}
+                      >
+                        <FaMicrophone /> Start Recording
+                      </button>
+                    )}
+
+                    {/* Actions before saving */}
+                    {formData.videoBlob && !formData.video && (
+                      <div className="video-actions">
+                        <button
+                          type="button"
+                          className="re-record-btn"
+                          onClick={() => {
+                            setFormData(prev => ({ ...prev, videoBlob: null, video: null }));
+                            setShowCamera(true);
+                          }}
+                        >
+                          <FaMicrophone /> Re-record
+                        </button>
+                        <button
+                          type="button"
+                          className="upload-recorded-btn"
+                          onClick={() => {
+                            const extension = formData.videoBlob.type.split("/")[1] || "mp4";
+                            const videoFile = new File(
+                              [formData.videoBlob],
+                              `recorded-video.${extension}`,
+                              {
+                                type: formData.videoBlob.type,
+                                lastModified: Date.now()
+                              }
+                            );
+                            setFormData(prev => ({ ...prev, video: videoFile }));
+                            alert("Video Saved!");
+                          }}
+                        >
+                          <FaUpload /> Use This Video
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Show file name after saving + always show Re-record */}
+                    {formData.video && (
+                      <div className="video-saved-inline">
+                        <span className="recorded-video-name">
+                          <FaVideo /> {formData.video.name}
+                        </span>
+                        <button
+                          type="button"
+                          className="re-record-btn-small"
+                          onClick={handleReRecord} // now opens ConfirmDialog
+                          disabled={recordAttempts >= 3}
+                        >
+                          Re-record
+                        </button>
+                        {recordAttempts >= 3 && (
+                          <small className="attempts-limit-msg">(Max re-records reached)</small>
+                        )}
+
+                        {/* Custom confirmation dialog */}
+                        <ConfirmDialog
+                          open={showConfirmReRecord}
+                          message="You've just done fine with your previous video 😊. We'll ask you for a new video if required. Do you still wish to record a new video?"
+                          onConfirm={confirmReRecordAction}
+                          onCancel={() => setShowConfirmReRecord(false)}
+                        />
+                      </div>
+                    )}
+
+                    {errors.video && <span className="error-message">{errors.video}</span>}
+                  </div>
+                )}
+              </div>
+
+              {/* Profile Photo Upload */}
+              <div className={`form-group file-upload ${errors.photo ? 'has-error' : ''}`}>
+                <label className="file-label">Profile Photo*</label>
+                <label className="upload-label">
+                  <span className="upload-content">
                     <FaCamera className="upload-icon" />
-                    <span>{formData.photo ? formData.photo.name : 'Upload Photo (Max 5MB)'}</span>
-                    <input
-                      type="file"
-                      name="photo"
-                      onChange={handleChange}
-                      accept="image/*"
-                    />
-                  </label>
-                  <p className="file-hint">JPG, PNG (Max 5MB)</p>
-                </div>
+                    {formData.photo ? formData.photo.name : 'Upload Photo (Max 5MB)'}
+                  </span>
+                  <input
+                    type="file"
+                    name="photo"
+                    onChange={handleChange}
+                    accept="image/*"
+                  />
+                </label>
+                {errors.photo && <span className="error-message">{errors.photo}</span>}
+                <p className="file-hint">JPG, PNG (Max 5MB)</p>
               </div>
 
-              {/* Resume Upload - Full Width */}
-              <div className="form-group file-upload full-width">
+              {/* Resume Upload */}
+              <div className={`form-group file-upload ${errors.resume ? 'has-error' : ''}`}>
                 <label className="file-label">RESUME / CV*</label>
                 <label className="upload-label">
                   <FaFileUpload className="upload-icon" />
@@ -200,22 +730,29 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     required
                   />
                 </label>
+                {errors.resume && <span className="error-message">{errors.resume}</span>}
                 <p className="file-hint">PDF, DOC, or DOCX (Max 5MB)</p>
               </div>
 
-              {/* Cover Letter - Full Width */}
-              <div className="form-group floating-label full-width">
+              {/* Cover Letter */}
+              <div className="form-group floating-label">
                 <label className="file-label">COVER LETTER</label>
                 <textarea
                   name="coverLetter"
                   id="coverLetter"
                   value={formData.coverLetter}
                   onChange={handleChange}
-                  required
                   placeholder=" "
                 ></textarea>
                 <div className="char-count">{formData.coverLetter.length}/1000</div>
               </div>
+
+              {showCamera && (
+                <VideoRecorderOverlay
+                  onComplete={handleRecordingComplete}
+                  onClose={() => setShowCamera(false)}
+                />
+              )}
 
               {/* Form Footer */}
               <div className="form-footer">
@@ -236,6 +773,16 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
       </div>
 
       <style jsx>{`
+      .recorded-video-name {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
         .application-modal {
           position: fixed;
           top: 0;
@@ -314,6 +861,39 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           line-height: 1.3;
         }
 
+        .video-saved-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.recorded-video-name {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Small inline button */
+.re-record-btn-small {
+  padding: 3px 8px;
+  font-size: 12px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.re-record-btn-small:hover {
+  background-color: red;
+}
+
+
         .application-subtitle {
           color: ${colors.textSecondary};
           font-size: 1rem;
@@ -368,6 +948,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
 
         .form-group {
           position: relative;
+          margin-bottom: 1.5rem;
         }
 
         /* Floating Label Styles */
@@ -513,6 +1094,90 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           margin-top: 0.5rem;
         }
 
+        /* Video Source Toggle */
+        .video-source-toggle {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 15px;
+        }
+
+        .toggle-option {
+          flex: 1;
+          padding: 10px 15px;
+          border: 1px solid ${colors.border};
+          background: white;
+          color: ${colors.textSecondary};
+          border-radius: 8px;
+          cursor: pointer;
+          transition: all 0.3s;
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+
+        .toggle-option.active {
+          background: ${colors.primary};
+          color: white;
+          border-color: ${colors.primary};
+        }
+
+        /* Video Recorder */
+        .video-recorder {
+          margin-top: 10px;
+        }
+
+        .video-preview-container {
+          width: 100%;
+          background: #000;
+          border-radius: 10px;
+          overflow: hidden;
+          margin-bottom: 15px;
+        }
+
+        .video-preview {
+          width: 100%;
+          max-height: 300px;
+          display: block;
+          background: #222;
+        }
+
+        .recorder-controls {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+        }
+
+        .record-btn, .stop-btn, .retry-btn {
+          padding: 10px 20px;
+          border: none;
+          border-radius: 8px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .record-btn {
+          background: ${colors.error};
+          color: white;
+        }
+
+        .stop-btn {
+          background: ${colors.error};
+          color: white;
+        }
+
+        .retry-btn {
+          background: ${colors.secondary};
+          color: white;
+        }
+
+        .record-btn:hover, .stop-btn:hover, .retry-btn:hover {
+          opacity: 0.9;
+        }
+
+        /* Form Footer */
         .form-footer {
           display: flex;
           flex-direction: column;
@@ -651,6 +1316,34 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           box-shadow: 0 8px 25px rgba(6, 163, 194, 0.4);
         }
 
+        /* Error States */
+        .has-error input,
+        .has-error textarea,
+        .has-error .upload-label,
+        .has-error .video-preview-container {
+          border-color: ${colors.error} !important;
+          background-color: rgba(244, 67, 54, 0.05) !important;
+        }
+        
+        .error-message {
+          color: ${colors.error};
+          font-size: 0.75rem;
+          margin-top: 0.25rem;
+          display: block;
+        }
+        
+        .has-error label {
+          color: ${colors.error} !important;
+        }
+        
+        .has-error .file-label {
+          color: ${colors.error} !important;
+        }
+        
+        .has-error .upload-icon {
+          color: ${colors.error} !important;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
           .application-container {
@@ -668,6 +1361,10 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           
           .half-width {
             width: 100%;
+          }
+
+          .video-source-toggle {
+            flex-direction: column;
           }
         }
 
@@ -697,6 +1394,147 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
             left: 1.25rem;
           }
         }
+
+         .video-source-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .toggle-option {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid ${colors.border};
+    background: white;
+    color: ${colors.textSecondary};
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .toggle-option.active {
+    background: ${colors.primary};
+    color: white;
+    border-color: ${colors.primary};
+  }
+
+  .toggle-separator {
+    color: ${colors.textSecondary};
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0 5px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .video-source-toggle {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .toggle-separator {
+      padding: 5px 0;
+    }
+  }
+
+  /* Toggle container */
+.video-source-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.toggle-option {
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: 2px solid #ccc;
+  background-color: #f8f8f8;
+  color: #444;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.toggle-option:hover {
+  background-color: #f0f0f0;
+  border-color: #999;
+}
+
+
+
+/* Separator */
+.toggle-separator {
+  font-size: 14px;
+  font-weight: 500;
+  color: #777;
+}
+
+/* Action buttons under preview */
+.video-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.re-record-btn,
+.upload-recorded-btn,
+.start-recording-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+/* Button colors */
+.re-record-btn {
+  background-color: red;
+  color: white;
+}
+
+.re-record-btn:hover {
+  background-color: red;
+}
+
+.upload-recorded-btn {
+  background-color: #2a2d7c;
+  color: white;
+}
+
+.upload-recorded-btn:hover {
+  background-color: #43a047;
+}
+
+.start-recording-btn {
+  background-color: #2196F3;
+  color: white;
+}
+
+.start-recording-btn:hover {
+  background-color: #1976D2;
+}
+
+/* Subtle hover lift */
+.re-record-btn:hover,
+.upload-recorded-btn:hover,
+.start-recording-btn:hover {
+  transform: translateY(-1px);
+}
+  .attempts-limit-msg {
+  font-size: 12px;
+  color: #d32f2f;
+}
+
       `}</style>
     </div>
   );

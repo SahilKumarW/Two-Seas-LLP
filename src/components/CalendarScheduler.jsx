@@ -64,7 +64,7 @@ const CalendarScheduler = ({
     title = "Schedule a Meeting",
     submitButtonText = "Send Appointment Request",
     successMessage = "We'll contact you shortly to confirm your appointment.",
-    workingHours = { start: 9, end: 16 } // 9 AM to 4 PM
+    workingHours = { start: 9, end: 21 } // 9 AM to 9 PM
 }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedTime, setSelectedTime] = useState(null);
@@ -91,6 +91,7 @@ const CalendarScheduler = ({
     const [isDetectingLocation, setIsDetectingLocation] = useState(false);
     const [showWorldClock, setShowWorldClock] = useState(false);
     const [worldClocks, setWorldClocks] = useState([]);
+    const [timeFormat, setTimeFormat] = useState('12h'); // '12h' or '24h'
 
     // Add a popular city to world clocks
     const addWorldClock = (timezone) => {
@@ -108,6 +109,10 @@ const CalendarScheduler = ({
     const removeWorldClock = (timezone) => {
         setWorldClocks(worldClocks.filter(clock => clock.timezone !== timezone));
     };
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    })
 
     // Update world clock times
     useEffect(() => {
@@ -213,7 +218,6 @@ const CalendarScheduler = ({
         }
     }, [selectedTimeZone]);
 
-
     const convertTimeToTimezone = (time, fromTimezone, toTimezone) => {
         // Create a date object with the current date and selected time
         const date = new Date();
@@ -305,12 +309,11 @@ const CalendarScheduler = ({
 
     const generateTimeSlots = async (date, timeZone = selectedTimeZone) => {
         const slots = [];
-        const startHour = 9; // 9 AM
-        const endHour = 16;  // 4 PM
+        const startHour = workingHours.start; // 9 AM
+        const endHour = workingHours.end;    // 9 PM
 
         // Get date in YYYY-MM-DD format in LOCAL timezone
         const dateString = formatDateLocal(date);
-        console.log(`Generating slots for LOCAL date: ${dateString} in timezone ${timeZone}`);
 
         try {
             // Get blocked slots for this date
@@ -327,7 +330,7 @@ const CalendarScheduler = ({
                     hour: 'numeric',
                     minute: '2-digit',
                     hour12: true,
-                    timeZone: timeZone // Use the passed timezone
+                    timeZone: timeZone
                 });
 
                 // Check if this slot is blocked
@@ -353,7 +356,7 @@ const CalendarScheduler = ({
                         hour: 'numeric',
                         minute: '2-digit',
                         hour12: true,
-                        timeZone: timeZone // Use the passed timezone
+                        timeZone: timeZone
                     }),
                     isAvailable: true
                 });
@@ -621,6 +624,49 @@ const CalendarScheduler = ({
         return blockedTimes.includes(normalizeTime(time));
     }
 
+    const WorldClockRegion = ({ title, clocks, removeClock, timeFormat }) => {
+        if (clocks.length === 0) return null;
+
+        return (
+            <div className="world-clock-region">
+                <div className="region-title">{title}</div>
+                {clocks.map((clock, index) => (
+                    <div key={index} className="world-clock-item">
+                        <div className="world-clock-city">
+                            {clock.label.split(' (')[0].replace(/(America|Asia|Europe|Africa|Australia|Pacific|Atlantic)\//, '')}
+                        </div>
+                        <div className="world-clock-time">
+                            {formatTime(clock.time, timeFormat)}
+                        </div>
+                        <button
+                            className="remove-clock-btn"
+                            onClick={() => removeClock(clock.timezone)}
+                            title="Remove clock"
+                        >
+                            ×
+                        </button>
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    const formatTime = (timeString, format) => {
+        if (!timeString) return '--:-- --';
+        if (format === '24h') {
+            const [time, period] = timeString.split(' ');
+            let [hours, minutes] = time.split(':');
+            if (period === 'PM' && hours !== '12') {
+                hours = String(Number(hours) + 12);
+            }
+            if (period === 'AM' && hours === '12') {
+                hours = '00';
+            }
+            return `${hours}:${minutes}`;
+        }
+        return timeString;
+    };
+
     return (
         <div className="calendar-scheduler">
             <div className="scheduler-header">
@@ -709,52 +755,141 @@ const CalendarScheduler = ({
                                     ))}
                                 </select>
                                 {isDetectingLocation && <FaSpinner className="spinner" />}
-                                <button
+                                {/* <button
                                     className="world-clock-toggle"
                                     onClick={() => setShowWorldClock(!showWorldClock)}
                                 >
                                     {showWorldClock ? 'Hide Clocks' : 'Show World Clocks'}
-                                </button>
+                                </button> */}
                             </div>
 
                             {showWorldClock && (
                                 <div className="world-clock-container">
                                     <div className="world-clock-header">
                                         <h4>World Clocks</h4>
-                                        <div className="world-clock-actions">
-                                            <select
-                                                value=""
-                                                onChange={(e) => addWorldClock(e.target.value)}
-                                                className="add-clock-dropdown"
+                                        <div className="time-format-toggle">
+                                            <button
+                                                className={timeFormat === '12h' ? 'active' : ''}
+                                                onClick={() => setTimeFormat('12h')}
                                             >
-                                                <option value="">Add a city...</option>
-                                                {popularCities.map(city => (
-                                                    <option key={city.value} value={city.value}>
-                                                        {city.label}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                                am/pm
+                                            </button>
+                                            <button
+                                                className={timeFormat === '24h' ? 'active' : ''}
+                                                onClick={() => setTimeFormat('24h')}
+                                            >
+                                                24h
+                                            </button>
                                         </div>
+                                        <select
+                                            value=""
+                                            onChange={(e) => addWorldClock(e.target.value)}
+                                            className="add-clock-dropdown"
+                                        >
+                                            <option value="">All time zones - all cities - all regions</option>
+                                            {timeZones.map(zone => (
+                                                <option key={zone.value} value={zone.value}>
+                                                    {zone.label}
+                                                </option>
+                                            ))}
+                                        </select>
                                     </div>
-                                    <div className="world-clocks-grid">
-                                        {worldClocks.map((clock, index) => (
-                                            <div key={index} className="world-clock-item">
-                                                <div className="world-clock-city">
-                                                    {clock.label.split(' (')[0]}
-                                                </div>
-                                                <div className="world-clock-time">
-                                                    {clock.time || '--:-- --'}
-                                                </div>
-                                                <button
-                                                    className="remove-clock-btn"
-                                                    onClick={() => removeWorldClock(clock.timezone)}
-                                                    title="Remove clock"
-                                                >
-                                                    ×
-                                                </button>
-                                            </div>
-                                        ))}
-                                    </div>
+
+                                    {/* US/CANADA Section */}
+                                    <WorldClockRegion
+                                        title="US/CANADA"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('America/') ||
+                                            clock.timezone.includes('US/') ||
+                                            clock.timezone.includes('Canada')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
+
+                                    {/* AMERICA Section */}
+                                    <WorldClockRegion
+                                        title="AMERICA"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('America/') &&
+                                            !clock.timezone.includes('US/') &&
+                                            !clock.timezone.includes('Canada')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
+
+                                    {/* EUROPE Section */}
+                                    <WorldClockRegion
+                                        title="EUROPE"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('Europe/')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
+
+                                    {/* ASIA Section */}
+                                    <WorldClockRegion
+                                        title="ASIA"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('Asia/')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
+
+                                    {/* AFRICA Section */}
+                                    <WorldClockRegion
+                                        title="AFRICA"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('Africa/')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
+
+                                    {/* AUSTRALIA Section */}
+                                    <WorldClockRegion
+                                        title="AUSTRALIA"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('Australia/')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
+
+                                    {/* PACIFIC Section */}
+                                    <WorldClockRegion
+                                        title="PACIFIC"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('Pacific/') &&
+                                            !clock.timezone.includes('Pacific/Auckland')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
+
+                                    {/* ATLANTIC Section */}
+                                    <WorldClockRegion
+                                        title="ATLANTIC"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('Atlantic/')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
+
+                                    {/* UTC Section */}
+                                    <WorldClockRegion
+                                        title="UTC"
+                                        clocks={worldClocks.filter(clock =>
+                                            clock.timezone.includes('UTC') ||
+                                            clock.timezone.includes('GMT')
+                                        )}
+                                        removeClock={removeWorldClock}
+                                        timeFormat={timeFormat}
+                                    />
                                 </div>
                             )}
 
