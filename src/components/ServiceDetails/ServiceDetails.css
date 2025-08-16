@@ -95,6 +95,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     flex: 1;
+    margin-top: 0 !important;
 }
 
 .back-button:hover {

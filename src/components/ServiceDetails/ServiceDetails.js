@@ -18,11 +18,6 @@ const ServiceDetails = () => {
         return null;
     }
 
-    const handleBookConsultation = () => {
-        console.log("Booking consultation for", service.title);
-        navigate('/schedule-appointment');
-    };
-
     return (
         <div className="service-detail-page">
             <h2 className="service-title">{service.displayTitle || service.title} Professionals</h2>
@@ -34,7 +29,10 @@ const ServiceDetails = () => {
             <div className="action-buttons-container">
                 <button
                     className="consultation-button"
-                    onClick={handleBookConsultation}
+                    onClick={() => {
+                        window.scrollTo(0, 0); // scroll to top
+                        navigate("/schedule-appointment");
+                    }}
                 >
                     {service.title?.toLowerCase() === "sales & marketing"
                         ? "Find Your Next Best Hire"

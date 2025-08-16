@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './components/styles.css';
 import ProcessSection from './components/ProcessSection';
 import PromiseSection from './components/PromiseSection';
@@ -7,6 +7,10 @@ import EmployeeSupportSection from './components/EmployeeSupportSection';
 import { FaBullhorn, FaFilter, FaUserFriends, FaDatabase, FaUsers } from 'react-icons/fa';
 
 const HowWeWork = () => {
+    useEffect(() => {
+    window.scrollTo(0, 0);
+    })
+
     return (
         <div className="how-we-work-page">
             <header className="how-we-work-header">

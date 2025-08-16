@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaFileUpload, FaLinkedin, FaCheck, FaTimes, FaVideo, FaCamera, FaMicrophone, FaUpload, FaStop } from 'react-icons/fa';
+import { FaFileUpload, FaLinkedin, FaCheck, FaTimes, FaVideo, FaCamera, FaMicrophone, FaUpload, FaStop, FaPlay, FaPause, FaDownload } from 'react-icons/fa';
 import ConfirmDialog from '../../components/ConfirmDialog';
 
 const VideoRecorderOverlay = ({ onComplete, onClose }) => {
@@ -22,7 +22,7 @@ const VideoRecorderOverlay = ({ onComplete, onClose }) => {
       streamRef.current = stream;
       videoRef.current.srcObject = stream;
       videoRef.current.play();
-      setCountdown(5); // Start with 3 second countdown
+      setCountdown(5); // Start with 5 second countdown
     } catch (err) {
       console.error("Error accessing camera:", err);
       onClose();
@@ -148,152 +148,373 @@ const VideoRecorderOverlay = ({ onComplete, onClose }) => {
       </div>
 
       <style jsx>{`
-        .recorder-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.9);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-        }
-        
-        .recorder-container {
-          position: relative;
-          width: 90%;
-          max-width: 800px;
-          background: #111;
-          border-radius: 10px;
+        .video-player-container {
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          margin: 15px 0;
           overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .close-btn {
-          position: absolute;
-          top: 15px;
-          right: 15px;
-          background: rgba(255, 255, 255, 0.2);
-          border: none;
-          color: white;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
+        .video-player-header {
           display: flex;
+          justify-content: space-between;
           align-items: center;
-          justify-content: center;
+          padding: 12px 15px;
+          background-color: #f5f5f5;
           cursor: pointer;
-          z-index: 10;
-          transition: all 0.2s;
+          user-select: none;
         }
         
-        .close-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-        }
-        
-        .camera-preview {
-          width: 100%;
-          max-height: 70vh;
-          display: block;
-          background: #000;
-        }
-        
-        .countdown {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          text-align: center;
-          color: white;
-        }
-        
-        .countdown-number {
-          font-size: 72px;
-          font-weight: bold;
-          color: #ff4757;
-          text-shadow: 0 0 10px rgba(255, 71, 87, 0.7);
-        }
-        
-        .countdown-text {
-          font-size: 18px;
-          margin-top: 10px;
-        }
-        
-        .recording-info {
-          position: absolute;
-          top: 20px;
-          left: 20px;
-          display: flex;
-          align-items: center;
-          gap: 15px;
-        }
-        
-        .recording-indicator {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(255, 0, 0, 0.3);
-          padding: 5px 10px;
-          border-radius: 4px;
-          color: white;
-          font-weight: bold;
-        }
-        
-        .recording-dot {
-          width: 10px;
-          height: 10px;
-          background: #ff4757;
-          border-radius: 50%;
-          animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-          0% { opacity: 1; }
-          50% { opacity: 0.3; }
-          100% { opacity: 1; }
-        }
-        
-        .recording-timer {
-          color: white;
-          font-weight: bold;
-          background: rgba(0, 0, 0, 0.5);
-          padding: 5px 10px;
-          border-radius: 4px;
-        }
-        
-        .controls {
-          position: absolute;
-          bottom: 20px;
-          left: 0;
-          right: 0;
-          display: flex;
-          justify-content: center;
-        }
-        
-        .stop-btn {
-          background: #ff4757;
-          color: white;
-          border: none;
-          padding: 12px 24px;
-          border-radius: 50px;
+        .video-player-header h4 {
+          margin: 0;
           font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-          transition: all 0.2s;
+          color: #333;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 80%;
         }
         
-        .stop-btn:hover {
-          background: #ff6b81;
-          transform: translateY(-2px);
+        .collapse-toggle {
+          font-size: 14px;
+          color: #666;
+        }
+        
+        .video-player-content {
+          padding: 15px;
+          background-color: white;
+        }
+        
+        .video-preview {
+          width: 100%;
+          max-height: 200px;
+          background-color: #000;
+          border-radius: 4px;
+          margin-bottom: 10px;
+        }
+        
+        .video-controls {
+          display: flex;
+          justify-content: center;
+          gap: 15px;
+          margin-bottom: 15px;
+        }
+        
+        .control-btn {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 10px 15px;
+          background-color: #f0f0f0;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+        }
+        
+        .video-actions {
+          display: flex;
+          gap: 10px;
+        }
+        
+        .re-record-btn {
+          flex: 1;
+          padding: 12px;
+          background-color: #f8f8f8;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+          font-size: 14px;
+        }
+        
+        .use-video-btn {
+          flex: 1;
+          padding: 12px;
+          background-color: #2a2d7c;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+          font-size: 14px;
+        }
+        
+        @media (max-width: 480px) {
+          .video-player-header h4 {
+            font-size: 14px;
+          }
+          
+          .video-preview {
+            max-height: 150px;
+          }
+          
+          .video-controls {
+            flex-direction: column;
+            gap: 8px;
+          }
+          
+          .video-actions {
+            flex-direction: column;
+          }
+          
+          .control-btn, .re-record-btn, .use-video-btn {
+            width: 100%;
+            justify-content: center;
+          }
         }
       `}</style>
     </div>
   );
+};
+
+const VideoPlayer = ({ videoBlob, onReRecord, onUseVideo, attemptNumber, maxAttempts }) => {
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
+
+  useEffect(() => {
+    if (videoBlob) {
+      const url = URL.createObjectURL(videoBlob);
+      setVideoUrl(url);
+
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    }
+  }, [videoBlob]);
+
+  const togglePlay = async () => {
+    if (!videoRef.current) return;
+
+    try {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        if (videoRef.current.ended) {
+          videoRef.current.currentTime = 0;
+        }
+        await videoRef.current.play();
+        setIsPlaying(true);
+      }
+    } catch (err) {
+      console.error("Video play error:", err);
+      setIsPlaying(false);
+    }
+  };
+
+  const handleDownload = () => {
+    const a = document.createElement('a');
+    a.href = videoUrl;
+    a.download = `interview-attempt-${attemptNumber}.webm`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  };
+
+  return (
+    <div className={`video-player-container ${isCollapsed ? 'collapsed' : ''}`}>
+      <div className="video-player-header" onClick={() => setIsCollapsed(!isCollapsed)}>
+        <h4>Recorded Interview Video (Attempt {attemptNumber})</h4>
+        <span className="collapse-toggle">
+          {isCollapsed ? 'Show' : 'Hide'}
+        </span>
+      </div>
+
+      {!isCollapsed && (
+        <div className="video-player-content">
+          <video
+            ref={videoRef}
+            src={videoUrl}
+            controls={false}
+            className="video-preview"
+            onEnded={() => setIsPlaying(false)}
+          />
+
+          <div className="video-controls">
+            <button onClick={togglePlay} className="control-btn">
+              {isPlaying ? <FaPause /> : <FaPlay />}
+            </button>
+            <button onClick={handleDownload} className="control-btn">
+              <FaDownload /> Save
+            </button>
+          </div>
+
+          <div className="video-actions">
+            <button
+              onClick={onReRecord}
+              className="re-record-btn"
+              disabled={attemptNumber >= maxAttempts}
+            >
+              Record Another
+            </button>
+            <button onClick={() => onUseVideo(videoBlob)} className="use-video-btn">
+              Use This Video
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        .video-player-container {
+          border: 1px solid #e0e0e0;
+          border-radius: 8px;
+          margin: 15px 0;
+          overflow: hidden;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .video-player-content {
+          padding: 15px;
+          background-color: white;
+          display: flex;
+          flex-direction: column;          
+        }
+        
+        .video-preview {
+          width: 100%;
+          max-height: 300px;
+          background-color: #000;
+          border-radius: 4px;
+        }
+
+        .video-controls-container {
+          display: flex;
+          flex-direction: column;
+          gap: 55px;
+        }
+        
+        .video-controls {
+          display: flex;
+          margin-bottom: 155px;
+          align-items: center;
+          background: #2a2f7c !important;
+        }
+        
+        .video-player-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 15px;
+          background-color: #f5f5f5;
+          cursor: pointer;
+          user-select: none;
+        }
+        
+        .video-player-header h4 {
+          margin: 0;
+          font-size: 16px;
+          color: #333;
+        }
+        
+        .collapse-toggle {
+          font-size: 14px;
+          color: #666;
+        }
+        
+        .video-player-content {
+          padding: 15px;
+          background-color: white;
+        }
+        
+        .video-preview {
+          width: 100%;
+          max-height: 300px;
+          background-color: #000;
+          border-radius: 4px;
+          margin-bottom: 10px;
+        }
+        
+        .video-time {
+          font-size: 14px;
+          color: #06a3c2;
+          flex-grow: 1;
+          text-align: center;
+        }
+
+        @media (max-width: 768px) {
+          .video-controls {
+            display: flex;
+            margin-bottom: 195px;
+            align-items: center;
+            background: #2a2f7c !important;
+          }
+        }
+        
+        .control-btn {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 8px 12px;
+          background-color: #06a3c2;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 14px;
+        }
+        
+        .control-btn:hover {
+          background-color: #e0e0e0;
+        }
+        
+        .video-actions {
+          display: flex;
+          gap: 10px;
+          margin-top: 60px;
+        }
+        
+        .re-record-btn {
+          flex: 1;
+          padding: 12px;
+          background-color: #f8f8f8;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+          font-size: 14px;
+        }
+        
+        .re-record-btn:hover:not(:disabled) {
+          background-color: #e9e9e9;
+        }
+        
+        .re-record-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+        
+        .use-video-btn {
+          flex: 1;
+          padding: 12px;
+          background-color: #2a2d7c;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-weight: 500;
+          font-size: 14px;
+        }
+        
+        .use-video-btn:hover {
+          background-color: #1a1d6c;
+        }
+        
+        .collapsed .video-player-content {
+          display: none;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// Helper function to format time
+const formatTime = (seconds) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 };
 
 const ApplicationForm = ({ jobTitle, onClose }) => {
@@ -314,8 +535,9 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [errors, setErrors] = useState({});
   const [showCamera, setShowCamera] = useState(false);
-  const [recordAttempts, setRecordAttempts] = useState(0); // Tracks recording count
-  const [showConfirmReRecord, setShowConfirmReRecord] = useState(false);
+  const [recordedAttempts, setRecordedAttempts] = useState([]);
+  const [currentAttempt, setCurrentAttempt] = useState(1);
+  const MAX_ATTEMPTS = 3;
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -332,25 +554,37 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
   };
 
   const handleRecordingComplete = (blob) => {
-    setFormData(prev => ({
-      ...prev,
-      videoBlob: blob,
-      video: new File([blob], 'recorded-video.webm', { type: 'video/webm' })
-    }));
+    const newAttempt = {
+      blob,
+      attemptNumber: currentAttempt,
+      timestamp: new Date().toISOString()
+    };
+
+    setRecordedAttempts(prev => [...prev, newAttempt]);
+    setCurrentAttempt(prev => prev + 1);
     setShowCamera(false);
   };
 
-  // Re-record click handler
   const handleReRecord = () => {
-    if (recordAttempts >= 3) return; // limit reached
-    setShowConfirmReRecord(true); // open our styled dialog
+    if (currentAttempt > MAX_ATTEMPTS) return;
+    setShowCamera(true);
   };
 
-  const confirmReRecordAction = () => {
-    setFormData(prev => ({ ...prev, videoBlob: null, video: null }));
-    setShowCamera(true);
-    setRecordAttempts(prev => prev + 1);
-    setShowConfirmReRecord(false);
+  const handleUseVideo = (blob) => {
+    const extension = blob.type.split("/")[1] || "webm";
+    const videoFile = new File(
+      [blob],
+      `recorded-video-attempt-${recordedAttempts.length}.${extension}`,
+      {
+        type: blob.type,
+        lastModified: Date.now()
+      }
+    );
+    setFormData(prev => ({
+      ...prev,
+      videoBlob: blob,
+      video: videoFile
+    }));
   };
 
   const validateForm = () => {
@@ -397,49 +631,15 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
     e.preventDefault();
 
     if (!validateForm()) {
-      // Handle validation errors
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Create FormData object
-      const formDataToSend = new FormData();
-
-      // Append all form fields
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('email', formData.email);
-      formDataToSend.append('phone', formData.phone);
-      formDataToSend.append('linkedin', formData.linkedin);
-      formDataToSend.append('coverLetter', formData.coverLetter);
-
-      // Append files
-      if (formData.video) {
-        formDataToSend.append('video', formData.video);
-      }
-      if (formData.photo) {
-        formDataToSend.append('photo', formData.photo);
-      }
-      if (formData.resume) {
-        formDataToSend.append('resume', formData.resume);
-      }
-
-      // Send to your backend API
-      const response = await fetch('YOUR_API_ENDPOINT', {
-        method: 'POST',
-        body: formDataToSend,
-        // Don't set Content-Type header - browser will set it automatically
-        // with the correct boundary for multipart/form-data
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const result = await response.json();
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
       setIsSuccess(true);
-
     } catch (error) {
       console.error('Error submitting form:', error);
       alert('There was an error submitting your application. Please try again.');
@@ -448,7 +648,6 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
     }
   };
 
-  // Color theme variables
   const colors = {
     primary: '#2A2D7C',
     secondary: '#06A3C2',
@@ -467,14 +666,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
       <div className="application-container">
         {/* Header Section */}
         <div className="application-header">
-          <button
-            className="close-btn"
-            onClick={onClose}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              onClose();
-            }}
-          >
+          <button className="close-btn" onClick={onClose}>
             <FaTimes />
           </button>
           <div className="header-content">
@@ -482,11 +674,6 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
               Apply for <span className="highlight">{jobTitle}</span>
             </h2>
             <p className="application-subtitle">Join our team and start your next adventure</p>
-            <div className="header-divider">
-              <div className="divider-line"></div>
-              <div className="divider-dot"></div>
-              <div className="divider-line"></div>
-            </div>
           </div>
         </div>
 
@@ -574,8 +761,6 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
               {/* Video Introduction Section */}
               <div className="form-group">
                 <label className="file-label">Video Introduction*</label>
-
-                {/* Toggle between upload or record */}
                 <div className="video-source-toggle">
                   <button
                     type="button"
@@ -590,7 +775,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     className={`toggle-option ${formData.videoSource === 'record' ? 'active' : ''}`}
                     onClick={() => handleVideoSourceChange('record')}
                   >
-                    Record Video (Upto 90s)
+                    Record Video
                   </button>
                 </div>
 
@@ -617,9 +802,8 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                 {/* Record mode */}
                 {formData.videoSource === 'record' && (
                   <div className={`video-recorder ${errors.video ? 'has-error' : ''}`}>
-
                     {/* If no recording yet */}
-                    {!formData.videoBlob && !formData.video && (
+                    {recordedAttempts.length === 0 && (
                       <button
                         type="button"
                         className="start-recording-btn"
@@ -629,67 +813,39 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                       </button>
                     )}
 
-                    {/* Actions before saving */}
-                    {formData.videoBlob && !formData.video && (
-                      <div className="video-actions">
-                        <button
-                          type="button"
-                          className="re-record-btn"
-                          onClick={() => {
-                            setFormData(prev => ({ ...prev, videoBlob: null, video: null }));
-                            setShowCamera(true);
-                          }}
-                        >
-                          <FaMicrophone /> Re-record
-                        </button>
-                        <button
-                          type="button"
-                          className="upload-recorded-btn"
-                          onClick={() => {
-                            const extension = formData.videoBlob.type.split("/")[1] || "mp4";
-                            const videoFile = new File(
-                              [formData.videoBlob],
-                              `recorded-video.${extension}`,
-                              {
-                                type: formData.videoBlob.type,
-                                lastModified: Date.now()
-                              }
-                            );
-                            setFormData(prev => ({ ...prev, video: videoFile }));
-                            alert("Video Saved!");
-                          }}
-                        >
-                          <FaUpload /> Use This Video
-                        </button>
+                    {/* Show recorded attempts */}
+                    {recordedAttempts.length > 0 && (
+                      <div className="recorded-attempts">
+                        {recordedAttempts.map((attempt, index) => (
+                          <VideoPlayer
+                            key={index}
+                            videoBlob={attempt.blob}
+                            attemptNumber={attempt.attemptNumber}
+                            maxAttempts={MAX_ATTEMPTS}
+                            onReRecord={handleReRecord}
+                            onUseVideo={() => handleUseVideo(attempt.blob)}
+                          />
+                        ))}
                       </div>
                     )}
 
-                    {/* Show file name after saving + always show Re-record */}
+                    {/* Show current selected video */}
                     {formData.video && (
-                      <div className="video-saved-inline">
-                        <span className="recorded-video-name">
-                          <FaVideo /> {formData.video.name}
-                        </span>
-                        <button
-                          type="button"
-                          className="re-record-btn-small"
-                          onClick={handleReRecord} // now opens ConfirmDialog
-                          disabled={recordAttempts >= 3}
-                        >
-                          Re-record
-                        </button>
-                        {recordAttempts >= 3 && (
-                          <small className="attempts-limit-msg">(Max re-records reached)</small>
-                        )}
-
-                        {/* Custom confirmation dialog */}
-                        <ConfirmDialog
-                          open={showConfirmReRecord}
-                          message="You've just done fine with your previous video 😊. We'll ask you for a new video if required. Do you still wish to record a new video?"
-                          onConfirm={confirmReRecordAction}
-                          onCancel={() => setShowConfirmReRecord(false)}
-                        />
+                      <div className="selected-video-info">
+                        <p>Selected Video: {formData.video.name}</p>
                       </div>
+                    )}
+
+                    {/* Allow new recording if attempts remain */}
+                    {recordedAttempts.length > 0 && currentAttempt <= MAX_ATTEMPTS && (
+                      <button
+                        type="button"
+                        className="start-recording-btn"
+                        onClick={() => setShowCamera(true)}
+                        style={{ marginTop: '15px' }}
+                      >
+                        <FaMicrophone /> Record Another (Attempt {currentAttempt}/{MAX_ATTEMPTS})
+                      </button>
                     )}
 
                     {errors.video && <span className="error-message">{errors.video}</span>}
@@ -773,16 +929,6 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
       </div>
 
       <style jsx>{`
-      .recorded-video-name {
-  margin-top: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
         .application-modal {
           position: fixed;
           top: 0;
@@ -861,49 +1007,16 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           line-height: 1.3;
         }
 
-        .video-saved-inline {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-.recorded-video-name {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #333;
-}
-
-/* Small inline button */
-.re-record-btn-small {
-  padding: 3px 8px;
-  font-size: 12px;
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.re-record-btn-small:hover {
-  background-color: red;
-}
-
+        .highlight {
+          color: ${colors.secondary};
+          font-weight: 700;
+        }
 
         .application-subtitle {
           color: ${colors.textSecondary};
           font-size: 1rem;
           margin: 0 0 1.5rem;
           font-weight: 500;
-        }
-
-        .highlight {
-          color: ${colors.secondary};
-          font-weight: 700;
         }
 
         .header-divider {
@@ -1097,7 +1210,8 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
         /* Video Source Toggle */
         .video-source-toggle {
           display: flex;
-          gap: 10px;
+          align-items: center;
+          gap: 12px;
           margin-bottom: 15px;
         }
 
@@ -1112,6 +1226,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           transition: all 0.3s;
           font-size: 0.875rem;
           font-weight: 500;
+          text-align: center;
         }
 
         .toggle-option.active {
@@ -1120,61 +1235,51 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           border-color: ${colors.primary};
         }
 
+        .toggle-separator {
+          color: ${colors.textSecondary};
+          font-size: 0.875rem;
+          font-weight: 500;
+          padding: 0 5px;
+        }
+
         /* Video Recorder */
         .video-recorder {
           margin-top: 10px;
         }
 
-        .video-preview-container {
-          width: 100%;
-          background: #000;
-          border-radius: 10px;
-          overflow: hidden;
-          margin-bottom: 15px;
-        }
-
-        .video-preview {
-          width: 100%;
-          max-height: 300px;
-          display: block;
-          background: #222;
-        }
-
-        .recorder-controls {
+        .recorded-attempts {
           display: flex;
-          justify-content: center;
-          gap: 10px;
+          flex-direction: column;
+          gap: 15px;
         }
 
-        .record-btn, .stop-btn, .retry-btn {
-          padding: 10px 20px;
+        .selected-video-info {
+          margin-top: 10px;
+          padding: 10px;
+          background: #f5f5f5;
+          border-radius: 4px;
+          font-size: 14px;
+        }
+
+        .start-recording-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 15px 15px 15px; /* top, left/right, bottom */
+          background: #2a2d7c;
+          color: white;
           border: none;
           border-radius: 8px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.3s;
-          display: flex;
-          align-items: center;
-          gap: 8px;
+          width: 100%;
+          justify-content: center;
+          margin-top: 20px; /* adjust value as needed */
         }
 
-        .record-btn {
-          background: ${colors.error};
-          color: white;
-        }
-
-        .stop-btn {
-          background: ${colors.error};
-          color: white;
-        }
-
-        .retry-btn {
-          background: ${colors.secondary};
-          color: white;
-        }
-
-        .record-btn:hover, .stop-btn:hover, .retry-btn:hover {
-          opacity: 0.9;
+        .start-recording-btn:hover {
+          background: #1a1d6c;
         }
 
         /* Form Footer */
@@ -1394,147 +1499,6 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
             left: 1.25rem;
           }
         }
-
-         .video-source-toggle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-
-  .toggle-option {
-    flex: 1;
-    padding: 10px 15px;
-    border: 1px solid ${colors.border};
-    background: white;
-    color: ${colors.textSecondary};
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 0.875rem;
-    font-weight: 500;
-    text-align: center;
-  }
-
-  .toggle-option.active {
-    background: ${colors.primary};
-    color: white;
-    border-color: ${colors.primary};
-  }
-
-  .toggle-separator {
-    color: ${colors.textSecondary};
-    font-size: 0.875rem;
-    font-weight: 500;
-    padding: 0 5px;
-  }
-
-  /* Responsive adjustments */
-  @media (max-width: 480px) {
-    .video-source-toggle {
-      flex-direction: column;
-      gap: 8px;
-    }
-    
-    .toggle-separator {
-      padding: 5px 0;
-    }
-  }
-
-  /* Toggle container */
-.video-source-toggle {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.toggle-option {
-  padding: 10px 18px;
-  border-radius: 6px;
-  border: 2px solid #ccc;
-  background-color: #f8f8f8;
-  color: #444;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.toggle-option:hover {
-  background-color: #f0f0f0;
-  border-color: #999;
-}
-
-
-
-/* Separator */
-.toggle-separator {
-  font-size: 14px;
-  font-weight: 500;
-  color: #777;
-}
-
-/* Action buttons under preview */
-.video-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.re-record-btn,
-.upload-recorded-btn,
-.start-recording-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.25s ease, transform 0.2s ease;
-}
-
-/* Button colors */
-.re-record-btn {
-  background-color: red;
-  color: white;
-}
-
-.re-record-btn:hover {
-  background-color: red;
-}
-
-.upload-recorded-btn {
-  background-color: #2a2d7c;
-  color: white;
-}
-
-.upload-recorded-btn:hover {
-  background-color: #43a047;
-}
-
-.start-recording-btn {
-  background-color: #2196F3;
-  color: white;
-}
-
-.start-recording-btn:hover {
-  background-color: #1976D2;
-}
-
-/* Subtle hover lift */
-.re-record-btn:hover,
-.upload-recorded-btn:hover,
-.start-recording-btn:hover {
-  transform: translateY(-1px);
-}
-  .attempts-limit-msg {
-  font-size: 12px;
-  color: #d32f2f;
-}
-
       `}</style>
     </div>
   );
