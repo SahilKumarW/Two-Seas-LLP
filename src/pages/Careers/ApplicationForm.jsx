@@ -148,121 +148,148 @@ const VideoRecorderOverlay = ({ onComplete, onClose }) => {
       </div>
 
       <style jsx>{`
-        .video-player-container {
-          border: 1px solid #e0e0e0;
-          border-radius: 8px;
-          margin: 15px 0;
-          overflow: hidden;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .video-player-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 12px 15px;
-          background-color: #f5f5f5;
-          cursor: pointer;
-          user-select: none;
-        }
-        
-        .video-player-header h4 {
-          margin: 0;
-          font-size: 16px;
-          color: #333;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          max-width: 80%;
-        }
-        
-        .collapse-toggle {
-          font-size: 14px;
-          color: #666;
-        }
-        
-        .video-player-content {
-          padding: 15px;
-          background-color: white;
-        }
-        
-        .video-preview {
-          width: 100%;
-          max-height: 200px;
-          background-color: #000;
-          border-radius: 4px;
-          margin-bottom: 10px;
-        }
-        
-        .video-controls {
+        .recorder-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.9);
           display: flex;
           justify-content: center;
-          gap: 15px;
-          margin-bottom: 15px;
+          align-items: center;
+          z-index: 1000;
         }
         
-        .control-btn {
+        .recorder-container {
+          position: relative;
+          width: 90%;
+          max-width: 800px;
+          background: #111;
+          border-radius: 10px;
+          overflow: hidden;
+        }
+        
+        .close-btn {
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          color: white;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
           display: flex;
           align-items: center;
-          gap: 5px;
-          padding: 10px 15px;
-          background-color: #f0f0f0;
-          border: 1px solid #ddd;
-          border-radius: 4px;
+          justify-content: center;
           cursor: pointer;
-          font-size: 14px;
+          z-index: 10;
+          transition: all 0.2s;
         }
         
-        .video-actions {
+        .close-btn:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .camera-preview {
+          width: 100%;
+          max-height: 70vh;
+          display: block;
+          background: #000;
+        }
+        
+        .countdown {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          text-align: center;
+          color: white;
+        }
+        
+        .countdown-number {
+          font-size: 72px;
+          font-weight: bold;
+          color: #ff4757;
+          text-shadow: 0 0 10px rgba(255, 71, 87, 0.7);
+        }
+        
+        .countdown-text {
+          font-size: 18px;
+          margin-top: 10px;
+        }
+        
+        .recording-info {
+          position: absolute;
+          top: 20px;
+          left: 20px;
           display: flex;
-          gap: 10px;
+          align-items: center;
+          gap: 15px;
         }
         
-        .re-record-btn {
-          flex: 1;
-          padding: 12px;
-          background-color: #f8f8f8;
-          border: 1px solid #ddd;
+        .recording-indicator {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          background: rgba(255, 0, 0, 0.3);
+          padding: 5px 10px;
           border-radius: 4px;
-          cursor: pointer;
-          font-weight: 500;
-          font-size: 14px;
+          color: white;
+          font-weight: bold;
         }
         
-        .use-video-btn {
-          flex: 1;
-          padding: 12px;
-          background-color: #2a2d7c;
+        .recording-dot {
+          width: 10px;
+          height: 10px;
+          background: #ff4757;
+          border-radius: 50%;
+          animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+          0% { opacity: 1; }
+          50% { opacity: 0.3; }
+          100% { opacity: 1; }
+        }
+        
+        .recording-timer {
+          color: white;
+          font-weight: bold;
+          background: rgba(0, 0, 0, 0.5);
+          padding: 5px 10px;
+          border-radius: 4px;
+        }
+        
+        .controls {
+          position: absolute;
+          bottom: 20px;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: center;
+        }
+        
+        .stop-btn {
+          background: #ff4757;
           color: white;
           border: none;
-          border-radius: 4px;
+          padding: 12px 24px;
+          border-radius: 50px;
+          font-size: 16px;
+          font-weight: 600;
           cursor: pointer;
-          font-weight: 500;
-          font-size: 14px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          transition: all 0.2s;
         }
         
-        @media (max-width: 480px) {
-          .video-player-header h4 {
-            font-size: 14px;
-          }
-          
-          .video-preview {
-            max-height: 150px;
-          }
-          
-          .video-controls {
-            flex-direction: column;
-            gap: 8px;
-          }
-          
-          .video-actions {
-            flex-direction: column;
-          }
-          
-          .control-btn, .re-record-btn, .use-video-btn {
-            width: 100%;
-            justify-content: center;
-          }
+        .stop-btn:hover {
+          background: #ff6b81;
+          transform: translateY(-2px);
         }
       `}</style>
     </div>
@@ -276,34 +303,29 @@ const VideoPlayer = ({ videoBlob, onReRecord, onUseVideo, attemptNumber, maxAtte
   const [videoUrl, setVideoUrl] = useState('');
 
   useEffect(() => {
+    // Create object URL when component mounts
     if (videoBlob) {
       const url = URL.createObjectURL(videoBlob);
       setVideoUrl(url);
 
+      // Clean up object URL when component unmounts
       return () => {
         URL.revokeObjectURL(url);
       };
     }
   }, [videoBlob]);
 
-  const togglePlay = async () => {
+  const togglePlay = () => {
     if (!videoRef.current) return;
 
-    try {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      } else {
-        if (videoRef.current.ended) {
-          videoRef.current.currentTime = 0;
-        }
-        await videoRef.current.play();
-        setIsPlaying(true);
-      }
-    } catch (err) {
-      console.error("Video play error:", err);
-      setIsPlaying(false);
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch(err => console.error("Error playing video:", err));
     }
+    setIsPlaying(!isPlaying);
   };
 
   const handleDownload = () => {
@@ -334,26 +356,32 @@ const VideoPlayer = ({ videoBlob, onReRecord, onUseVideo, attemptNumber, maxAtte
             onEnded={() => setIsPlaying(false)}
           />
 
-          <div className="video-controls">
-            <button onClick={togglePlay} className="control-btn">
-              {isPlaying ? <FaPause /> : <FaPlay />}
-            </button>
-            <button onClick={handleDownload} className="control-btn">
-              <FaDownload /> Save
-            </button>
-          </div>
+          <div className="video-controls-container">
 
-          <div className="video-actions">
-            <button
-              onClick={onReRecord}
-              className="re-record-btn"
-              disabled={attemptNumber >= maxAttempts}
-            >
-              Record Another
-            </button>
-            <button onClick={() => onUseVideo(videoBlob)} className="use-video-btn">
-              Use This Video
-            </button>
+
+            <div className="video-actions">
+              <button
+                onClick={onReRecord}
+                className="re-record-btn"
+                disabled={attemptNumber >= maxAttempts}
+              >
+                Record Another (Attempt {attemptNumber + 1}/{maxAttempts})
+              </button>
+              <button onClick={() => onUseVideo(videoBlob)} className="use-video-btn">
+                Use This Video
+              </button>
+            </div>
+            <div className="video-controls">
+              <button onClick={togglePlay} className="control-btn">
+                {isPlaying ? <FaPause /> : <FaPlay />}
+              </button>
+              <span className="video-time">
+                {videoRef.current ? formatTime(videoRef.current.currentTime) : '00:00'}
+              </span>
+              <button onClick={handleDownload} className="control-btn">
+                <FaDownload /> Save
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -666,7 +694,14 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
       <div className="application-container">
         {/* Header Section */}
         <div className="application-header">
-          <button className="close-btn" onClick={onClose}>
+          <button
+            className="close-btn"
+            onClick={onClose}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              onClose();
+            }}
+          >
             <FaTimes />
           </button>
           <div className="header-content">
@@ -674,6 +709,11 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
               Apply for <span className="highlight">{jobTitle}</span>
             </h2>
             <p className="application-subtitle">Join our team and start your next adventure</p>
+            <div className="header-divider">
+              <div className="divider-line"></div>
+              <div className="divider-dot"></div>
+              <div className="divider-line"></div>
+            </div>
           </div>
         </div>
 
@@ -761,6 +801,8 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
               {/* Video Introduction Section */}
               <div className="form-group">
                 <label className="file-label">Video Introduction*</label>
+
+                {/* Toggle between upload or record */}
                 <div className="video-source-toggle">
                   <button
                     type="button"
@@ -775,7 +817,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     className={`toggle-option ${formData.videoSource === 'record' ? 'active' : ''}`}
                     onClick={() => handleVideoSourceChange('record')}
                   >
-                    Record Video
+                    Record Video (Upto 90s)
                   </button>
                 </div>
 
