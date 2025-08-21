@@ -239,7 +239,7 @@ const ClientDetailsModal = memo(({ client, isOpen, onClose }) => {
             color: "white",
           }}
         >
-          <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "700" }}>
+          <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "700", color: "white"}}>
             Client Details
           </h2>
           <button
