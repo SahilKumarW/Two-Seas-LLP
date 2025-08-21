@@ -5,6 +5,10 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+.add-employee-page.no-padding {
+  padding: 0; /* removes top spacing when inside menu */
+}
+
 .add-employee-container {
   max-width: 1100px;
   margin: 0 auto;

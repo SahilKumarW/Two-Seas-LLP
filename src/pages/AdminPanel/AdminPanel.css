@@ -1,0 +1,13 @@
+.styled-input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.styled-input:focus {
+  border-color: #06a3c2;
+}

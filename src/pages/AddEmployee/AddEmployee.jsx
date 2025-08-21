@@ -4,11 +4,10 @@ import './AddEmployee.css';
 import { currencies, navItems } from '../AdminDashboard/constants';
 import { db, collection, addDoc } from '../../firebase';
 
-const AddEmployee = () => {
+const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
     const navigate = useNavigate();
     const [employee, setEmployee] = useState({
         name: '',
-        rate: '',
         currency: currencies[0].code,
         experience: '',
         expertise: '',
@@ -68,7 +67,7 @@ const AddEmployee = () => {
 
         try {
             // Validate required fields
-            if (!employee.name || !employee.rate || !selectedNiche) {
+            if (!employee.name || !selectedNiche) {
                 throw new Error('Please fill in all required fields');
             }
 
@@ -84,7 +83,7 @@ const AddEmployee = () => {
             // Prepare employee data
             const employeeData = {
                 name: employee.name,
-                rate: parseFloat(employee.rate),
+                // rate: parseFloat(employee.rate),
                 currency: employee.currency,
                 experience: employee.experience,
                 expertise: employee.expertise,
@@ -148,7 +147,7 @@ const AddEmployee = () => {
     };
 
     return (
-        <div className="add-employee-page">
+        <div className={`add-employee-page ${noPadding ? "no-padding" : ""}`}>
             <div className="add-employee-container">
                 <div className="add-employee-header">
                     <div className="header-content">
@@ -225,7 +224,7 @@ const AddEmployee = () => {
                                         </div>
                                     </div>
 
-                                    <div className="form-group">
+                                    {/* <div className="form-group">
                                         <label>Hourly Rate <span className="required">*</span></label>
                                         <div className="rate-input-container">
                                             <div className="currency-selector" ref={currencyDropdownRef}>
@@ -273,7 +272,7 @@ const AddEmployee = () => {
                                                 <span className="rate-suffix">/hr</span>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                                 <div className="form-group">

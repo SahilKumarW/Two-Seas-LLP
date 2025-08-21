@@ -37,6 +37,7 @@ import BlockedSlotsManager from "./components/BlockedSlotsManager/BlockedSlotsMa
 import Tracking from "./components/Tracking.js";
 import CalendarScheduler from "./components/CalendarScheduler.jsx";
 import EmployeeDetail from "./components/EmployeeDetail/EmployeeDetail.jsx";
+import ModernAdminPanel from "./pages/AdminPanel/AdminPanel.jsx";
 
 function Layout() {
   const location = useLocation();
@@ -45,11 +46,12 @@ function Layout() {
   const isContactPage = location.pathname === "/contact-us";
   const isAdminLoginPage = location.pathname === "/admin-login";
   const isAdminDashboardPage = location.pathname === "/admin-dashboard";
+  const isAdminPanelPage = location.pathname === "/admin-panel";
 
   return (
     <>
       <Tracking>
-        {!isBookCallPage && !isAdminLoginPage && <Navbar />}
+        {!isBookCallPage && !isAdminLoginPage && !isAdminPanelPage && <Navbar />}
 
         <Routes>
           <Route path="/" element={
@@ -88,14 +90,15 @@ function Layout() {
           <Route path="/view-meetings" element={<AdminMeetingsView />} />
           <Route path="/slots-manager" element={<BlockedSlotsManager />} />
           <Route path="/schedule-appointment" element={<CalendarScheduler />} />
-          <Route path="/employee/:id" element={<EmployeeDetail />} />          
+          <Route path="/employee/:id" element={<EmployeeDetail />} />
+          <Route path="/admin-panel" element={<ModernAdminPanel />} />
         </Routes>
 
         {/* Add WhatsAppChat component here */}
-        {!isAdminDashboardPage && <WhatsAppChat />}
+        {!isAdminDashboardPage && !isAdminPanelPage && <WhatsAppChat />}
 
-        {!isBookCallPage && !isAdminLoginPage && <Footer />}
-      </Tracking>
+        {/* Hide Footer on book-call, admin-login, and admin-panel */}
+        {!isBookCallPage && !isAdminLoginPage && !isAdminPanelPage && <Footer />}      </Tracking>
     </>
   );
 }
