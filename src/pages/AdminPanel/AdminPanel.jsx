@@ -2068,7 +2068,7 @@ export default function ModernAdminPanel() {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: <FiHome size={18} /> },
     { id: "add-client", label: "Add Client", icon: <FiPlus size={18} /> },
-    { id: "view-client", label: "View Client", icon: <FiEye size={18} /> },
+    { id: "view-client", label: "View Clients", icon: <FiEye size={18} /> },
     { id: "generate-credentials", label: "Generate Credentials", icon: <FiKey size={18} /> },
     { id: "add-employee", label: "Add Employee", icon: <FiUser size={18} /> },
     { id: "view-employees", label: "View Employees", icon: <FiUsers size={18} /> },
