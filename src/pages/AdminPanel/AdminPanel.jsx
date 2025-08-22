@@ -13,6 +13,7 @@ import {
   FiHome,
   FiBarChart2,
   FiUsers,
+  FiSave,
 } from "react-icons/fi"
 import Logo from "../../assets/Two Seas Logo.png"
 import { FiLogOut } from "react-icons/fi";
@@ -27,11 +28,600 @@ import {
   doc,
   getDoc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  setDoc,
+  query,
+  where
 } from 'firebase/firestore';
 
 // Add these imports at the top with other imports
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiChevronDown } from "react-icons/fi";
+
+import { FiCopy, FiRefreshCw } from "react-icons/fi";
+
+const GeneratePasswordComponent = memo(({ email, onPasswordGenerated }) => {
+  const [password, setPassword] = useState("");
+  const [isCopied, setIsCopied] = useState(false);
+  const [isEmailCopied, setIsEmailCopied] = useState(false);
+
+  const generatePassword = useCallback(() => {
+    const length = 12;
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let newPassword = "";
+
+    for (let i = 0; i < length; i++) {
+      newPassword += charset.charAt(Math.floor(Math.random() * charset.length));
+    }
+
+    setPassword(newPassword);
+    onPasswordGenerated(email, newPassword);
+    setIsCopied(false);
+  }, [email, onPasswordGenerated]);
+
+  const copyToClipboard = useCallback(() => {
+    navigator.clipboard.writeText(password);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  }, [password]);
+
+  const copyEmailToClipboard = useCallback(() => {
+    navigator.clipboard.writeText(email);
+    setIsEmailCopied(true);
+    setTimeout(() => setIsEmailCopied(false), 2000);
+  }, [email]);
+
+  useEffect(() => {
+    if (!password) {
+      generatePassword();
+    }
+  }, [password, generatePassword]);
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
+      <input
+        type="text"
+        value={password}
+        readOnly
+        style={{
+          flex: 1,
+          padding: "8px 12px",
+          border: "1px solid #e5e7eb",
+          borderRadius: "6px",
+          fontSize: "14px",
+          backgroundColor: "#f9fafb"
+        }}
+      />
+      <button
+        onClick={generatePassword}
+        style={{
+          padding: "8px",
+          backgroundColor: "#f8fafc",
+          border: "1px solid #e2e8f0",
+          borderRadius: "6px",
+          cursor: "pointer",
+          color: "#22A2D7",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        title="Generate new password"
+      >
+        <FiRefreshCw size={14} />
+      </button>
+      <button
+        onClick={copyToClipboard}
+        style={{
+          padding: "8px",
+          backgroundColor: isCopied ? "#10b981" : "#f8fafc",
+          border: "1px solid #e2e8f0",
+          borderRadius: "6px",
+          cursor: "pointer",
+          color: isCopied ? "white" : "#22A2D7",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.2s ease",
+        }}
+        title={isCopied ? "Copied!" : "Copy password"}
+      >
+        <FiCopy size={14} />
+      </button>
+      {/* <button
+        onClick={copyEmailToClipboard}
+        style={{
+          padding: "8px",
+          backgroundColor: isEmailCopied ? "#10b981" : "#f8fafc",
+          border: "1px solid #e2e8f0",
+          borderRadius: "6px",
+          cursor: "pointer",
+          color: isEmailCopied ? "white" : "#22A2D7",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.2s ease",
+        }}
+        title={isEmailCopied ? "Copied!" : "Copy email"}
+      >
+        <FiCopy size={14} />
+      </button> */}
+    </div>
+  );
+});
+
+// Update the ContactPersonCredentials component
+// Update the ContactPersonCredentials component
+const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCredentials }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState(null);
+  const [password, setPassword] = useState(""); // Add local password state
+
+  const handlePasswordGenerated = useCallback((email, generatedPassword) => {
+    setPassword(generatedPassword);
+    onPasswordGenerated(email, generatedPassword);
+  }, [onPasswordGenerated]);
+
+  const handleSave = async () => {
+    if (!password) return;
+
+    setIsSaving(true);
+    setSaveStatus(null);
+
+    try {
+      await onSaveCredentials(contact.email, password);
+      setSaveStatus("success");
+      setTimeout(() => setSaveStatus(null), 3000);
+    } catch (error) {
+      console.error("Error saving credentials:", error);
+      setSaveStatus("error");
+      setTimeout(() => setSaveStatus(null), 3000);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div style={{
+      border: "1px solid #e5e7eb",
+      borderRadius: "8px",
+      marginBottom: "12px",
+      overflow: "hidden"
+    }}>
+      <div
+        style={{
+          padding: "12px",
+          backgroundColor: "#f9fafb",
+          cursor: "pointer",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div>
+          <div style={{ fontWeight: "500", color: "#374151" }}>{contact.name}</div>
+          <div style={{ fontSize: "14px", color: "#6b7280" }}>{contact.email}</div>
+        </div>
+        <div style={{
+          transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+          transition: "transform 0.2s"
+        }}>
+          <FiChevronDown size={16} />
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div style={{ padding: "12px", backgroundColor: "white" }}>
+          <div style={{ marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
+            Email: {contact.email}
+          </div>
+          <div style={{ marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
+            Password:
+          </div>
+          <GeneratePasswordComponent
+            email={contact.email}
+            onPasswordGenerated={handlePasswordGenerated}
+          />
+
+          <div style={{ display: "flex", gap: "8px", marginTop: "12px", flexWrap: "wrap" }}>
+            <button
+              onClick={handleSave}
+              disabled={isSaving || !password}
+              style={{
+                padding: "6px 12px",
+                backgroundColor: isSaving || !password ? "#9ca3af" : (saveStatus === "success" ? "#10b981" : "#22A2D7"),
+                border: "none",
+                borderRadius: "6px",
+                cursor: isSaving || !password ? "not-allowed" : "pointer",
+                fontSize: "12px",
+                color: "white",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                transition: "all 0.2s ease",
+              }}
+            >
+              {isSaving ? (
+                <>Saving...</>
+              ) : saveStatus === "success" ? (
+                <>Saved!</>
+              ) : saveStatus === "error" ? (
+                <>Error</>
+              ) : (
+                <>Save Credentials</>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+// Update the ClientCredentialsModal component
+const ClientCredentialsModal = memo(({ client, isOpen, onClose }) => {
+  const [generatedCredentials, setGeneratedCredentials] = useState({});
+
+  const handlePasswordGenerated = useCallback((email, password) => {
+    setGeneratedCredentials(prev => ({
+      ...prev,
+      [email]: password
+    }));
+  }, []);
+
+  const saveCredentialsToFirebase = async (email, password) => {
+    try {
+      // Check if user already exists
+      const usersRef = collection(db, "clients-login");
+      const q = query(usersRef, where("email", "==", email));
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // Update existing user
+        const userDoc = querySnapshot.docs[0];
+        await updateDoc(doc(db, "clients-login", userDoc.id), {
+          password: password,
+          updatedAt: serverTimestamp()
+        });
+      } else {
+        // Create new user
+        await setDoc(doc(db, "clients-login", email), {
+          email: email,
+          password: password,
+          clientId: client.id,
+          clientName: client.name,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error saving credentials:", error);
+      throw error;
+    }
+  };
+
+  const copyAllCredentials = useCallback(() => {
+    const text = Object.entries(generatedCredentials)
+      .map(([email, password]) => `${email}: ${password}`)
+      .join('\n');
+
+    navigator.clipboard.writeText(text);
+  }, [generatedCredentials]);
+
+  if (!isOpen || !client) return null;
+
+  const contacts = [
+    {
+      name: client.contactPerson1,
+      email: client.contactPerson1Email,
+      phone: client.contactPerson1Phone
+    }
+  ];
+
+  if (client.contactPerson2 && client.contactPerson2Email) {
+    contacts.push({
+      name: client.contactPerson2,
+      email: client.contactPerson2Email,
+      phone: client.contactPerson2Phone
+    });
+  }
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 1000,
+        padding: "20px",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "white",
+          borderRadius: "16px",
+          width: "100%",
+          maxWidth: "500px",
+          maxHeight: "90vh",
+          overflow: "auto",
+        }}
+      >
+        <div
+          style={{
+            padding: "24px",
+            borderBottom: "1px solid #e5e7eb",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "linear-gradient(135deg, #22A2D7 0%, #06a3c2 100%)",
+            color: "white",
+          }}
+        >
+          <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "700", color: "white" }}>
+            Generate Credentials for {client.name}
+          </h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: "rgba(255, 255, 255, 0.2)",
+              border: "none",
+              padding: "8px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              color: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <FiX size={20} />
+          </button>
+        </div>
+
+        <div style={{ padding: "24px" }}>
+          {contacts.map((contact, index) => (
+            <ContactPersonCredentials
+              key={index}
+              contact={contact}
+              onPasswordGenerated={handlePasswordGenerated}
+              onSaveCredentials={saveCredentialsToFirebase}
+            />
+          ))}
+
+          {Object.keys(generatedCredentials).length > 0 && (
+            <div style={{ display: "flex", gap: "8px", marginTop: "16px", flexWrap: "wrap" }}>
+              <button
+                onClick={copyAllCredentials}
+                style={{
+                  padding: "10px 16px",
+                  backgroundColor: "#22A2D7",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500"
+                }}
+              >
+                <FiCopy size={16} /> Copy All Credentials
+              </button>
+
+              <button
+                onClick={async () => {
+                  // Save all credentials
+                  for (const [email, password] of Object.entries(generatedCredentials)) {
+                    try {
+                      await saveCredentialsToFirebase(email, password);
+                    } catch (error) {
+                      console.error(`Error saving credentials for ${email}:`, error);
+                    }
+                  }
+                }}
+                style={{
+                  padding: "10px 16px",
+                  backgroundColor: "#2a2d7c",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500"
+                }}
+              >
+                <FiSave size={16} /> Create Client User
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+// Generate Credentials Component
+const GenerateCredentials = memo(() => {
+  const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [isCredentialsModalOpen, setIsCredentialsModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
+
+  const fetchClients = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "clients"));
+      const clientsData = [];
+      querySnapshot.forEach((doc) => {
+        clientsData.push({ id: doc.id, ...doc.data() });
+      });
+      setClients(clientsData);
+    } catch (error) {
+      console.error("Error fetching clients:", error);
+      alert("Error loading clients");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClientClick = (client) => {
+    setSelectedClient(client);
+    setIsCredentialsModalOpen(true);
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <div style={{ fontSize: "18px", color: "#64748b" }}>Loading clients...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: "24px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+        <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#22A2D7", margin: 0 }}>
+          Generate Credentials ({clients.length})
+        </h2>
+        <p style={{ color: "#64748b", margin: 0 }}>
+          Select a client to generate credentials for their contacts
+        </p>
+      </div>
+
+      {clients.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "60px 20px", color: "#64748b" }}>
+          <FiUsers size={48} style={{ marginBottom: "16px", opacity: 0.5 }} />
+          <h3 style={{ margin: "0 0 8px 0", fontSize: "20px" }}>No clients found</h3>
+          <p style={{ margin: 0 }}>Add clients to generate credentials for them.</p>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          {clients.map((client) => (
+            <div
+              key={client.id}
+              onClick={() => handleClientClick(client)}
+              style={{
+                backgroundColor: "white",
+                borderRadius: "12px",
+                padding: "20px",
+                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.04)",
+                border: "1px solid #e5e7eb",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 8px 15px rgba(0, 0, 0, 0.1)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.04)";
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+                {client.companyLogo ? (
+                  <img
+                    src={client.companyLogo}
+                    alt={client.name}
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "8px",
+                      background: "linear-gradient(135deg, #22A2D7 0%, #06a3c2 100%)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {client.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600", color: "#22A2D7" }}>
+                  {client.name}
+                </h3>
+              </div>
+
+              <div style={{ marginBottom: "12px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+                  <FiUser size={14} color="#64748b" />
+                  <span style={{ fontSize: "14px", color: "#374151" }}>{client.contactPerson1}</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <FiMail size={14} color="#64748b" />
+                  <span style={{ fontSize: "14px", color: "#6b7280" }}>{client.contactPerson1Email}</span>
+                </div>
+              </div>
+
+              {client.contactPerson2 && (
+                <div style={{
+                  padding: "8px",
+                  backgroundColor: "#f9fafb",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  color: "#6b7280"
+                }}>
+                  +1 additional contact
+                </div>
+              )}
+
+              <div style={{
+                marginTop: "12px",
+                padding: "6px 10px",
+                backgroundColor: "#f0f9ff",
+                borderRadius: "20px",
+                display: "inline-block",
+                fontSize: "12px",
+                fontWeight: "500",
+                color: "#06a3c2"
+              }}>
+                Click to generate credentials
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <ClientCredentialsModal
+        client={selectedClient}
+        isOpen={isCredentialsModalOpen}
+        onClose={() => setIsCredentialsModalOpen(false)}
+      />
+    </div>
+  );
+});
 
 // Client Card Component
 const ClientCard = memo(({ client, onClick, onEdit, onDelete }) => {
@@ -239,7 +829,7 @@ const ClientDetailsModal = memo(({ client, isOpen, onClose }) => {
             color: "white",
           }}
         >
-          <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "700", color: "white"}}>
+          <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "700", color: "white" }}>
             Client Details
           </h2>
           <button
@@ -2117,6 +2707,8 @@ export default function ModernAdminPanel() {
         return <ViewClients />;
       case "view-employees":
         return <EmployeeCard />;
+      case "generate-credentials":
+        return <GenerateCredentials />;
       case "dashboard":
       default:
         return (

@@ -122,6 +122,12 @@
   /* Or adjust based on design */
 }
 
+/* ✅ Admin panel specific card */
+.employee-card.admin-card {
+  height: 320px;
+  overflow: hidden; /* ensures extra content doesn't spill */
+}
+
 .card-content {
   display: flex;
   flex-direction: column;
@@ -639,7 +645,7 @@
   margin: 15px 0;
   /* padding: 0 10px; */
   flex-wrap: nowrap; /* Force them into one row unless screen is too narrow */
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 /* Shared button style */
@@ -669,4 +675,129 @@
 /* Icon inside button */
 .document-button .document-icon {
   font-size: 16px;
+}
+
+.admin-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 1.5rem;
+}
+
+.admin-icon {
+  cursor: pointer;
+  font-size: 22px;
+  color: #2a2d7c;
+  transition: color 0.2s ease;
+}
+
+.admin-icon:hover {
+  color: #06a3c2;
+}
+
+.edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.edit-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-modal input,
+.edit-modal textarea {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.modal-field label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* Add these styles to your existing CSS */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.close-modal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #2A2D7C;
+}
+
+.add-employee-container {
+  padding: 20px;
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.search-input {
+  width: 60%;
+  padding: 10px 15px;
+  border: 15px solid #ccc;
+  border-radius: 15px !important; 
+  font-size: 16px;
+}
+.search-input:focus {
+  outline: none;
+  border-color: #2A2D7C;
+  box-shadow: 0 0 5px rgba(42,45,124,0.5);
 }

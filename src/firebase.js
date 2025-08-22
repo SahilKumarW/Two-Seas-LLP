@@ -1,8 +1,25 @@
 // src/firebase.js
 import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
-import { getAnalytics, logEvent } from "firebase/analytics";
+import { 
+  getStorage, 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from "firebase/storage";
+import { 
+  getFirestore, 
+  doc, 
+  updateDoc, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  deleteDoc, 
+  getDoc 
+} from "firebase/firestore";
+import { 
+  getAnalytics, 
+  logEvent 
+} from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -15,9 +32,29 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
 
-export { analytics, logEvent, storage, db, ref, uploadBytes, getDownloadURL, collection, addDoc };
+// Export everything you need
+export { 
+  db, 
+  storage, 
+  analytics, 
+  // Firestore functions
+  doc, 
+  updateDoc, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  deleteDoc, 
+  getDoc,
+  // Storage functions
+  ref, 
+  uploadBytes, 
+  getDownloadURL,
+  // Analytics
+  logEvent
+};

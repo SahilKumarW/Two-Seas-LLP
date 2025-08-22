@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FaFileAlt, FaClipboardCheck, FaHeart, FaCalendarAlt, FaRegHeart, FaStar, FaPlay, FaExternalLinkAlt, FaTimes } from 'react-icons/fa';
+import { FiArchive, FiEdit, FiTrash2 } from "react-icons/fi";
+import { useLocation, Link } from 'react-router-dom';
 import './EmployeeCard.css';
 import { db } from '../../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { niches } from '../AdminDashboard/constants';
-import { Link } from 'react-router-dom';
+import { doc, getDoc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import EditEmployeeModal from '../../components/EditEmployeeModal';
 
 export const useEmployees = () => {
   const [employees, setEmployees] = useState([]);
@@ -35,6 +38,9 @@ export const useEmployees = () => {
 
 const EmployeeCard = () => {
   const { employees, loading, error } = useEmployees();
+  const location = useLocation();
+  const isAdminPanel = location.pathname === "/admin-panel";
+
   const [wishlist, setWishlist] = useState({});
   const [expandedCards, setExpandedCards] = useState({});
   const [selectedNiche, setSelectedNiche] = useState('All');
@@ -46,16 +52,41 @@ const EmployeeCard = () => {
     isLoading: true
   });
 
+  const [editModalId, setEditModalId] = useState(null);
+  const [refresh, setRefresh] = useState(false);
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Add these missing state variables
+  const [editEmployee, setEditEmployee] = useState(null);
+  const [editData, setEditData] = useState({});
+  const [editingEmployee, setEditingEmployee] = useState(null);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // function to refresh employees after update
+  const refreshEmployees = () => {
+    setRefresh(!refresh);
+  };
+
   // Add 'All' option to the niches
   const allNiches = [{ id: 'All', name: 'All' }, ...niches];
 
   // Filter employees based on selected niche
   const filteredEmployees = employees.filter(emp => {
-    if (selectedNiche === 'All') return emp.status !== 'hidden';
+    const matchesNiche =
+      selectedNiche === 'All'
+        ? emp.status !== 'hidden'
+        : emp.niche === `niche-${parseInt(selectedNiche) - 1}` && emp.status !== 'hidden';
 
-    // Convert selectedNiche (which is id from niches array like 1–8) to niche-0 to niche-7
-    const nicheKey = `niche-${parseInt(selectedNiche) - 1}`;
-    return emp.niche === nicheKey && emp.status !== 'hidden';
+    const matchesSearch =
+      emp.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.expertise?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      emp.intro?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesNiche && matchesSearch;
   });
 
   const toggleCardExpand = (id) => {
@@ -124,10 +155,67 @@ const EmployeeCard = () => {
   };
 
   const getDocumentTitle = () => {
-    switch(viewerState.type) {
+    switch (viewerState.type) {
       case 'resume': return 'Resume Document';
       case 'assessment': return 'Assessment Report';
       default: return 'Document Viewer';
+    }
+  };
+
+  // Archive employee
+  const handleArchive = async (employee) => {
+    try {
+      // add to archivedEmployees
+      await setDoc(doc(db, "archivedEmployees", employee.id), employee);
+      // delete from employees
+      await deleteDoc(doc(db, "employees", employee.id));
+      alert(`${employee.name} archived successfully.`);
+    } catch (err) {
+      console.error("Error archiving:", err);
+      alert("Failed to archive employee.");
+    }
+  };
+
+  // Delete employee
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this employee?")) return;
+    try {
+      await deleteDoc(doc(db, "employees", id));
+      alert("Employee deleted successfully.");
+    } catch (err) {
+      console.error("Error deleting:", err);
+      alert("Failed to delete employee.");
+    }
+  };
+
+  // ✅ Open Edit Modal and fetch fresh data
+  const openEditModal = async (employeeId) => {
+    try {
+      const snap = await getDoc(doc(db, "employees", employeeId));
+      if (snap.exists()) {
+        setEditingEmployee({
+          id: employeeId,
+          ...snap.data()
+        });
+      } else {
+        alert("Employee not found.");
+      }
+    } catch (err) {
+      console.error("Error fetching employee:", err);
+      alert("Failed to fetch employee details.");
+    }
+  };
+
+  // Update employee in Firestore
+  const handleUpdate = async () => {
+    try {
+      await updateDoc(doc(db, "employees", editEmployee), editData);
+      alert("Employee updated successfully.");
+      setEditEmployee(null);
+      setEditData({});
+    } catch (err) {
+      console.error("Error updating:", err);
+      alert("Failed to update employee.");
     }
   };
 
@@ -172,6 +260,18 @@ const EmployeeCard = () => {
         </div>
       </div>
 
+      {/* 🔍 Search Bar */}
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search professionals..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="search-input"
+        />
+      </div>
+
+
       <div className="employee-grid">
         {filteredEmployees.length > 0 ? (
           filteredEmployees.map((employee, index) => {
@@ -180,7 +280,7 @@ const EmployeeCard = () => {
             return (
               <div
                 key={employee.id}
-                className={`employee-card ${expandedCards[employee.id] ? 'expanded' : ''}`}
+                className={`employee-card ${expandedCards[employee.id] ? 'expanded' : ''} ${isAdminPanel ? 'admin-card' : ''}`}
                 onClick={() => toggleCardExpand(employee.id)}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -198,13 +298,14 @@ const EmployeeCard = () => {
                             }}
                           />
                         </div>
+
                       </div>
                       <div className="profile-info">
                         <h3 className="employee-name">
                           <Link to={`/employee/${employee.id}`} className="employee-link">
                             {employee.name}
                           </Link>
-                        </h3>                        
+                        </h3>
                         <p className="employee-position">{employee.expertise}</p>
                       </div>
                     </div>
@@ -232,7 +333,34 @@ const EmployeeCard = () => {
                         </button>
                       )}
                     </div>
-
+                    {/* ✅ Show icons only in /admin-panel */}
+                    {isAdminPanel && (
+                      <div className="admin-actions">
+                        <FiArchive
+                          className="admin-icon"
+                          title="Archive"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleArchive(employee);
+                          }}
+                        />
+                        <FiEdit
+                          className="admin-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(employee.id); // Use the function
+                          }}
+                        />
+                        <FiTrash2
+                          className="admin-icon"
+                          title="Delete"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(employee.id);
+                          }}
+                        />
+                      </div>
+                    )}
                     <div className={`expandable-content ${expandedCards[employee.id] ? 'visible' : ''}`}>
                       <div className="expertise-section">
                         <h4 className="section-label">Core Expertise</h4>
@@ -316,23 +444,23 @@ const EmployeeCard = () => {
       {viewerState.isOpen && (
         <div className="document-viewer">
           <div className="viewer-overlay" onClick={closeDocument}></div>
-          
+
           <div className="viewer-container">
             <div className="viewer-header" style={{ backgroundColor: '#2a2d7c' }}>
               <h3 style={{ color: 'white' }}>{getDocumentTitle()}</h3>
-              
+
               <div className="viewer-actions">
-                <a 
-                  href={viewerState.document.link} 
-                  target="_blank" 
+                <a
+                  href={viewerState.document.link}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="external-link"
                   title="Open in new tab"
                 >
                   <FaExternalLinkAlt color="white" />
                 </a>
-                <button 
-                  onClick={closeDocument} 
+                <button
+                  onClick={closeDocument}
                   className="close-button"
                   aria-label="Close document viewer"
                 >
@@ -348,7 +476,7 @@ const EmployeeCard = () => {
                   <p>Loading document...</p>
                 </div>
               )}
-              
+
               <iframe
                 src={getEmbedUrl(viewerState.document.link)}
                 title={getDocumentTitle()}
@@ -360,6 +488,50 @@ const EmployeeCard = () => {
           </div>
         </div>
       )}
+
+      {editingEmployee && (
+        <EditEmployeeModal
+          employee={editingEmployee}
+          onClose={() => setEditingEmployee(null)}
+          onUpdated={() => {
+            setEditingEmployee(null);
+            refreshEmployees(); // Refresh the employee list
+          }}
+        />
+      )}
+
+      {editModalId && (
+        <EditEmployeeModal
+          employeeId={editModalId}
+          onClose={() => setEditModalId(null)}
+          onUpdated={refreshEmployees}
+        />
+      )}
+
+      {editEmployee && (
+        <div className="edit-modal-overlay" onClick={() => setEditEmployee(null)}>
+          <div className="edit-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Edit Employee</h3>
+
+            {Object.keys(editData).map((key) => (
+              <div key={key} className="modal-field">
+                <label>{key}</label>
+                <input
+                  type="text"
+                  value={editData[key] || ""}
+                  onChange={(e) => setEditData({ ...editData, [key]: e.target.value })}
+                />
+              </div>
+            ))}
+
+            <div className="modal-actions">
+              <button onClick={handleUpdate}>Update</button>
+              <button onClick={() => setEditEmployee(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
