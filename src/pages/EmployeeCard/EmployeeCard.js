@@ -9,7 +9,7 @@ import { niches } from '../AdminDashboard/constants';
 import { doc, getDoc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import EditEmployeeModal from '../../components/EditEmployeeModal';
 
-export const useEmployees = () => {
+export const useEmployees = (archived = false) => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,7 +17,8 @@ export const useEmployees = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'employees'));
+        const collectionName = archived ? 'archivedEmployees' : 'employees';
+        const querySnapshot = await getDocs(collection(db, collectionName));
         const employeesData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
@@ -31,13 +32,13 @@ export const useEmployees = () => {
     };
 
     fetchEmployees();
-  }, []);
+  }, [archived]);
 
   return { employees, loading, error };
 };
 
-const EmployeeCard = () => {
-  const { employees, loading, error } = useEmployees();
+const EmployeeCard = ({ archived = false }) => {
+  const { employees, loading, error } = useEmployees(archived);
   const location = useLocation();
   const isAdminPanel = location.pathname === "/admin-panel";
 
@@ -173,6 +174,19 @@ const EmployeeCard = () => {
     } catch (err) {
       console.error("Error archiving:", err);
       alert("Failed to archive employee.");
+    }
+  };
+
+  const handleUnarchive = async (employee) => {
+    try {
+      // move back to employees
+      await setDoc(doc(db, "employees", employee.id), employee);
+      // delete from archivedEmployees
+      await deleteDoc(doc(db, "archivedEmployees", employee.id));
+      alert(`${employee.name} unarchived successfully.`);
+    } catch (err) {
+      console.error("Error unarchiving:", err);
+      alert("Failed to unarchive employee.");
     }
   };
 
@@ -336,21 +350,34 @@ const EmployeeCard = () => {
                     {/* ✅ Show icons only in /admin-panel */}
                     {isAdminPanel && (
                       <div className="admin-actions">
-                        <FiArchive
-                          className="admin-icon"
-                          title="Archive"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleArchive(employee);
-                          }}
-                        />
-                        <FiEdit
-                          className="admin-icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            openEditModal(employee.id); // Use the function
-                          }}
-                        />
+                        {archived ? (
+                          <FiArchive
+                            className="admin-icon"
+                            title="Unarchive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUnarchive(employee);
+                            }}
+                          />
+                        ) : (
+                          <FiArchive
+                            className="admin-icon"
+                            title="Archive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleArchive(employee);
+                            }}
+                          />
+                        )}
+                        {!archived && (
+                          <FiEdit
+                            className="admin-icon"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openEditModal(employee.id);
+                            }}
+                          />
+                        )}
                         <FiTrash2
                           className="admin-icon"
                           title="Delete"

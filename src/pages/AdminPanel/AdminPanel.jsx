@@ -2709,6 +2709,8 @@ export default function ModernAdminPanel() {
         return <EmployeeCard />;
       case "generate-credentials":
         return <GenerateCredentials />;
+      case "archived":
+        return <EmployeeCard archived />;
       case "dashboard":
       default:
         return (
