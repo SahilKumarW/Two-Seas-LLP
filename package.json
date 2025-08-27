@@ -26,6 +26,7 @@
     "react-refresh": "^0.17.0",
     "react-router-dom": "^7.4.0",
     "react-scripts": "5.0.1",
+    "react-select": "^5.10.2",
     "recharts": "^3.1.2",
     "styled-components": "^6.1.16",
     "swiper": "^11.2.6",

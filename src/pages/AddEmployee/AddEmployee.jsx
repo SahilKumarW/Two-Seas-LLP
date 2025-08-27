@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AddEmployee.css';
 import { currencies, navItems } from '../AdminDashboard/constants';
-import { db, collection, addDoc } from '../../firebase';
+import { db, collection, addDoc, getDocs } from '../../firebase';
 
 const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
     const navigate = useNavigate();
@@ -15,15 +15,40 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
         image: null,
         interviewVideoLink: '',
         introductionVideoLink: '',
-        resumeLink: '', // Changed from resumeFile to resumeLink
-        assessmentLink: '' // Changed from assessmentFile to assessmentLink
+        resumeLink: '',
+        assessmentLink: '',
+        hiddenFromClients: []
     });
+    const [clients, setClients] = useState([]);   // ✅ store all clients
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const [selectedNiche, setSelectedNiche] = useState('');
     const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadStatus, setUploadStatus] = useState(''); // For tracking upload status
+
+    // ✅ fetch clients list
+    useEffect(() => {
+        const fetchClients = async () => {
+            try {
+                const snapshot = await getDocs(collection(db, "clients"));
+                const clientList = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setClients(clientList);
+            } catch (err) {
+                console.error("Error fetching clients: ", err);
+            }
+        };
+        fetchClients();
+    }, []);
+
+    const handleHiddenClientsChange = (e) => {
+        const options = Array.from(e.target.selectedOptions);
+        const selectedIds = options.map(opt => opt.value);
+        setEmployee({ ...employee, hiddenFromClients: selectedIds });
+    };
 
     const niches = navItems.map((item, index) => ({
         id: `niche-${index}`,
@@ -103,7 +128,8 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                     type: 'google_drive',
                     link: employee.assessmentLink,
                     accessedAt: new Date()
-                }
+                },
+                hiddenFromClients: employee.hiddenFromClients || [],
             };
 
             // Add to Firestore
@@ -437,7 +463,6 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                         </div>
                     )}
 
-                    {/* Add this new form card for file uploads */}
                     {/* Updated Documents form card */}
                     <div className="form-card">
                         <div className="card-header">
@@ -486,6 +511,68 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                             <p className="file-hint">Paste the shareable Google Drive link</p>
                         </div>
                     </div>
+
+                    {/* ✅ New section for hidden clients */}
+                    <div className="form-card">
+                        <div className="card-header">
+                            <div className="form-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                    <path
+                                        d="M17 3H20C21.1 3 22 3.9 22 5V19C22 20.1 21.1 21 20 21H4C2.9 21 2 20.1 2 19V5C2 3.9 3 3 4 3H7C7 1.34 8.34 0 10 0C11.66 0 13 1.34 13 3H17Z"
+                                        fill="#2A2D7C"
+                                    />
+                                </svg>
+                            </div>
+                            <h2>Client Visibility</h2>
+                        </div>
+
+                        <p>Select clients this employee should be hidden from:</p>
+
+                        {/* Select / Deselect All button */}
+                        <button
+                            type="button"
+                            className="select-btn"
+                            onClick={() => {
+                                if (employee.hiddenFromClients.length === clients.length) {
+                                    // Deselect all
+                                    setEmployee({ ...employee, hiddenFromClients: [] });
+                                } else {
+                                    // Select all
+                                    setEmployee({
+                                        ...employee,
+                                        hiddenFromClients: clients.map((c) => c.id),
+                                    });
+                                }
+                            }}
+                        >
+                            {employee.hiddenFromClients.length === clients.length
+                                ? "Deselect All"
+                                : "Select All"}
+                        </button>
+
+                        <div className="checkbox-list">
+                            {clients.map((client) => (
+                                <label key={client.id} className="checkbox-item">
+                                    <input
+                                        type="checkbox"
+                                        value={client.id}
+                                        checked={employee.hiddenFromClients.includes(client.id)}
+                                        onChange={(e) => {
+                                            let updated = [...employee.hiddenFromClients];
+                                            if (e.target.checked) {
+                                                updated.push(client.id);
+                                            } else {
+                                                updated = updated.filter((id) => id !== client.id);
+                                            }
+                                            setEmployee({ ...employee, hiddenFromClients: updated });
+                                        }}
+                                    />
+                                    {client.name}
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="form-actions">
                         <button
                             type="button"

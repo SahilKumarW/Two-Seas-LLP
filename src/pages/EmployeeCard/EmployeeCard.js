@@ -37,7 +37,7 @@ export const useEmployees = (archived = false) => {
   return { employees, loading, error };
 };
 
-const EmployeeCard = ({ archived = false }) => {
+const EmployeeCard = ({ archived = false, currentClientId = null }) => {
   const { employees, loading, error } = useEmployees(archived);
   const location = useLocation();
   const isAdminPanel = location.pathname === "/admin-panel";
@@ -87,7 +87,11 @@ const EmployeeCard = ({ archived = false }) => {
       emp.expertise?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       emp.intro?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesNiche && matchesSearch;
+    // ✅ NEW: hide if employee.hiddenFromClients includes this client
+    const notHiddenFromClient =
+      !currentClientId || !emp.hiddenFromClients?.includes(currentClientId);
+
+    return matchesNiche && matchesSearch && notHiddenFromClient;
   });
 
   const toggleCardExpand = (id) => {

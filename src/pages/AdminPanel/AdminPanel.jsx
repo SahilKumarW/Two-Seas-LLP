@@ -38,6 +38,7 @@ import {
 import { FiChevronLeft, FiChevronRight, FiChevronDown } from "react-icons/fi";
 
 import { FiCopy, FiRefreshCw } from "react-icons/fi";
+import ViewMember from "./pages/ViewMember";
 
 const GeneratePasswordComponent = memo(({ email, onPasswordGenerated }) => {
   const [password, setPassword] = useState("");
@@ -2707,6 +2708,8 @@ export default function ModernAdminPanel() {
         return <ViewClients />;
       case "view-employees":
         return <EmployeeCard />;
+      case "view-member":
+        return <ViewMember />;
       case "generate-credentials":
         return <GenerateCredentials />;
       case "archived":
@@ -3017,8 +3020,8 @@ export default function ModernAdminPanel() {
                         e.target.style.borderColor = "#e5e7eb"
                       }}
                     >
-                      <FiUsers size={18} />
-                      <span>View Analytics</span>
+                      <FiUser size={18} />
+                      <span>View as Member</span>
                     </button>
                   </div>
                 </div>
