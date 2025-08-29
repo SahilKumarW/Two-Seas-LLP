@@ -2757,8 +2757,7 @@ export default function ModernAdminPanel() {
 
   const stats = [
     { label: "Total Clients", value: "248", change: "+12%", icon: <FiUsers size={24} /> },
-    { label: "Active Employees", value: "1,429", change: "+8%", icon: <FiUser size={24} /> },
-    { label: "Pending Tasks", value: "23", change: "-5%", icon: <FiBarChart2 size={24} /> },
+    { label: "Total Employees", value: "1,429", change: "+8%", icon: <FiUser size={24} /> },
     { label: "Revenue", value: "$84,290", change: "+15%", icon: <FiBarChart2 size={24} /> },
   ]
 

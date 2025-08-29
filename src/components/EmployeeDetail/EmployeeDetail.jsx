@@ -133,7 +133,7 @@ const EmployeeDetail = () => {
             <p className="position" style={{ color: 'white' }}>{employee.expertise}</p>
             <div className="meta-info">
               <span>{employee.experience} years experience</span>
-              <span>{employee.currency} {employee.rate}/hr</span>
+              {/* <span>{employee.currency} {employee.rate}/hr</span> */}
             </div>
           </div>
         </div>

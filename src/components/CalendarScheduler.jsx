@@ -7,6 +7,8 @@ import {
   FaGlobe,
   FaExclamationTriangle,
   FaSpinner,
+  FaTimes,
+  FaChevronDown,
 } from "react-icons/fa"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "../firebase"
@@ -18,34 +20,269 @@ const EMAILJS_SERVICE_ID = "service_wjrb0qk"
 const EMAILJS_TEMPLATE_ID = "template_177shrs"
 const EMAILJS_PUBLIC_KEY = "vkVckeGL1JQx-x4_q"
 
-// Updated time zones with more city-specific options
-export const timeZones = [
-  { value: "Pacific/Midway", label: "Midway Island (GMT-11:00)" },
-  { value: "Pacific/Honolulu", label: "Honolulu (GMT-10:00)" },
-  { value: "America/Anchorage", label: "Anchorage (GMT-09:00)" },
-  { value: "America/Los_Angeles", label: "Los Angeles (GMT-08:00)" },
-  { value: "America/Denver", label: "Denver (GMT-07:00)" },
-  { value: "America/Chicago", label: "Chicago (GMT-06:00)" },
-  { value: "America/New_York", label: "New York (GMT-05:00)" },
-  { value: "America/Caracas", label: "Caracas (GMT-04:30)" },
-  { value: "America/Halifax", label: "Halifax (GMT-04:00)" },
-  { value: "America/St_Johns", label: "St. Johns (GMT-03:30)" },
-  { value: "America/Argentina/Buenos_Aires", label: "Buenos Aires (GMT-03:00)" },
-  { value: "Atlantic/Azores", label: "Azores (GMT-01:00)" },
-  { value: "Europe/London", label: "London (GMT+00:00)" },
-  { value: "Europe/Berlin", label: "Berlin (GMT+01:00)" },
-  { value: "Europe/Paris", label: "Paris (GMT+01:00)" },
-  { value: "Europe/Moscow", label: "Moscow (GMT+03:00)" },
-  { value: "Asia/Dubai", label: "Dubai (GMT+04:00)" },
-  { value: "Asia/Karachi", label: "Karachi (GMT+05:00)" },
-  { value: "Asia/Kolkata", label: "Kolkata (GMT+05:30)" },
-  { value: "Asia/Dhaka", label: "Dhaka (GMT+06:00)" },
-  { value: "Asia/Bangkok", label: "Bangkok (GMT+07:00)" },
-  { value: "Asia/Shanghai", label: "Shanghai (GMT+08:00)" },
-  { value: "Asia/Tokyo", label: "Tokyo (GMT+09:00)" },
-  { value: "Australia/Sydney", label: "Sydney (GMT+10:00)" },
-  { value: "Pacific/Auckland", label: "Auckland (GMT+12:00)" },
-]
+// Regional time zones organized by region
+export const regionalTimeZones = {
+  "Americas": [
+    { value: "America/New_York", label: "Eastern Time" },
+    { value: "America/Chicago", label: "Central Time" },
+    { value: "America/Denver", label: "Mountain Time" },
+    { value: "America/Los_Angeles", label: "Pacific Time" },
+    { value: "America/Anchorage", label: "Alaska Time" },
+    { value: "Pacific/Honolulu", label: "Hawaii Time" },
+    { value: "America/Toronto", label: "Toronto, Canada" },
+    { value: "America/Vancouver", label: "Vancouver, Canada" },
+    { value: "America/Mexico_City", label: "Mexico City, Mexico" },
+    { value: "America/Sao_Paulo", label: "São Paulo, Brazil" },
+    { value: "America/Argentina/Buenos_Aires", label: "Buenos Aires, Argentina" },
+  ],
+  "Europe & Africa": [
+    { value: "Europe/London", label: "London, UK" },
+    { value: "Europe/Paris", label: "Paris, France" },
+    { value: "Europe/Berlin", label: "Berlin, Germany" },
+    { value: "Europe/Moscow", label: "Moscow, Russia" },
+    { value: "Europe/Istanbul", label: "Istanbul, Turkey" },
+    { value: "Africa/Cairo", label: "Cairo, Egypt" },
+    { value: "Africa/Johannesburg", label: "Johannesburg, South Africa" },
+    { value: "Africa/Lagos", label: "Lagos, Nigeria" },
+  ],
+  "Asia & Pacific": [
+    { value: "Asia/Dubai", label: "Dubai, UAE" },
+    { value: "Asia/Karachi", label: "Karachi, Pakistan" },
+    { value: "Asia/Kolkata", label: "Kolkata, India" },
+    { value: "Asia/Dhaka", label: "Dhaka, Bangladesh" },
+    { value: "Asia/Bangkok", label: "Bangkok, Thailand" },
+    { value: "Asia/Singapore", label: "Singapore" },
+    { value: "Asia/Shanghai", label: "Shanghai, China" },
+    { value: "Asia/Tokyo", label: "Tokyo, Japan" },
+    { value: "Asia/Seoul", label: "Seoul, South Korea" },
+    { value: "Australia/Sydney", label: "Sydney, Australia" },
+    { value: "Pacific/Auckland", label: "Auckland, New Zealand" },
+  ],
+  "Other Regions": [
+    { value: "UTC", label: "Coordinated Universal Time (UTC)" },
+    { value: "Etc/GMT+12", label: "International Date Line West (GMT-12)" },
+    { value: "Pacific/Midway", label: "Midway Island (GMT-11)" },
+    { value: "Pacific/Guam", label: "Guam (GMT+10)" },
+  ]
+}
+
+// Simple Input component
+const Input = ({ placeholder, value, onChange, className, ...props }) => {
+  return (
+    <input
+      type="text"
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      className={`border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+      {...props}
+    />
+  )
+}
+
+// World Clock Component
+const WorldClock = ({ isOpen, onClose, timeFormat, onTimeZoneSelect }) => {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [is24Hour, setIs24Hour] = useState(timeFormat === "24h")
+  const [currentTimes, setCurrentTimes] = useState({})
+  const [selectedTimeZone, setSelectedTimeZone] = useState(null)
+
+  const allTimeZones = Object.values(regionalTimeZones).flat()
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const updateTimes = () => {
+      const times = {}
+      allTimeZones.forEach((tz) => {
+        const now = new Date()
+        const timeString = now.toLocaleTimeString("en-US", {
+          timeZone: tz.value,
+          hour12: !is24Hour,
+          hour: "numeric",
+          minute: "2-digit",
+        })
+        times[tz.value] = timeString
+      })
+      setCurrentTimes(times)
+    }
+
+    updateTimes()
+    const interval = setInterval(updateTimes, 1000)
+    return () => clearInterval(interval)
+  }, [allTimeZones, is24Hour, isOpen])
+
+  const filteredRegions = Object.entries(regionalTimeZones).reduce(
+    (acc, [region, zones]) => {
+      const filteredZones = zones.filter(
+        (zone) =>
+          zone.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          region.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      if (filteredZones.length > 0) {
+        acc[region] = filteredZones
+      }
+      return acc
+    },
+    {}
+  )
+
+  const handleTimeZoneClick = (timezone) => {
+    setSelectedTimeZone(timezone)
+    if (onTimeZoneSelect) {
+      onTimeZoneSelect(timezone)
+    }
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="world-clock-modal">
+      <div className="modal-overlay" onClick={onClose} />
+      <div className="modal-content">
+        <div className="modal-header">
+          <h3>World Clock</h3>
+          <button className="close-btn" onClick={onClose}>
+            <FaTimes />
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="mb-4">
+            <Input
+              placeholder="Search time zones..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-10 w-full"
+            />
+          </div>
+
+          <div className="mb-4 flex items-center justify-between">
+            <h4 className="text-sm font-semibold text-gray-600 uppercase">TIME ZONE</h4>
+            <div className="flex items-center rounded-full bg-gray-200 p-1">
+              <button
+                onClick={() => setIs24Hour(false)}
+                className={`rounded-full px-3 py-1 text-sm font-medium ${!is24Hour ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+                  }`}
+              >
+                am/pm
+              </button>
+              <div className="w-px h-4 bg-gray-300 mx-1" />
+              <button
+                onClick={() => setIs24Hour(true)}
+                className={`rounded-full px-3 py-1 text-sm font-medium ${is24Hour ? "bg-white text-gray-900 shadow-sm" : "text-gray-600"
+                  }`}
+              >
+                24h
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            {Object.entries(filteredRegions).map(([region, zones]) => (
+              <div key={region}>
+                <h4 className="mb-2 text-sm font-semibold text-gray-900 uppercase">{region}</h4>
+                <div className="space-y-1">
+                  {zones.map((zone) => (
+                    <button
+                      key={zone.value}
+                      onClick={() => handleTimeZoneClick(zone.value)}
+                      className={`w-full flex items-center justify-between px-3 py-2 text-left rounded ${selectedTimeZone === zone.value
+                        ? "bg-teal-600 text-white"
+                        : "bg-white text-gray-900 hover:bg-gray-100"
+                        }`}
+                    >
+                      <span className="text-sm">{zone.label}</span>
+                      <span className="text-sm tabular-nums">{currentTimes[zone.value] || "--:--"}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+  .world-clock-modal {
+    position: fixed;
+    inset: 0; /* shorthand for top/left/right/bottom: 0 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+  }
+
+  .modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    z-index: 1001;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    animation: fadeInUp 0.25s ease-out;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #2a2d7c;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: color 0.2s ease;
+  }
+
+  .close-btn:hover {
+    color: #111827;
+  }
+
+  .modal-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`}</style>
+    </div>
+  )
+}
 
 const CalendarScheduler = ({
   onDateSelected,
@@ -80,94 +317,132 @@ const CalendarScheduler = ({
   const [userLocation, setUserLocation] = useState(null)
   const [isDetectingLocation, setIsDetectingLocation] = useState(false)
   const [showWorldClock, setShowWorldClock] = useState(false)
-  const [worldClocks, setWorldClocks] = useState([])
   const [timeFormat, setTimeFormat] = useState("12h")
+  const [showRegionDropdown, setShowRegionDropdown] = useState(false)
+  const [currentTimes, setCurrentTimes] = useState({});
 
-  const addWorldClock = useCallback((timezone) => {
-    setWorldClocks((prev) => {
-      if (prev.some((clock) => clock.timezone === timezone)) return prev
-      const newClock = {
-        timezone,
-        label: timeZones.find((tz) => tz.value === timezone)?.label || timezone,
-        time: "",
-      }
-      return [...prev, newClock]
-    })
-  }, [])
-
-  const removeWorldClock = useCallback((timezone) => {
-    setWorldClocks((prev) => prev.filter((clock) => clock.timezone !== timezone))
-  }, [])
-
-  useEffect(() => {
-    if (worldClocks.length === 0) return
-
-    const updateWorldClocks = () => {
-      setWorldClocks((prev) =>
-        prev.map((clock) => {
-          try {
-            const now = new Date()
-            const formatter = new Intl.DateTimeFormat("en-US", {
-              timeZone: clock.timezone,
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: true,
-            })
-            return {
-              ...clock,
-              time: formatter.format(now),
-            }
-          } catch (error) {
-            console.error("Error updating world clock:", error)
-            return clock
-          }
-        }),
-      )
+  // Get current timezone label
+  const currentTimezoneLabel = useMemo(() => {
+    for (const region of Object.values(regionalTimeZones)) {
+      const found = region.find(tz => tz.value === selectedTimeZone);
+      if (found) return found.label;
     }
+    return selectedTimeZone;
+  }, [selectedTimeZone]);
 
-    updateWorldClocks()
-    const timer = setInterval(updateWorldClocks, 1000)
-    return () => clearInterval(timer)
-  }, [worldClocks.length])
+  // Update current times for all timezones
+  useEffect(() => {
+    const updateTimes = () => {
+      const times = {};
+      Object.values(regionalTimeZones).flat().forEach((tz) => {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString("en-US", {
+          timeZone: tz.value,
+          hour12: timeFormat === "12h",
+          hour: "numeric",
+          minute: "2-digit",
+        });
+        times[tz.value] = timeString;
+      });
+      setCurrentTimes(times);
+    };
+
+    updateTimes();
+    const interval = setInterval(updateTimes, 1000);
+    return () => clearInterval(interval);
+  }, [timeFormat]);
+
+  const formatDateLocal = useCallback((date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, "0")
+    const day = String(date.getDate()).padStart(2, "0")
+    return `${year}-${month}-${day}`
+  }, [])
+
+  const generateTimeSlots = useCallback(
+    async (date, timeZone = selectedTimeZone) => {
+      const slots = []
+      const startHour = workingHours.start
+      const endHour = workingHours.end
+      const dateString = formatDateLocal(date)
+
+      try {
+        const blockedSlotsForDate = await getBlockedSlotsForDate(dateString)
+
+        for (let hour = startHour; hour <= endHour; hour++) {
+          const time24 = `${hour.toString().padStart(2, "0")}:00:00`
+          const time12 = new Date(date)
+          time12.setHours(hour, 0, 0, 0)
+
+          const displayTime = time12.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: timeZone,
+          })
+
+          const isBlocked = blockedSlotsForDate.some((slot) => slot.time === time24)
+
+          slots.push({
+            systemTime: time24,
+            displayTime: displayTime,
+            isAvailable: !isBlocked,
+          })
+        }
+      } catch (error) {
+        console.error("Error generating slots:", error)
+        // Fallback - return all slots as available
+        for (let hour = startHour; hour <= endHour; hour++) {
+          const time12 = new Date(date)
+          time12.setHours(hour, 0, 0, 0)
+          slots.push({
+            systemTime: `${hour.toString().padStart(2, "0")}:00:00`,
+            displayTime: time12.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+              timeZone: timeZone,
+            }),
+            isAvailable: true,
+          })
+        }
+      }
+
+      return slots
+    },
+    [workingHours.start, workingHours.end, selectedTimeZone, formatDateLocal],
+  )
+
+  const handleTimeZoneSelect = useCallback(
+    async (timezone) => {
+      setSelectedTimeZone(timezone);
+      setShowRegionDropdown(false);
+
+      if (selectedDate) {
+        const slots = await generateTimeSlots(selectedDate, timezone);
+        setTimeSlots(slots);
+      }
+    },
+    [selectedDate, generateTimeSlots],
+  );
 
   const detectUserLocation = useCallback(async () => {
     setIsDetectingLocation(true)
     try {
-      const controller = new AbortController()
-      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
-
-      const ipResponse = await fetch("https://ipapi.co/json/", {
-        signal: controller.signal,
-        headers: {
-          Accept: "application/json",
-        },
-      })
-
-      clearTimeout(timeoutId)
-
-      if (!ipResponse.ok) {
-        throw new Error(`HTTP error! status: ${ipResponse.status}`)
-      }
-
-      const ipData = await ipResponse.json()
-
-      if (ipData.error) {
-        throw new Error(ipData.reason || "IP geolocation service error")
-      }
+      const response = await fetch("https://ipapi.co/json/")
+      const data = await response.json()
 
       const locationData = {
-        country: ipData.country_name,
-        city: ipData.city,
-        region: ipData.region,
-        timezone: ipData.timezone,
+        country: data.country_name,
+        city: data.city,
+        region: data.region,
+        timezone: data.timezone,
         source: "ip",
       }
       setUserLocation(locationData)
 
-      if (ipData.timezone && timeZones.some((tz) => tz.value === ipData.timezone)) {
-        setSelectedTimeZone(ipData.timezone)
-        addWorldClock(ipData.timezone)
+      if (data.timezone) {
+        setSelectedTimeZone(data.timezone)
       }
     } catch (error) {
       const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -177,18 +452,13 @@ const CalendarScheduler = ({
       }
       setUserLocation(fallbackLocation)
 
-      if (browserTimezone && timeZones.some((tz) => tz.value === browserTimezone)) {
+      if (browserTimezone) {
         setSelectedTimeZone(browserTimezone)
-        addWorldClock(browserTimezone)
-      }
-
-      if (process.env.NODE_ENV === "development") {
-        console.warn("Location detection failed, using browser timezone:", error)
       }
     } finally {
       setIsDetectingLocation(false)
     }
-  }, [addWorldClock])
+  }, [])
 
   useEffect(() => {
     detectUserLocation()
@@ -295,67 +565,6 @@ const CalendarScheduler = ({
     [unavailableDates],
   )
 
-  const formatDateLocal = useCallback((date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }, [])
-
-  const generateTimeSlots = useCallback(
-    async (date, timeZone = selectedTimeZone) => {
-      const slots = []
-      const startHour = workingHours.start
-      const endHour = workingHours.end
-      const dateString = formatDateLocal(date)
-
-      try {
-        const blockedSlotsForDate = await getBlockedSlotsForDate(dateString)
-
-        for (let hour = startHour; hour <= endHour; hour++) {
-          const time24 = `${hour.toString().padStart(2, "0")}:00:00`
-          const time12 = new Date(date)
-          time12.setHours(hour, 0, 0, 0)
-
-          const displayTime = time12.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-            timeZone: timeZone,
-          })
-
-          const isBlocked = blockedSlotsForDate.some((slot) => slot.time === time24)
-
-          slots.push({
-            systemTime: time24,
-            displayTime: displayTime,
-            isAvailable: !isBlocked,
-          })
-        }
-      } catch (error) {
-        console.error("Error generating slots:", error)
-        // Fallback - return all slots as available
-        for (let hour = startHour; hour <= endHour; hour++) {
-          const time12 = new Date(date)
-          time12.setHours(hour, 0, 0, 0)
-          slots.push({
-            systemTime: `${hour.toString().padStart(2, "0")}:00:00`,
-            displayTime: time12.toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "2-digit",
-              hour12: true,
-              timeZone: timeZone,
-            }),
-            isAvailable: true,
-          })
-        }
-      }
-
-      return slots
-    },
-    [workingHours.start, workingHours.end, selectedTimeZone, formatDateLocal],
-  )
-
   const handleDateClick = useCallback(
     async (date) => {
       if (!date || isDateDisabled(date)) return
@@ -372,19 +581,6 @@ const CalendarScheduler = ({
       }
     },
     [isDateDisabled, generateTimeSlots, selectedTimeZone, formatDateLocal, onDateSelected],
-  )
-
-  const handleTimeZoneChange = useCallback(
-    async (e) => {
-      const newTimeZone = e.target.value
-      setSelectedTimeZone(newTimeZone)
-
-      if (selectedDate) {
-        const slots = await generateTimeSlots(selectedDate, newTimeZone)
-        setTimeSlots(slots)
-      }
-    },
-    [selectedDate, generateTimeSlots],
   )
 
   const handleTimeClick = useCallback((time) => {
@@ -555,50 +751,15 @@ const CalendarScheduler = ({
     })
   }, [])
 
-  const formatTime = useCallback((timeString, format) => {
-    if (!timeString) return "--:-- --"
-    if (format === "24h") {
-      const [time, period] = timeString.split(" ")
-      let [hours, minutes] = time.split(":")
-      if (period === "PM" && hours !== "12") {
-        hours = String(Number(hours) + 12)
-      }
-      if (period === "AM" && hours === "12") {
-        hours = "00"
-      }
-      return `${hours}:${minutes}`
-    }
-    return timeString
-  }, [])
-
-  const WorldClockRegion = React.memo(({ title, clocks, removeClock, timeFormat }) => {
-    if (clocks.length === 0) return null
-
-    return (
-      <div className="world-clock-region">
-        <div className="region-title">{title}</div>
-        {clocks.map((clock, index) => (
-          <div key={index} className="world-clock-item">
-            <div className="world-clock-city">
-              {clock.label.split(" (")[0].replace(/(America|Asia|Europe|Africa|Australia|Pacific|Atlantic)\//, "")}
-            </div>
-            <div className="world-clock-time">{formatTime(clock.time, timeFormat)}</div>
-            <button
-              className="remove-clock-btn"
-              onClick={() => removeClock(clock.timezone)}
-              title="Remove clock"
-              aria-label={`Remove ${clock.label} clock`}
-            >
-              ×
-            </button>
-          </div>
-        ))}
-      </div>
-    )
-  })
-
   return (
     <div className="calendar-scheduler" onClick={(e) => e.stopPropagation()}>
+      <WorldClock
+        isOpen={showWorldClock}
+        onClose={() => setShowWorldClock(false)}
+        timeFormat={timeFormat}
+        onTimeZoneSelect={handleTimeZoneSelect}
+      />
+
       <div className="scheduler-header">
         <h2 className="text-3xl font-bold text-blue-600 mt-6">{title}</h2>
         <div className="header-divider"></div>
@@ -663,25 +824,92 @@ const CalendarScheduler = ({
             <div className="time-slot-view">
               <div className="time-zone-selector">
                 <FaGlobe className="time-zone-icon" aria-hidden="true" />
-                {userLocation && (
-                  <span className="detected-location">
-                    {userLocation.city && `${userLocation.city}, `}
-                    {userLocation.country || userLocation.timezone}
-                  </span>
-                )}
-                <select
-                  value={selectedTimeZone}
-                  onChange={handleTimeZoneChange}
-                  className="time-zone-dropdown"
-                  aria-label="Select timezone"
+
+                {/* Time format toggle */}
+                <div className="time-format-toggle">
+                  <button
+                    onClick={() => setTimeFormat("12h")}
+                    className={timeFormat === "12h" ? "active" : ""}
+                  >
+                    12h
+                  </button>
+                  <button
+                    onClick={() => setTimeFormat("24h")}
+                    className={timeFormat === "24h" ? "active" : ""}
+                  >
+                    24h
+                  </button>
+                </div>
+
+                {/* Regional Dropdown */}
+                <div className="regional-dropdown-container">
+                  <button
+                    className="regional-dropdown-toggle"
+                    onClick={() => setShowRegionDropdown(!showRegionDropdown)}
+                    aria-expanded={showRegionDropdown}
+                  >
+                    <span>{currentTimezoneLabel}</span>
+                    <FaChevronDown className={`chevron ${showRegionDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {showRegionDropdown && (
+                    <div className="regional-dropdown-menu">
+                      {Object.entries(regionalTimeZones).map(([region, timezones]) => (
+                        <div key={region} className="regional-group">
+                          <div className="regional-group-header">{region}</div>
+                          {timezones.map((tz) => (
+                            <button
+                              key={tz.value}
+                              className={`regional-option ${selectedTimeZone === tz.value ? "selected" : ""}`}
+                              onClick={() => handleTimeZoneSelect(tz.value)}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                padding: "8px 12px",
+                              }}
+                            >
+                              {/* Left side: label */}
+                              <span
+                                style={{
+                                  flex: 1,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  paddingRight: "16px",
+                                }}
+                              >
+                                {tz.label}
+                              </span>
+
+                              {/* Right side: fixed time column */}
+                              <span
+                                style={{
+                                  width: "80px", // adjust column width
+                                  textAlign: "right",
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {currentTimes[tz.value] || "--:--"}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+
+
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  className="world-clock-btn"
+                  onClick={() => setShowWorldClock(true)}
+                  aria-label="Open world clock"
                 >
-                  {timeZones.map((zone) => (
-                    <option key={zone.value} value={zone.value}>
-                      {zone.label}
-                    </option>
-                  ))}
-                </select>
-                {isDetectingLocation && <FaSpinner className="spinner" aria-hidden="true" />}
+                  <FaClock />
+                </button>
               </div>
 
               <h3>Select a Time Slot</h3>
@@ -756,7 +984,7 @@ const CalendarScheduler = ({
                 {formatDateDisplay(selectedDate)}
                 {selectedTime && `, ${convertTimeToTimezone(selectedTime, "Asia/Karachi", selectedTimeZone)}`}
                 {selectedTimeZone &&
-                  ` (${timeZones.find((tz) => tz.value === selectedTimeZone)?.label || selectedTimeZone})`}
+                  ` (${currentTimezoneLabel})`}
               </p>
 
               {error && (
@@ -918,527 +1146,764 @@ const CalendarScheduler = ({
       </div>
 
       <style jsx>{`
-                .calendar-scheduler {
-                    max-width: 800px;
-                    margin: 0 auto;
-                    font-family: 'Arial', sans-serif;
-                }
-                
-                .scheduler-header {
-                    text-align: center;
-                    margin-bottom: 2rem;
-                    margin-top: 2rem;
-                }
-                
-                .header-divider {
-                    width: 100px;
-                    height: 3px;
-                    background-color: #06a3c2;
-                    margin: 10px auto;
-                }
-                
-                .scheduler-container {
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 2rem;
-                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-                    margin-bottom: 2rem;
-                }
-                
-                .scheduler-card {
-                    text-align: center;
-                }
-                
-                .scheduler-icon {
-                    font-size: 2rem;
-                    color: #2A2D7C;
-                    margin-bottom: 1rem;
-                }
-                
-                .calendar-view {
-                    max-width: 500px;
-                    margin: 0 auto;
-                    display: flex;
-                    flex-direction: column;
-                }
-                
-                .calendar-header-fixed {
-                    position: sticky;
-                    top: 0;
-                    background: white;
-                    z-index: 10;
-                    padding: 10px 0;
-                }
-                
-                .calendar-header {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 15px;
-                }
-                
-                .calendar-header h3 {
-                    margin: 0;
-                    color: #2A2D7C;
-                    font-size: 1.2rem;
-                    white-space: nowrap;
-                }
-                
-                .month-nav-btn {
-                    background: none;
-                    border: none;
-                    font-size: 1rem;
-                    cursor: pointer;
-                    color: #2A2D7C;
-                    padding: 0.5rem;
-                    border-radius: 4px;
-                    transition: all 0.2s;
-                }
-                
-                .month-nav-btn:hover:not(:disabled) {
-                    color: #06a3c2;
-                    background-color: #f0f8ff;
-                }
-                
-                .calendar-grid-container {
-                    overflow-x: auto;
-                    -webkit-overflow-scrolling: touch;
-                    width: 100%;
-                }
-                
-                .day-names {
-                    display: grid;
-                    grid-template-columns: repeat(7, minmax(40px, 1fr));
-                    text-align: center;
-                    font-weight: bold;
-                    margin-bottom: 0.5rem;
-                    color: #2A2D7C;
-                    position: sticky;
-                    left: 0;
-                    background: white;
-                    min-width: 280px;
-                }
-                
-                .day-name {
-                    padding: 0.5rem;
-                }
-                
-                .days-grid {
-                    display: grid;
-                    grid-template-columns: repeat(7, minmax(40px, 1fr));
-                    gap: 5px;
-                    min-width: 280px;
-                }
-                
-                .day-cell {
-                    min-height: 50px;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    transition: all 0.2s;
-                    position: relative;
-                    padding: 0.2rem;
-                    aspect-ratio: 1;
-                    background: none;
-                    border: 1px solid transparent;
-                }
-                
-                .day-cell:not(.empty):not(.disabled):hover {
-                    background-color: #e1f5fe;
-                    border-color: #06a3c2;
-                }
-                
-                .day-cell:not(.empty):not(.disabled):focus {
-                    outline: 2px solid #06a3c2;
-                    outline-offset: 2px;
-                }
-                
-                .day-cell.empty {
-                    visibility: hidden;
-                }
-                
-                .day-cell.disabled {
-                    color: #ccc;
-                    cursor: not-allowed;
-                    opacity: 0.5;
-                }
-                
-                .day-number {
-                    font-size: 0.9rem;
-                    font-weight: bold;
-                }
-                
-                .booked-indicator {
-                    font-size: 0.6rem;
-                    color: #f44336;
-                    margin-top: 2px;
-                }
-                
-                .time-slot-view {
-                    max-width: 500px;
-                    margin: 0 auto;
-                }
-                
-                .time-slot-view h3 {
-                    color: #2A2D7C;
-                    margin-bottom: 0.5rem;
-                }
-                
-                .selected-date {
-                    color: #2A2D7C;
-                    font-weight: bold;
-                    margin-bottom: 1.5rem;
-                }
-                
-                .current-time-display {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 8px;
-                    font-size: 1rem;
-                    margin-bottom: 16px;
-                    padding: 10px 14px;
-                    background-color: #f9f9f9;
-                    border: 1px solid #ddd;
-                    border-radius: 8px;
-                    color: #333;
-                }
-                
-                .current-time-display strong {
-                    color: #2A2D7C;
-                    font-weight: bold;
-                }
-                
-                .time-slots-grid {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                    gap: 10px;
-                    margin-bottom: 1.5rem;
-                }
-                
-                .time-slot-btn {
-                    padding: 10px;
-                    background-color: #06a3c2;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    transition: all 0.3s;
-                    font-size: 0.9rem;
-                }
-                
-                .time-slot-btn:hover:not(:disabled) {
-                    background-color: #2A2D7C;
-                    transform: translateY(-1px);
-                }
-                
-                .time-slot-btn:focus {
-                    outline: 2px solid #06a3c2;
-                    outline-offset: 2px;
-                }
-                
-                .time-slot-btn.blocked {
-                    background-color: #f8d7da;
-                    color: #721c24;
-                    cursor: not-allowed;
-                    position: relative;
-                }
-                
-                .time-slot-btn.blocked:hover {
-                    background-color: #f8d7da;
-                    transform: none;
-                }
-                
-                .blocked-label {
-                    display: block;
-                    font-size: 0.7em;
-                    color: #dc3545;
-                    margin-top: 4px;
-                }
-                
-                .time-slot-actions {
-                    display: flex;
-                    justify-content: center;
-                }
-                
-                .appointment-form-container {
-                    display: flex;
-                    flex-direction: column;
-                    max-height: 80vh;
-                }
-                
-                .selected-slot {
-                    font-size: 1.1rem;
-                    color: #2A2D7C;
-                    margin-bottom: 1.5rem;
-                    text-align: center;
-                    font-weight: bold;
-                    flex-shrink: 0;
-                }
-                
-                .form-scroll-container {
-                    flex-grow: 1;
-                    overflow-y: auto;
-                    padding-right: 8px;
-                    margin-bottom: 15px;
-                }
-                
-                .form-scroll-container::-webkit-scrollbar {
-                    width: 6px;
-                }
-                
-                .form-scroll-container::-webkit-scrollbar-track {
-                    background: #f1f1f1;
-                    border-radius: 10px;
-                }
-                
-                .form-scroll-container::-webkit-scrollbar-thumb {
-                    background: #888;
-                    border-radius: 10px;
-                }
-                
-                .form-scroll-container::-webkit-scrollbar-thumb:hover {
-                    background: #555;
-                }
-                
-                .form-group {
-                    margin-bottom: 1rem;
-                    text-align: left;
-                }
-                
-                .form-group label {
-                    display: block;
-                    margin-bottom: 0.5rem;
-                    font-weight: bold;
-                    color: #333;
-                }
-                
-                .form-group input,
-                .form-group select,
-                .form-group textarea {
-                    width: 100%;
-                    padding: 10px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    font-size: 1rem;
-                    transition: border-color 0.2s;
-                }
-                
-                .form-group input:focus,
-                .form-group select:focus,
-                .form-group textarea:focus {
-                    outline: none;
-                    border-color: #06a3c2;
-                    box-shadow: 0 0 0 2px rgba(6, 163, 194, 0.2);
-                }
-                
-                .form-group textarea {
-                    min-height: 100px;
-                    resize: vertical;
-                }
-                
-                .error-text {
-                    color: #dc3545;
-                    font-size: 0.875rem;
-                    margin-top: 0.25rem;
-                    display: block;
-                }
-                
-                .error-notification {
-                    background-color: #f8d7da;
-                    color: #721c24;
-                    padding: 12px;
-                    border-radius: 4px;
-                    margin-bottom: 1rem;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-                
-                .form-buttons {
-                    display: flex;
-                    justify-content: space-between;
-                    margin-top: auto;
-                    padding-top: 15px;
-                    flex-shrink: 0;
-                    border-top: 1px solid #eee;
-                    gap: 1rem;
-                }
-                
-                .confirm-btn,
-                .back-btn,
-                .primary-btn {
-                    padding: 12px 24px;
-                    background-color: #2A2D7C;
-                    color: white;
-                    border: none;
-                    border-radius: 4px;
-                    cursor: pointer;
-                    font-size: 1rem;
-                    transition: all 0.3s;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-                
-                .confirm-btn:hover:not(:disabled),
-                .back-btn:hover:not(:disabled),
-                .primary-btn:hover:not(:disabled) {
-                    background-color: #1a1c52;
-                    transform: translateY(-1px);
-                }
-                
-                .confirm-btn:disabled {
-                    background-color: #cccccc;
-                    cursor: not-allowed;
-                    transform: none;
-                }
-                
-                .success-message {
-                    text-align: center;
-                    max-width: 500px;
-                    margin: 0 auto;
-                }
-                
-                .success-message h3 {
-                    color: #2A2D7C;
-                    margin-bottom: 1rem;
-                }
-                
-                .confirmation-details {
-                    font-size: 1.1rem;
-                    margin: 1.5rem 0;
-                    padding: 1rem;
-                    background-color: #f0f8ff;
-                    border-radius: 4px;
-                    border-left: 4px solid #06a3c2;
-                }
-                
-                .button-container {
-                    margin-top: 1.5rem;
-                }
-                
-                .time-zone-selector {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    margin-bottom: 20px;
-                    background: #f5f5f5;
-                    padding: 10px 15px;
-                    border-radius: 6px;
-                    flex-wrap: wrap;
-                }
-                
-                .detected-location {
-                    font-size: 0.9rem;
-                    color: #2A2D7C;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    max-width: 150px;
-                }
-                
-                .time-zone-dropdown {
-                    padding: 8px 12px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    background: white;
-                    font-size: 14px;
-                    min-width: 200px;
-                    flex: 1;
-                }
-                
-                .time-zone-icon {
-                    color: #2A2D7C;
-                    font-size: 18px;
-                    flex-shrink: 0;
-                }
-                
-                .spinner {
-                    animation: spin 1s linear infinite;
-                }
-                
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-                
-                /* Mobile Responsive Styles */
-                @media (max-width: 768px) {
-                    .scheduler-container {
-                        padding: 1rem;
-                    }
-                    
-                    .appointment-form-container {
-                        max-height: 70vh;
-                    }
-                    
-                    .form-buttons {
-                        flex-direction: column;
-                    }
-                    
-                    .confirm-btn, .back-btn {
-                        width: 100%;
-                    }
-                    
-                    .time-zone-selector {
-                        flex-direction: column;
-                        align-items: stretch;
-                    }
-                    
-                    .time-zone-dropdown {
-                        width: 100%;
-                        min-width: auto;
-                    }
-                }
-                
-                @media (max-width: 600px) {
-                    .calendar-header h3 {
-                        font-size: 1rem;
-                    }
-                    
-                    .month-nav-btn {
-                        padding: 5px;
-                    }
-                    
-                    .day-names {
-                        grid-template-columns: repeat(7, 60px);
-                        min-width: 420px;
-                        font-size: 0.8rem;
-                    }
-                    
-                    .days-grid {
-                        grid-template-columns: repeat(7, 60px);
-                        min-width: 420px;
-                    }
-                    
-                    .day-cell {
-                        min-height: 60px;
-                    }
-                    
-                    .day-number {
-                        font-size: 0.8rem;
-                    }
-                    
-                    .booked-indicator {
-                        font-size: 0.5rem;
-                    }
-                    
-                    .time-slots-grid {
-                        grid-template-columns: repeat(2, 1fr);
-                    }
-                    
-                    .time-slot-btn {
-                        padding: 8px;
-                        font-size: 0.8rem;
-                    }
-                }
-            `}</style>
+        .calendar-scheduler {
+          max-width: 800px;
+          margin: 0 auto;
+          font-family: 'Arial', sans-serif;
+        }
+        
+        .scheduler-header {
+          text-align: center;
+          margin-bottom: 2rem;
+          margin-top: 2rem;
+        }
+        
+        .header-divider {
+          width: 100px;
+          height: 3px;
+          background-color: #06a3c2;
+          margin: 10px auto;
+        }
+        
+        .scheduler-container {
+          background-color: #f8f9fa;
+          border-radius: 8px;
+          padding: 2rem;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          margin-bottom: 2rem;
+        }
+        
+        .scheduler-card {
+          text-align: center;
+        }
+        
+        .scheduler-icon {
+          font-size: 2rem;
+          color: #2A2D7C;
+          margin-bottom: 1rem;
+        }
+        
+        .calendar-view {
+          max-width: 500px;
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .calendar-header-fixed {
+          position: sticky;
+          top: 0;
+          background: white;
+          z-index: 10;
+          padding: 10px 0;
+        }
+        
+        .calendar-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 15px;
+        }
+        
+        .calendar-header h3 {
+          margin: 0;
+          color: #2A2D7C;
+          font-size: 1.2rem;
+          white-space: nowrap;
+        }
+        
+        .month-nav-btn {
+          background: none;
+          border: none;
+          font-size: 1rem;
+          cursor: pointer;
+          color: #2A2D7C;
+          padding: 0.5rem;
+          border-radius: 4px;
+          transition: all 0.2s;
+        }
+        
+        .month-nav-btn:hover:not(:disabled) {
+          color: #06a3c2;
+          background-color: #f0f8ff;
+        }
+        
+        .calendar-grid-container {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          width: 100%;
+        }
+        
+        .day-names {
+          display: grid;
+          grid-template-columns: repeat(7, minmax(40px, 1fr));
+          text-align: center;
+          font-weight: bold;
+          margin-bottom: 0.5rem;
+          color: #2A2D7C;
+          position: sticky;
+          left: 0;
+          background: white;
+          min-width: 280px;
+        }
+        
+        .day-name {
+          padding: 0.5rem;
+        }
+        
+        .days-grid {
+          display: grid;
+          grid-template-columns: repeat(7, minmax(40px, 1fr));
+          gap: 5px;
+          min-width: 280px;
+        }
+        
+        .day-cell {
+          min-height: 50px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s;
+          position: relative;
+          padding: 0.2rem;
+          aspect-ratio: 1;
+          background: none;
+          border: 1px solid transparent;
+        }
+        
+        .day-cell:not(.empty):not(.disabled):hover {
+          background-color: #e1f5fe;
+          border-color: #06a3c2;
+        }
+        
+        .day-cell:not(.empty):not(.disabled):focus {
+          outline: 2px solid #06a3c2;
+          outline-offset: 2px;
+        }
+        
+        .day-cell.empty {
+          visibility: hidden;
+        }
+        
+        .day-cell.disabled {
+          color: #ccc;
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+        
+        .day-number {
+          font-size: 0.9rem;
+          font-weight: bold;
+        }
+        
+        .booked-indicator {
+          font-size: 0.6rem;
+          color: #f44336;
+          margin-top: 2px;
+        }
+        
+        .time-slot-view {
+          max-width: 500px;
+          margin: 0 auto;
+        }
+        
+        .time-slot-view h3 {
+          color: #2A2D7C;
+          margin-bottom: 0.5rem;
+        }
+        
+        .selected-date {
+          color: #2A2D7C;
+          font-weight:  bold;
+      margin-bottom: 1.5rem;
+    }
+    
+    .current-time-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      padding: 10px 14px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      color: #333;
+    }
+    
+    .current-time-display strong {
+      color: #2A2D7C;
+      font-weight: bold;
+    }
+    
+    .time-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .time-slot-btn {
+      padding: 10px;
+      background-color: #06a3c2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9rem;
+    }
+    
+    .time-slot-btn:hover:not(:disabled) {
+      background-color: #2A2D7C;
+      transform: translateY(-1px);
+    }
+    
+    .time-slot-btn:focus {
+      outline: 2px solid #06a3c2;
+      outline-offset: 2px;
+    }
+    
+    .time-slot-btn.blocked {
+      background-color: #f8d7da;
+      color: #721c24;
+      cursor: not-allowed;
+      position: relative;
+    }
+    
+    .time-slot-btn.blocked:hover {
+      background-color: #f8d7da;
+      transform: none;
+    }
+    
+    .blocked-label {
+      display: block;
+      font-size: 0.7em;
+      color: #dc3545;
+      margin-top: 4px;
+    }
+    
+    .time-slot-actions {
+      display: flex;
+      justify-content: center;
+    }
+    
+    .appointment-form-container {
+      display: flex;
+      flex-direction: column;
+      max-height: 80vh;
+    }
+    
+    .selected-slot {
+      font-size: 1.1rem;
+      color: #2A2D7C;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    
+    .form-scroll-container {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding-right: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .form-scroll-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .form-scroll-container::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    .form-scroll-container::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+    }
+    
+    .form-scroll-container::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #06a3c2;
+      box-shadow: 0 0 0 2px rgba(6, 163, 194, 0.2);
+    }
+    
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .error-text {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: block;
+    }
+    
+    .error-notification {
+      background-color: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 15px;
+      flex-shrink: 0;
+      border-top: 1px solid #eee;
+      gap: 1rem;
+    }
+    
+    .confirm-btn,
+    .back-btn,
+    .primary-btn {
+      padding: 12px 24px;
+      background-color: #2A2D7C;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .confirm-btn:hover:not(:disabled),
+    .back-btn:hover:not(:disabled),
+    .primary-btn:hover:not(:disabled) {
+      background-color: #1a1c52;
+      transform: translateY(-1px);
+    }
+    
+    .confirm-btn:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .success-message {
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    .success-message h3 {
+      color: #2A2D7C;
+      margin-bottom: 1rem;
+    }
+    
+    .confirmation-details {
+      font-size: 1.1rem;
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background-color: #f0f8ff;
+      border-radius: 4px;
+      border-left: 4px solid #06a3c2;
+    }
+    
+    .button-container {
+      margin-top: 1.5rem;
+    }
+    
+    .time-zone-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: #f5f5f5;
+      padding: 10px 15px;
+      border-radius: 6px;
+      flex-wrap: wrap;
+      position: relative;
+    }
+    
+    .detected-location {
+      font-size: 0.9rem;
+      color: #2A2D7C;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 150px;
+    }
+    
+    .regional-dropdown-container {
+      position: relative;
+      flex: 1;
+    }
+    
+    .regional-dropdown-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    
+    .regional-dropdown-toggle:hover {
+      border-color: #06a3c2;
+    }
+    
+    .regional-dropdown-toggle:focus {
+      outline: none;
+      border-color: #06a3c2;
+      box-shadow: 0 0 0 2px rgba(6, 163, 194, 0.2);
+    }
+    
+    .chevron {
+      transition: transform 0.2s;
+    }
+    
+    .chevron.rotate-180 {
+      transform: rotate(180deg);
+    }
+    
+    .regional-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 4px;
+    }
+    
+    .regional-group {
+      border-bottom: 1px solid #eee;
+    }
+    
+    .regional-group:last-child {
+      border-bottom: none;
+    }
+    
+    .regional-group-header {
+      padding: 8px 12px;
+      background-color: #f8f9fa;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #2A2D7C;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    
+    .regional-option {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      text-align: left;
+      border: none;
+      background: white;
+      cursor: pointer;
+      font-size: 0.875rem;
+      transition: background-color 0.2s;
+    }
+    
+    .regional-option:hover {
+      background-color: #f0f8ff;
+    }
+    
+    .regional-option.selected {
+      background-color: #06a3c2;
+      color: white;
+    }
+    
+    .world-clock-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #2A2D7C;
+      font-size: 18px;
+      padding: 5px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    
+    .world-clock-btn:hover {
+      background-color: rgba(42, 45, 124, 0.1);
+    }
+    
+    .time-zone-icon {
+      color: #2A2D7C;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    
+    .spinner {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      .scheduler-container {
+        padding: 1rem;
+      }
+      
+      .appointment-form-container {
+        max-height: 70vh;
+      }
+      
+      .form-buttons {
+        flex-direction: column;
+      }
+      
+      .confirm-btn, .back-btn {
+        width: 100%;
+      }
+      
+      .time-zone-selector {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .regional-dropdown-container {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .calendar-header h3 {
+        font-size: 1rem;
+      }
+      
+      .month-nav-btn {
+        padding: 5px;
+      }
+      
+      .day-names {
+        grid-template-columns: repeat(7, 60px);
+        min-width: 420px;
+        font-size: 0.8rem;
+      }
+      
+      .days-grid {
+        grid-template-columns: repeat(7, 60px);
+        min-width: 420px;
+      }
+      
+      .day-cell {
+        min-height: 60px;
+      }
+      
+      .day-number {
+        font-size: 0.8rem;
+      }
+      
+      .booked-indicator {
+        font-size: 0.5rem;
+      }
+      
+      .time-slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .time-slot-btn {
+        padding: 8px;
+        font-size: 0.8rem;
+      }
+
+      .time-zone-selector {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    background: #f5f5f5;
+    padding: 10px 15px;
+    border-radius: 6px;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .regional-dropdown-container {
+    position: relative;
+    flex: 1;
+  }
+
+  .regional-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .regional-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 4px;
+  }
+
+  .regional-group {
+    border-bottom: 1px solid #eee;
+  }
+
+  .regional-group-header {
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #2A2D7C;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .regional-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 8px 12px;
+    text-align: left;
+    border: none;
+    background: white;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+  }
+
+  .regional-option:hover {
+    background-color: #f0f8ff;
+  }
+
+  .regional-option.selected {
+    background-color: #06a3c2;
+    color: white;
+  }
+
+  .timezone-label {
+    flex: 1;
+    text-align: left;
+  }
+
+  .timezone-time {
+    font-feature-settings: "tnum";
+    font-variant-numeric: tabular-nums;
+    color: #666;
+    margin-left: 8px;
+  }
+
+  .regional-option.selected .timezone-time {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .time-format-toggle {
+  display: inline-flex;
+  background: #f3f4f6;
+  border-radius: 9999px;
+  padding: 4px;
+  gap: 4px;
+  margin-right: auto; /* Pushes it to the left */
+}
+
+.time-format-toggle button {
+  flex: 1;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 9999px;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.time-format-toggle button:hover {
+  background: #e5e7eb;
+}
+
+.time-format-toggle button.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Focus styles for accessibility */
+.time-format-toggle button:focus {
+  outline: 2px solid #06a3c2;
+  outline-offset: 2px;
+}
+    }
+  `}</style>
     </div>
+
   )
 }
 
-export default CalendarScheduler;
+export default CalendarScheduler

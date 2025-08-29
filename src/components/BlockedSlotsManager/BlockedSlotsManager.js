@@ -4,7 +4,7 @@ import {
     unblockTimeSlot,
     getBlockedSlotsForDate
 } from '../../services/blockedSlotsService';
-import { timeZones } from '../CalendarScheduler';
+import { regionalTimeZones } from '../CalendarScheduler';
 import { format, parseISO } from 'date-fns';
 import { FaCalendarAlt, FaClock, FaTimes, FaGlobe, FaSpinner } from 'react-icons/fa';
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -158,7 +158,7 @@ const BlockedSlotsManager = ({ date }) => {
                         value={newBlock.timeZone}
                         onChange={handleInputChange}
                     >
-                        {timeZones.map(zone => (
+                        {regionalTimeZones.map(zone => (
                             <option key={zone.value} value={zone.value}>
                                 {zone.label}
                             </option>

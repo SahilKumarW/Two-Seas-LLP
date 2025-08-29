@@ -40,7 +40,7 @@ const SEASProcessFlow = () => {
         <div className="seas-flow-container">
             <div className="flow-header">
                 <h2>We Hire Professionals</h2>
-                <p>With Minimum Bachelor's Degree & 1-2 Years of Experience</p>
+                <p>With Minimum a Bachelor's Degree & 1-2 Years of Experience</p>
             </div>
 
             <div className="process-track">
@@ -119,7 +119,7 @@ function getStepDescription(step) {
     const descriptions = [
         "Advertising of positions is done on multiple platforms.",
         "Each candidate undergoes rigorous screening for qualifications.",
-        "Shortlisted candidates complete multiple interview rounds.",
+        "Shortlisted candidates complete an interview round.",
         "We verify background information and references.",
         "Successful candidates join our exclusive talent pool."
     ];
