@@ -1762,21 +1762,21 @@ const CalendarScheduler = ({
       }
 
       .time-zone-selector {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    background: #f5f5f5;
-    padding: 10px 15px;
-    border-radius: 6px;
-    flex-wrap: wrap;
-    position: relative;
-  }
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: #f5f5f5;
+      padding: 10px 15px;
+      border-radius: 6px;
+      flex-wrap: wrap;
+      position: relative;
+    }
 
-  .regional-dropdown-container {
-    position: relative;
-    flex: 1;
-  }
+    .regional-dropdown-container {
+      position: relative;
+      flex: 1;
+    }
 
   .regional-dropdown-toggle {
     display: flex;
@@ -1861,7 +1861,14 @@ const CalendarScheduler = ({
     color: rgba(255, 255, 255, 0.9);
   }
 
-  .time-format-toggle {
+/* Focus styles for accessibility */
+.time-format-toggle button:focus {
+  outline: 2px solid #06a3c2;
+  outline-offset: 2px;
+}
+    }
+
+    .time-format-toggle {
   display: inline-flex;
   background: #f3f4f6;
   border-radius: 9999px;
@@ -1893,13 +1900,6 @@ const CalendarScheduler = ({
   color: #111827;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
-
-/* Focus styles for accessibility */
-.time-format-toggle button:focus {
-  outline: 2px solid #06a3c2;
-  outline-offset: 2px;
-}
-    }
   `}</style>
     </div>
 
