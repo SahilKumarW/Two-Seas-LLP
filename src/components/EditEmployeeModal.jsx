@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { currencies } from '../pages/AdminDashboard/constants';
 import { db, doc, updateDoc } from '../firebase';
 import '../pages/AddEmployee/AddEmployee.css';
+import defaultProfileImage from "../assets/no image found.png";
+import { niches } from '../pages/AdminDashboard/constants';
 
 const EditEmployeeModal = ({ employee, onClose, onUpdated }) => {
     const [formData, setFormData] = useState({
@@ -11,27 +13,27 @@ const EditEmployeeModal = ({ employee, onClose, onUpdated }) => {
         experience: employee.experience || '',
         expertise: employee.expertise || '',
         intro: employee.intro || '',
-        image: employee.imageBase64 || null,
+        image: employee.imageBase64 || defaultProfileImage,
         interviewVideoLink: employee.interviewVideoLink || '',
         introductionVideoLink: employee.introductionVideoLink || '',
-        resumeLink: employee.resume?.link || '',
-        assessmentLink: employee.assessment?.link || ''
+        resume: employee.resume || null,
+        assessment: employee.assessment || null,
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const [selectedNiche, setSelectedNiche] = useState(employee.niche || '');
     const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
 
-    const niches = [
-        { id: 'niche-0', name: 'Software Development' },
-        { id: 'niche-1', name: 'Data & Analytics' },
-        { id: 'niche-2', name: 'Design & Creative' },
-        { id: 'niche-3', name: 'Marketing' },
-        { id: 'niche-4', name: 'Writing' },
-        { id: 'niche-5', name: 'Support' },
-        { id: 'niche-6', name: 'Administration' },
-        { id: 'niche-7', name: 'Finance' }
-    ];
+    // const niches = [
+    //     { id: 'niche-0', name: 'Software Development' },
+    //     { id: 'niche-1', name: 'Data & Analytics' },
+    //     { id: 'niche-2', name: 'Design & Creative' },
+    //     { id: 'niche-3', name: 'Marketing' },
+    //     { id: 'niche-4', name: 'Writing' },
+    //     { id: 'niche-5', name: 'Support' },
+    //     { id: 'niche-6', name: 'Administration' },
+    //     { id: 'niche-7', name: 'Finance' }
+    // ];
 
     const fileInputRef = useRef(null);
     const currencyDropdownRef = useRef(null);
@@ -90,16 +92,8 @@ const EditEmployeeModal = ({ employee, onClose, onUpdated }) => {
                 niche: selectedNiche,
                 interviewVideoLink: formData.interviewVideoLink,
                 introductionVideoLink: formData.introductionVideoLink,
-                resume: {
-                    type: 'google_drive',
-                    link: formData.resumeLink,
-                    accessedAt: new Date()
-                },
-                assessment: {
-                    type: 'google_drive',
-                    link: formData.assessmentLink,
-                    accessedAt: new Date()
-                }
+                resume: formData.resume,
+                assessment: formData.assessment
             };
 
             await updateDoc(doc(db, "employees", employee.id), employeeData);
@@ -139,6 +133,29 @@ const EditEmployeeModal = ({ employee, onClose, onUpdated }) => {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
         const match = url.match(regExp);
         return (match && match[2].length === 11) ? match[2] : null;
+    };
+
+    const handleFileUpload = (e, type) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.type !== "application/pdf") {
+            alert("Please upload a PDF file");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            setFormData({
+                ...formData,
+                [type]: {
+                    base64: event.target.result,
+                    fileName: file.name,
+                    uploadedAt: Date.now(),  // or Timestamp.now()
+                },
+            });
+        };
+        reader.readAsDataURL(file);
     };
 
     return (
@@ -395,40 +412,29 @@ const EditEmployeeModal = ({ employee, onClose, onUpdated }) => {
                             </div>
 
                             <div className="form-group">
-                                <label>Resume (Google Drive Link)</label>
-                                <div className="input-with-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#64748B" />
-                                        <path d="M16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="#64748B" />
-                                    </svg>
-                                    <input
-                                        type="url"
-                                        name="resumeLink"
-                                        value={formData.resumeLink}
-                                        onChange={handleInputChange}
-                                        placeholder="https://drive.google.com/..."
-                                    />
-                                </div>
-                                <p className="file-hint">Paste the shareable Google Drive link</p>
+                                <label>Upload Resume (PDF)</label>
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    onChange={(e) => handleFileUpload(e, "resume")}
+                                />
+                                {formData.resume && (
+                                    <p className="file-hint">Current file: {formData.resume.fileName}</p>
+                                )}
                             </div>
 
                             <div className="form-group">
-                                <label>Assessment Report (Google Drive Link)</label>
-                                <div className="input-with-icon">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#64748B" />
-                                        <path d="M16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="#64748B" />
-                                    </svg>
-                                    <input
-                                        type="url"
-                                        name="assessmentLink"
-                                        value={formData.assessmentLink}
-                                        onChange={handleInputChange}
-                                        placeholder="https://drive.google.com/..."
-                                    />
-                                </div>
-                                <p className="file-hint">Paste the shareable Google Drive link</p>
+                                <label>Upload Assessment (PDF)</label>
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    onChange={(e) => handleFileUpload(e, "assessment")}
+                                />
+                                {formData.assessment && (
+                                    <p className="file-hint">Current file: {formData.assessment.fileName}</p>
+                                )}
                             </div>
+
                         </div>
                         <div className="form-actions">
                             <button

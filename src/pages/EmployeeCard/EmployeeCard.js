@@ -8,8 +8,9 @@ import { collection, getDocs } from 'firebase/firestore';
 import { niches } from '../AdminDashboard/constants';
 import { doc, getDoc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import EditEmployeeModal from '../../components/EditEmployeeModal';
+import defaultProfileImage from "../../assets/no image found.png";
 
-export const useEmployees = (archived = false) => {
+export const useEmployees = (archived = false, refresh = false) => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,10 +20,14 @@ export const useEmployees = (archived = false) => {
       try {
         const collectionName = archived ? 'archivedEmployees' : 'employees';
         const querySnapshot = await getDocs(collection(db, collectionName));
-        const employeesData = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+        const employeesData = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          return {
+            id: doc.id,
+            ...data,
+            imageBase64: data.imageBase64 || defaultProfileImage,
+          };
+        });
         setEmployees(employeesData);
         setLoading(false);
       } catch (err) {
@@ -32,16 +37,17 @@ export const useEmployees = (archived = false) => {
     };
 
     fetchEmployees();
-  }, [archived]);
+  }, [archived, refresh]); // ✅ re-run when refresh changes
 
-  return { employees, loading, error };
+  return { employees, loading, error, setEmployees };
 };
 
 const EmployeeCard = ({ archived = false, currentClientId = null }) => {
-  const { employees, loading, error } = useEmployees(archived);
+  const [refresh, setRefresh] = useState(false); // 👈 define refresh first
+  const { employees, loading, error, setEmployees } = useEmployees(archived, refresh);
   const location = useLocation();
   const isAdminPanel = location.pathname === "/admin-panel";
-
+  
   const [wishlist, setWishlist] = useState({});
   const [expandedCards, setExpandedCards] = useState({});
   const [selectedNiche, setSelectedNiche] = useState('All');
@@ -54,14 +60,13 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
   });
 
   const [editModalId, setEditModalId] = useState(null);
-  const [refresh, setRefresh] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Add these missing state variables
   const [editEmployee, setEditEmployee] = useState(null);
   const [editData, setEditData] = useState({});
   const [editingEmployee, setEditingEmployee] = useState(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -143,6 +148,10 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
 
   const openDocument = (doc, type, e) => {
     e.stopPropagation();
+    if (!doc?.base64) {
+      alert("This document is not available.");
+      return;
+    }
     setViewerState({
       isOpen: true,
       document: doc,
@@ -196,10 +205,14 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
 
   // Delete employee
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this employee?")) return;
     try {
-      await deleteDoc(doc(db, "employees", id));
-      alert("Employee deleted successfully.");
+      const collectionName = archived ? "archivedEmployees" : "employees";
+      await deleteDoc(doc(db, collectionName, id));
+
+      // Update local state immediately
+      setEmployees((prev) => prev.filter((emp) => emp.id !== id));
+
+      setConfirmDeleteId(null); // close modal
     } catch (err) {
       console.error("Error deleting:", err);
       alert("Failed to delete employee.");
@@ -308,11 +321,11 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
                       <div className="avatar-container">
                         <div className="avatar-wrapper">
                           <img
-                            src={employee.imageBase64 || 'https://via.placeholder.com/150'}
+                            src={employee.imageBase64 || defaultProfileImage}
                             alt={employee.name}
                             className="employee-avatar"
                             onError={(e) => {
-                              e.target.src = 'https://via.placeholder.com/150';
+                              e.target.src = defaultProfileImage; // fallback if broken
                             }}
                           />
                         </div>
@@ -387,7 +400,7 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
                           title="Delete"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDelete(employee.id);
+                            setConfirmDeleteId(employee.id);
                           }}
                         />
                       </div>
@@ -482,7 +495,8 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
 
               <div className="viewer-actions">
                 <a
-                  href={viewerState.document.link}
+                  href={viewerState.document.base64}
+                  download={viewerState.document.fileName}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="external-link"
@@ -509,7 +523,7 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
               )}
 
               <iframe
-                src={getEmbedUrl(viewerState.document.link)}
+                src={viewerState.document.base64}
                 title={getDocumentTitle()}
                 className={`document-iframe ${viewerState.isLoading ? 'loading' : ''}`}
                 allow="fullscreen"
@@ -558,6 +572,29 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
             <div className="modal-actions">
               <button onClick={handleUpdate}>Update</button>
               <button onClick={() => setEditEmployee(null)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {confirmDeleteId && (
+        <div className="confirm-modal-overlay" onClick={() => setConfirmDeleteId(null)}>
+          <div className="confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this employee?</p>
+            <div className="modal-actions">
+              <button
+                className="confirm-btn"
+                onClick={() => handleDelete(confirmDeleteId)}
+              >
+                Yes, Delete
+              </button>
+              <button
+                className="cancel-btn"
+                onClick={() => setConfirmDeleteId(null)}
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './AddEmployee.css';
 import { currencies, navItems } from '../AdminDashboard/constants';
 import { db, collection, addDoc, getDocs } from '../../firebase';
+import defaultProfileImage from "../../assets/no image found.png";
 
 const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
     const navigate = useNavigate();
@@ -26,6 +27,12 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
     const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadStatus, setUploadStatus] = useState(''); // For tracking upload status
+
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredClients = clients.filter((client) =>
+        client.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     // ✅ fetch clients list
     useEffect(() => {
@@ -80,6 +87,26 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
         reader.readAsDataURL(file);
     };
 
+    const handlePdfUpload = (e, type) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.type !== "application/pdf") {
+            alert("Only PDF files are allowed");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setEmployee((prev) => ({
+                ...prev,
+                [`${type}Base64`]: reader.result, // store Base64
+                [`${type}FileName`]: file.name
+            }));
+        };
+        reader.readAsDataURL(file); // Convert to Base64
+    };
+
     const validateGoogleDriveLink = (url) => {
         if (!url) return true;
         return url.includes('drive.google.com') || url.includes('docs.google.com');
@@ -108,29 +135,29 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
             // Prepare employee data
             const employeeData = {
                 name: employee.name,
-                // rate: parseFloat(employee.rate),
                 currency: employee.currency,
                 experience: employee.experience,
                 expertise: employee.expertise,
                 intro: employee.intro,
-                imageBase64: employee.image,
+                imageBase64: employee.image || defaultProfileImage,
                 niche: selectedNiche,
                 interviewVideoLink: employee.interviewVideoLink,
                 introductionVideoLink: employee.introductionVideoLink,
                 createdAt: new Date(),
-                status: 'active',
+                status: "active",
                 resume: {
-                    type: 'google_drive',
-                    link: employee.resumeLink,
-                    accessedAt: new Date()
+                    fileName: employee.resumeFileName,
+                    base64: employee.resumeBase64,
+                    uploadedAt: new Date()
                 },
                 assessment: {
-                    type: 'google_drive',
-                    link: employee.assessmentLink,
-                    accessedAt: new Date()
+                    fileName: employee.assessmentFileName,
+                    base64: employee.assessmentBase64,
+                    uploadedAt: new Date()
                 },
                 hiddenFromClients: employee.hiddenFromClients || [],
             };
+
 
             // Add to Firestore
             await addDoc(collection(db, "employees"), employeeData);
@@ -476,42 +503,32 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                         </div>
 
                         <div className="form-group">
-                            <label>Resume (Google Drive Link)</label>
-                            <div className="input-with-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#64748B" />
-                                    <path d="M16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="#64748B" />
-                                </svg>
-                                <input
-                                    type="url"
-                                    name="resumeLink"
-                                    value={employee.resumeLink}
-                                    onChange={handleInputChange}
-                                    placeholder="https://drive.google.com/..."
-                                />
-                            </div>
-                            <p className="file-hint">Paste the shareable Google Drive link</p>
+                            <label>Resume (PDF)</label>
+                            <input
+                                type="file"
+                                accept="application/pdf"
+                                onChange={(e) => handlePdfUpload(e, "resume")}
+                            />
+                            {employee.resumeFileName && (
+                                <p className="file-hint">Uploaded: {employee.resumeFileName}</p>
+                            )}
                         </div>
 
                         <div className="form-group">
-                            <label>Assessment Report (Google Drive Link)</label>
-                            <div className="input-with-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" fill="#64748B" />
-                                    <path d="M16 18H8V16H16V18ZM16 14H8V12H16V14ZM13 9V3.5L18.5 9H13Z" fill="#64748B" />
-                                </svg>
-                                <input
-                                    type="url"
-                                    name="assessmentLink"
-                                    value={employee.assessmentLink}
-                                    onChange={handleInputChange}
-                                    placeholder="https://drive.google.com/..."
-                                />
-                            </div>
-                            <p className="file-hint">Paste the shareable Google Drive link</p>
+                            <label>Assessment Report (PDF)</label>
+                            <input
+                                type="file"
+                                accept="application/pdf"
+                                onChange={(e) => handlePdfUpload(e, "assessment")}
+                            />
+                            {employee.assessmentFileName && (
+                                <p className="file-hint">Uploaded: {employee.assessmentFileName}</p>
+                            )}
                         </div>
+
                     </div>
 
+                    {/* ✅ New section for hidden clients */}
                     {/* ✅ New section for hidden clients */}
                     <div className="form-card">
                         <div className="card-header">
@@ -526,50 +543,131 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                             <h2>Client Visibility</h2>
                         </div>
 
-                        <p>Select clients this employee should be hidden from:</p>
+                        <p className="visibility-description">Select clients this employee should be hidden from:</p>
 
-                        {/* Select / Deselect All button */}
-                        <button
-                            type="button"
-                            className="select-btn"
-                            onClick={() => {
-                                if (employee.hiddenFromClients.length === clients.length) {
-                                    // Deselect all
-                                    setEmployee({ ...employee, hiddenFromClients: [] });
-                                } else {
-                                    // Select all
-                                    setEmployee({
-                                        ...employee,
-                                        hiddenFromClients: clients.map((c) => c.id),
-                                    });
-                                }
-                            }}
-                        >
-                            {employee.hiddenFromClients.length === clients.length
-                                ? "Deselect All"
-                                : "Select All"}
-                        </button>
+                        {/* Modern search container */}
+                        <div className="modern-search-container">
+                            <div className="search-input-wrapper">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="search-icon">
+                                    <path d="M15.5 14H14.71L14.43 13.73C15.41 12.59 16 11.11 16 9.5C16 5.91 13.09 3 9.5 3C5.91 3 3 5.91 3 9.5C3 13.09 5.91 16 9.5 16C11.11 16 12.59 15.41 13.73 14.43L14 14.71V15.5L19 20.49L20.49 19L15.5 14ZM9.5 14C7.01 14 5 11.99 5 9.5C5 7.01 7.01 5 9.5 5C11.99 5 14 7.01 14 9.5C14 11.99 11.99 14 9.5 14Z" fill="#94A3B8" />
+                                </svg>
+                                <input
+                                    type="text"
+                                    placeholder="Search clients by name..."
+                                    className="modern-search-input"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                {searchTerm && (
+                                    <button
+                                        className="clear-search-btn"
+                                        onClick={() => setSearchTerm('')}
+                                        aria-label="Clear search"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                            <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="#64748B" />
+                                        </svg>
+                                    </button>
+                                )}
+                            </div>
+                        </div>
 
-                        <div className="checkbox-list">
-                            {clients.map((client) => (
-                                <label key={client.id} className="checkbox-item">
-                                    <input
-                                        type="checkbox"
-                                        value={client.id}
-                                        checked={employee.hiddenFromClients.includes(client.id)}
-                                        onChange={(e) => {
-                                            let updated = [...employee.hiddenFromClients];
-                                            if (e.target.checked) {
-                                                updated.push(client.id);
-                                            } else {
-                                                updated = updated.filter((id) => id !== client.id);
-                                            }
-                                            setEmployee({ ...employee, hiddenFromClients: updated });
-                                        }}
-                                    />
-                                    {client.name}
-                                </label>
-                            ))}
+                        {/* Selection controls */}
+                        <div className="selection-controls">
+                            <div className="selection-info">
+                                <span className="selected-count">
+                                    {employee.hiddenFromClients.length} of {clients.length} selected
+                                </span>
+                                <span className="filtered-count">
+                                    {filteredClients.length} matches
+                                </span>
+                            </div>
+
+                            <div className="selection-buttons">
+                                <button
+                                    type="button"
+                                    className="select-all-btn"
+                                    onClick={() => {
+                                        if (employee.hiddenFromClients.length === filteredClients.length) {
+                                            // Deselect all visible
+                                            const remainingSelections = employee.hiddenFromClients.filter(
+                                                id => !filteredClients.some(client => client.id === id)
+                                            );
+                                            setEmployee({ ...employee, hiddenFromClients: remainingSelections });
+                                        } else {
+                                            // Select all visible
+                                            const newSelections = [...new Set([
+                                                ...employee.hiddenFromClients,
+                                                ...filteredClients.map(c => c.id)
+                                            ])];
+                                            setEmployee({ ...employee, hiddenFromClients: newSelections });
+                                        }
+                                    }}
+                                >
+                                    {employee.hiddenFromClients.length === filteredClients.length ?
+                                        "Deselect Visible" : "Select Visible"}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    className="select-all-btn"
+                                    onClick={() => {
+                                        if (employee.hiddenFromClients.length === clients.length) {
+                                            setEmployee({ ...employee, hiddenFromClients: [] });
+                                        } else {
+                                            setEmployee({
+                                                ...employee,
+                                                hiddenFromClients: clients.map((c) => c.id),
+                                            });
+                                        }
+                                    }}
+                                >
+                                    {employee.hiddenFromClients.length === clients.length ?
+                                        "Deselect All" : "Select All"}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Clients list */}
+                        <div className="modern-checkbox-list">
+                            {filteredClients.length > 0 ? (
+                                filteredClients.map((client) => (
+                                    <div key={client.id} className="modern-checkbox-item">
+                                        <label className="checkbox-label">
+                                            <input
+                                                type="checkbox"
+                                                value={client.id}
+                                                checked={employee.hiddenFromClients.includes(client.id)}
+                                                onChange={(e) => {
+                                                    let updated = [...employee.hiddenFromClients];
+                                                    if (e.target.checked) {
+                                                        updated.push(client.id);
+                                                    } else {
+                                                        updated = updated.filter((id) => id !== client.id);
+                                                    }
+                                                    setEmployee({ ...employee, hiddenFromClients: updated });
+                                                }}
+                                            />
+                                            <span className="custom-checkbox"></span>
+                                            <span className="client-name">{client.name}</span>
+                                        </label>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="no-results-message">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#CBD5E1" />
+                                        <path d="M12 7C11.45 7 11 7.45 11 8V12C11 12.55 11.45 13 12 13C12.55 13 13 12.55 13 12V8C13 7.45 12.55 7 12 7ZM11 15H13V17H11V15Z" fill="#CBD5E1" />
+                                    </svg>
+                                    <p>No clients found matching "{searchTerm}"</p>
+                                    <button
+                                        className="clear-search-text-btn"
+                                        onClick={() => setSearchTerm('')}
+                                    >
+                                        Clear search
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 

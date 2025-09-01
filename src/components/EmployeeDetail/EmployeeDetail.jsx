@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FaFileAlt, FaTimes, FaArrowLeft, FaExternalLinkAlt } from 'react-icons/fa';
 import { getEmployeeById } from '../../services/employeeService';
 import './EmployeeDetail.css';
+import defaultProfileImage from "../../assets/no image found.png";
 
 const EmployeeDetail = () => {
   const { id } = useParams();
@@ -122,9 +123,12 @@ const EmployeeDetail = () => {
         <div className="profile-section">
           <div className="avatar-container">
             <img
-              src={employee.imageBase64 || 'https://via.placeholder.com/300'}
+              src={employee.imageBase64 || defaultProfileImage}
               alt={employee.name}
               className="detail-avatar"
+              onError={(e) => {
+                e.target.src = defaultProfileImage;
+              }}
             />
           </div>
 
@@ -185,13 +189,22 @@ const EmployeeDetail = () => {
             {/* <h3>Documents</h3> */}
 
             {employee.resume && (
-              <div className="document-card" onClick={() => openDocument(employee.resume, 'resume')}>
+              <div
+                className="document-card"
+                style={{ cursor: "pointer" }}
+                onClick={() => openDocument(employee.resume, "resume")}
+              >
                 <span className="doc-link">View Resume</span>
               </div>
+
             )}
 
             {employee.assessment && (
-              <div className="document-card" onClick={() => openDocument(employee.assessment, 'assessment')}>
+              <div
+                className="document-card"
+                style={{ cursor: "pointer" }}
+                onClick={() => openDocument(employee.assessment, 'assessment')}
+              >
                 <span className="doc-link">View Assessment</span>
               </div>
             )}
@@ -210,7 +223,8 @@ const EmployeeDetail = () => {
 
               <div className="viewer-actions">
                 <a
-                  href={viewerState.document.link}
+                  href={viewerState.document.base64}
+                  download={viewerState.document.fileName}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="external-link"
@@ -237,7 +251,7 @@ const EmployeeDetail = () => {
               )}
 
               <iframe
-                src={getEmbedUrl(viewerState.document.link)}
+                src={viewerState.document.base64}
                 title={getDocumentTitle()}
                 className={`document-iframe ${viewerState.isLoading ? 'loading' : ''}`}
                 allow="fullscreen"

@@ -4,6 +4,7 @@ import {
   getStorage, 
   ref, 
   uploadBytes, 
+  uploadBytesResumable,
   getDownloadURL 
 } from "firebase/storage";
 import { 
@@ -54,6 +55,7 @@ export {
   // Storage functions
   ref, 
   uploadBytes, 
+  uploadBytesResumable,
   getDownloadURL,
   // Analytics
   logEvent

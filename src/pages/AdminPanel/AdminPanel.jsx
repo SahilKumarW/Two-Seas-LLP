@@ -14,6 +14,7 @@ import {
   FiBarChart2,
   FiUsers,
   FiSave,
+  FiCalendar
 } from "react-icons/fi"
 import Logo from "../../assets/Two Seas Logo.png"
 import { FiLogOut } from "react-icons/fi";
@@ -148,8 +149,7 @@ const GeneratePasswordComponent = memo(({ email, onPasswordGenerated }) => {
   );
 });
 
-// Update the ContactPersonCredentials component
-// Update the ContactPersonCredentials component
+
 // Update the ContactPersonCredentials component
 const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCredentials, credentialsExist }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -217,9 +217,9 @@ const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCre
           <div style={{ fontSize: "14px", color: "#6b7280" }}>{contact.email}</div>
           {credentialsExist && (
             <div style={{ marginTop: "4px" }}>
-              <span style={{ 
-                fontStyle: "italic", 
-                color: "#15803d", 
+              <span style={{
+                fontStyle: "italic",
+                color: "#15803d",
                 fontSize: "12px",
                 fontWeight: "500"
               }}>
@@ -2753,7 +2753,8 @@ export default function ModernAdminPanel() {
     { id: "view-employees", label: "View Employees", icon: <FiUsers size={18} /> },
     { id: "view-member", label: "View as Member", icon: <FiUser size={18} /> },
     { id: "archived", label: "Archived Employees", icon: <FiArchive size={18} /> },
-  ]
+    { id: "view-interview-requests", label: "View Interview Requests", icon: <FiCalendar size={18} /> }, // ✅ New item
+  ];
 
   const stats = [
     { label: "Total Clients", value: "248", change: "+12%", icon: <FiUsers size={24} /> },
