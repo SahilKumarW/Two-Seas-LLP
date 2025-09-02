@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, memo } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from "react"
 import {
   FiUser,
   FiMail,
@@ -37,7 +37,7 @@ import {
 } from 'firebase/firestore';
 
 // Add these imports at the top with other imports
-import { FiChevronLeft, FiChevronRight, FiChevronDown } from "react-icons/fi";
+import { FiChevronLeft, FiChevronRight, FiChevronDown, FiSearch } from "react-icons/fi";
 
 import { FiCopy, FiRefreshCw } from "react-icons/fi";
 import ViewMember from "./pages/ViewMember";
@@ -1119,6 +1119,7 @@ const ViewClients = memo(() => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [clientToEdit, setClientToEdit] = useState(null);
   const [clientToDelete, setClientToDelete] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchClients();
@@ -1184,6 +1185,13 @@ const ViewClients = memo(() => {
     }
   };
 
+  // Filter clients by search term
+  const filteredClients = useMemo(() => {
+    return clients.filter(client =>
+      client.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [clients, searchTerm]);
+
   if (loading) {
     return (
       <div style={{ padding: "40px", textAlign: "center" }}>
@@ -1194,13 +1202,29 @@ const ViewClients = memo(() => {
 
   return (
     <div style={{ padding: "24px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+      {/* Header + Search */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
         <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#22A2D7", margin: 0 }}>
-          All Clients ({clients.length})
+          All Clients ({filteredClients.length})
         </h2>
+
+        {/* Search Bar */}
+        <input
+          type="text"
+          placeholder="Search clients..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{
+            padding: "8px 12px",
+            borderRadius: "8px",
+            border: "1px solid #ccc",
+            width: "250px",
+            outline: "none",
+          }}
+        />
       </div>
 
-      {clients.length === 0 ? (
+      {filteredClients.length === 0 ? (
         <div style={{ textAlign: "center", padding: "60px 20px", color: "#64748b" }}>
           <FiUsers size={48} style={{ marginBottom: "16px", opacity: 0.5 }} />
           <h3 style={{ margin: "0 0 8px 0", fontSize: "20px" }}>No clients found</h3>
@@ -1214,7 +1238,7 @@ const ViewClients = memo(() => {
             gap: "24px",
           }}
         >
-          {clients.map((client) => (
+          {filteredClients.map((client) => (
             <ClientCard
               key={client.id}
               client={client}
