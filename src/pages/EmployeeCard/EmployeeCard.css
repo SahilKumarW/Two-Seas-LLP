@@ -869,9 +869,42 @@
   text-decoration: underline;/* show underline only on hover */
 }
 
-
-
 .name-button:active {
   transform: translateY(0);
   box-shadow: none;
+}
+
+/* T-Key Ribbon */
+.tkey-ribbon {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+/* .employee-card:hover .tkey-ribbon {
+  transform: scale(1.1) rotate(10deg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+} */
+
+/* .tkey-ribbon svg {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+} */
+
+/* Ensure the card has relative positioning for absolute ribbon placement */
+.employee-card {
+  position: relative;
+  /* ... existing styles ... */
+}
+
+.card-content {
+  position: relative;
 }

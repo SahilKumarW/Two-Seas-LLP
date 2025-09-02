@@ -18,20 +18,28 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
         introductionVideoLink: '',
         resumeLink: '',
         assessmentLink: '',
-        hiddenFromClients: []
+        hiddenFromClients: [],
+        tKeyColor: '' // Add T-Key color field
     });
-    const [clients, setClients] = useState([]);   // ✅ store all clients
+    const [clients, setClients] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const [selectedNiche, setSelectedNiche] = useState('');
     const [uploadProgress, setUploadProgress] = useState(0);
-    const [uploadStatus, setUploadStatus] = useState(''); // For tracking upload status
-
+    const [uploadStatus, setUploadStatus] = useState('');
     const [searchTerm, setSearchTerm] = useState("");
 
     const filteredClients = clients.filter((client) =>
         client.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // T-Key color options
+    const tKeyColors = [
+        { id: '#ef4444', name: 'Red' },
+        { id: '#22c55e', name: 'Green' },
+        { id: '#3b82f6', name: 'Blue' },
+        { id: '#06a3c2', name: 'Turquoise' }
+    ];
 
     // ✅ fetch clients list
     useEffect(() => {
@@ -115,6 +123,70 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
         return url.includes('drive.google.com') || url.includes('docs.google.com');
     };
 
+    const YouTubeLinkInput = ({ label, name, value, onChange, placeholder }) => {
+        const extractYouTubeId = (url) => {
+            if (!url) return null;
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        };
+
+        const videoId = extractYouTubeId(value);
+
+        return (
+            <div className="form-group">
+                <label>{label}</label>
+                <div className="input-with-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B" />
+                    </svg>
+                    <input
+                        type="url"
+                        name={name}
+                        value={value}
+                        onChange={onChange}
+                        placeholder={placeholder}
+                        className="youtube-input"
+                    />
+                    {videoId && (
+                        <div className="input-status valid">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="#22c55e" />
+                            </svg>
+                        </div>
+                    )}
+                </div>
+
+                {videoId && (
+                    <div className="video-preview-container">
+                        <div className="video-preview">
+                            <iframe
+                                width="100%"
+                                height="200"
+                                src={`https://www.youtube.com/embed/${videoId}`}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                title={`${name} preview`}
+                            />
+                        </div>
+                        <div className="video-actions">
+                            <button
+                                type="button"
+                                className="clear-video-btn"
+                                onClick={() => onChange({ target: { name, value: '' } })}
+                            >
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                    <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="#64748B" />
+                                </svg>
+                                Remove Video
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -143,7 +215,7 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
             // Prepare employee data
             const employeeData = {
                 name: employee.name,
-                email: employee.email, // Include email
+                email: employee.email,
                 experience: employee.experience,
                 expertise: employee.expertise,
                 intro: employee.intro,
@@ -164,6 +236,7 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                     uploadedAt: new Date()
                 },
                 hiddenFromClients: employee.hiddenFromClients || [],
+                tKeyColor: employee.tKeyColor // Include T-Key color
             };
 
             // Add to Firestore
@@ -371,6 +444,47 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                         </div>
                     </div>
 
+                    {/* T-Key Color Section */}
+                    <div className="form-card">
+                        <div className="card-header">
+                            <div className="form-card-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.5 12C17.5 14.21 16.54 16.22 15 17.66L16.5 19.23C18.47 17.45 19.5 14.76 19.5 12C19.5 9.24 18.47 6.55 16.5 4.77L15 6.34C16.54 7.78 17.5 9.79 17.5 12Z" fill="#2A2D7C" />
+                                    <path d="M12 7.5C13.93 7.5 15.5 9.07 15.5 11H17.5C17.5 7.97 15.03 5.5 12 5.5V7.5Z" fill="#2A2D7C" />
+                                    <path d="M6.5 12C6.5 9.07 8.07 7.5 10 7.5V5.5C6.97 5.5 4.5 7.97 4.5 11H6.5Z" fill="#2A2D7C" />
+                                    <path d="M10 16.5C8.07 16.5 6.5 14.93 6.5 13H4.5C4.5 16.03 6.97 18.5 10 18.5V16.5Z" fill="#2A2D7C" />
+                                    <path d="M12 16.5C10.07 16.5 8.5 14.93 8.5 13H6.5C6.5 16.03 8.97 18.5 12 18.5V16.5Z" fill="#2A2D7C" />
+                                </svg>
+                            </div>
+                            <h2>T-Key Assignment</h2>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Select T-Key Color</label>
+                            <div className="modern-color-grid">
+                                {tKeyColors.map(color => (
+                                    <div
+                                        key={color.id}
+                                        className={`color-option-card ${employee.tKeyColor === color.id ? 'selected' : ''}`}
+                                        onClick={() => setEmployee({ ...employee, tKeyColor: color.id })}
+                                    >
+                                        <div
+                                            className="color-swatch"
+                                            style={{ backgroundColor: color.id }}
+                                        >
+                                            {employee.tKeyColor === color.id && (
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="white" />
+                                                </svg>
+                                            )}
+                                        </div>
+                                        <span className="color-label">{color.name}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="form-card">
                         <div className="card-header">
                             <div className="form-card-icon">
@@ -381,63 +495,22 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                             <h2>Video Links</h2>
                         </div>
 
-                        <div className="form-group">
-                            <label>Introduction Video (YouTube Link)</label>
-                            <div className="input-with-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B" />
-                                </svg>
-                                <input
-                                    type="url"
-                                    name="introductionVideoLink"
-                                    value={employee.introductionVideoLink}
-                                    onChange={handleInputChange}
-                                    placeholder="https://www.youtube.com/watch?v=..."
-                                />
-                            </div>
-                            {employee.introductionVideoLink && extractYouTubeId(employee.introductionVideoLink) && (
-                                <div className="video-preview">
-                                    <iframe
-                                        width="100%"
-                                        height="200"
-                                        src={`https://www.youtube.com/embed/${extractYouTubeId(employee.introductionVideoLink)}`}
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                        title="Introduction video preview"
-                                    ></iframe>
-                                </div>
-                            )}
-                        </div>
+                        {/* YouTube Link Input Component */}
+                        <YouTubeLinkInput
+                            label="Introduction Video (YouTube Link)"
+                            name="introductionVideoLink"
+                            value={employee.introductionVideoLink}
+                            onChange={handleInputChange}
+                            placeholder="https://www.youtube.com/watch?v=..."
+                        />
 
-                        <div className="form-group">
-                            <label>Interview Video (YouTube Link)</label>
-                            <div className="input-with-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M10 16.5L16 12L10 7.5V16.5ZM21 3H3C1.9 3 1 3.9 1 5V19C1 20.1 1.9 21 3 21H21C22.1 21 23 20.1 23 19V5C23 3.9 22.1 3 21 3ZM21 19H3V5H21V19Z" fill="#64748B" />
-                                </svg>
-                                <input
-                                    type="url"
-                                    name="interviewVideoLink"
-                                    value={employee.interviewVideoLink}
-                                    onChange={handleInputChange}
-                                    placeholder="https://www.youtube.com/watch?v=..."
-                                />
-                            </div>
-                            {employee.interviewVideoLink && extractYouTubeId(employee.interviewVideoLink) && (
-                                <div className="video-preview">
-                                    <iframe
-                                        width="100%"
-                                        height="200"
-                                        src={`https://www.youtube.com/embed/${extractYouTubeId(employee.interviewVideoLink)}`}
-                                        frameBorder="0"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                        allowFullScreen
-                                        title="Interview video preview"
-                                    ></iframe>
-                                </div>
-                            )}
-                        </div>
+                        <YouTubeLinkInput
+                            label="Interview Video (YouTube Link)"
+                            name="interviewVideoLink"
+                            value={employee.interviewVideoLink}
+                            onChange={handleInputChange}
+                            placeholder="https://www.youtube.com/watch?v=..."
+                        />
                     </div>
 
                     {submitError && (

@@ -316,6 +316,22 @@ const EmployeeCard = ({ archived = false, currentClientId = null, setActiveMenuI
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="card-content">
+                  {/* Add T-Key color ribbon */}
+                  {employee.tKeyColor && (
+                    <div
+                      className="tkey-ribbon"
+                      style={{ backgroundColor: employee.tKeyColor }}
+                    // title={`T-Key: ${employee.tKeyColor}`}
+                    >
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.5 12C17.5 14.21 16.54 16.22 15 17.66L16.5 19.23C18.47 17.45 19.5 14.76 19.5 12C19.5 9.24 18.47 6.55 16.5 4.77L15 6.34C16.54 7.78 17.5 9.79 17.5 12Z" fill="white" />
+                        <path d="M12 7.5C13.93 7.5 15.5 9.07 15.5 11H17.5C17.5 7.97 15.03 5.5 12 5.5V7.5Z" fill="white" />
+                        <path d="M6.5 12C6.5 9.07 8.07 7.5 10 7.5V5.5C6.97 5.5 4.5 7.97 4.5 11H6.5Z" fill="white" />
+                        <path d="M10 16.5C8.07 16.5 6.5 14.93 6.5 13H4.5C4.5 16.03 6.97 18.5 10 18.5V16.5Z" fill="white" />
+                        <path d="M12 16.5C10.07 16.5 8.5 14.93 8.5 13H6.5C6.5 16.03 8.97 18.5 12 18.5V16.5Z" fill="white" />
+                      </svg>
+                    </div>
+                  )}
                   <div className="card-background">
                     <div className="employee-profile">
                       <div className="avatar-container">
