@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FaFileAlt, FaTimes, FaArrowLeft, FaExternalLinkAlt } from 'react-icons/fa';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { getEmployeeById } from '../../services/employeeService';
 import './EmployeeDetail.css';
 import defaultProfileImage from "../../assets/no image found.png";
 
@@ -9,29 +9,14 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeDocument, setActiveDocument] = useState(null);
+  const [documentType, setDocumentType] = useState(null);
   const [viewerState, setViewerState] = useState({
     isOpen: false,
     document: null,
     type: '',
     isLoading: true
   });
-
-  // Function to fetch employee data from Firestore
-  const getEmployeeById = async (id) => {
-    try {
-      const docRef = doc(db, "employees", id);
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() };
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error("Error fetching employee:", error);
-      throw error;
-    }
-  };
 
   const openDocument = (doc, type) => {
     setViewerState({
@@ -60,14 +45,11 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
 
   useEffect(() => {
     const fetchEmployee = async () => {
-      if (!employeeId) return;
-      
       try {
-        setLoading(true);
         const employeeData = await getEmployeeById(employeeId);
         if (employeeData) {
           setEmployee(employeeData);
-          if (setSelectedEmployee) setSelectedEmployee(employeeData);
+          if (setSelectedEmployee) setSelectedEmployee(employeeData); // 👈 update parent
         } else {
           setError("Professional not found");
         }
@@ -89,8 +71,15 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
+  const formatDate = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    const date = timestamp.toDate();
+    return date.toLocaleString();
+  };
+
   const getEmbedUrl = (url) => {
     if (!url) return null;
+    // Convert Google Drive view URL to embed URL
     if (url.includes('drive.google.com')) {
       const fileId = url.match(/\/d\/([^\/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
       if (fileId) {
@@ -120,24 +109,10 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
     );
   }
 
-  if (!employee) {
-    return (
-      <div className="error-container">
-        <p>No employee data available</p>
-        <button onClick={() => setActiveMenuItem("view-employees")} className="back-button">
-          <FaArrowLeft /> Back to Employees
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="employee-detail-container">
       <div className="detail-header">
         <div className="header-content">
-          <button onClick={() => setActiveMenuItem("view-employees")} className="back-button">
-            <FaArrowLeft /> Back to Employees
-          </button>
           <h1>Professional Profile</h1>
           <p>Detailed information about {employee.name}</p>
         </div>
@@ -161,8 +136,7 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
             <p className="position" style={{ color: 'white' }}>{employee.expertise}</p>
             <div className="meta-info">
               <span>{employee.experience} years experience</span>
-              {employee.rate && <span>{employee.currency} {employee.rate}/hr</span>}
-              {employee.email && <span>{employee.email}</span>}
+              {/* <span>{employee.currency} {employee.rate}/hr</span> */}
             </div>
           </div>
 
@@ -172,7 +146,7 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
                 className="action-button"
                 onClick={() => openDocument(employee.resume, "resume")}
               >
-                <FaFileAlt /> View Resume
+                View Resume
               </button>
             )}
 
@@ -181,7 +155,7 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
                 className="action-button"
                 onClick={() => openDocument(employee.assessment, "assessment")}
               >
-                <FaFileAlt /> View Assessment
+                View Assessment
               </button>
             )}
 
@@ -236,20 +210,6 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
               </div>
             )}
           </div>
-
-          {employee.niche && (
-            <div className="niche-section">
-              <h3>Niche Category</h3>
-              <p>{employee.niche}</p>
-            </div>
-          )}
-
-          {employee.hiddenFromClients && employee.hiddenFromClients.length > 0 && (
-            <div className="visibility-section">
-              <h3>Visibility Settings</h3>
-              <p>Hidden from {employee.hiddenFromClients.length} client(s)</p>
-            </div>
-          )}
         </div>
       </div>
 
