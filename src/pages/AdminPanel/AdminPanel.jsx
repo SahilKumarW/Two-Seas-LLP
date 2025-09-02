@@ -21,6 +21,8 @@ import { FiLogOut } from "react-icons/fi";
 import { db } from "../../firebase";
 import AddEmployee from '../AddEmployee/AddEmployee';
 import EmployeeCard from '../EmployeeCard/EmployeeCard';
+import EmployeeDetail from "../../components/EmployeeDetail/EmployeeDetail";
+import CalendarScheduler from "../../components/CalendarScheduler";
 import {
   collection,
   addDoc,
@@ -2693,10 +2695,12 @@ const AddClientModal = memo(({
 });
 
 export default function ModernAdminPanel() {
-  const [activeMenuItem, setActiveMenuItem] = useState("dashboard")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [showAddClientModal, setShowAddClientModal] = useState(false)
+  const [activeMenuItem, setActiveMenuItem] = useState("dashboard");
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAddClientModal, setShowAddClientModal] = useState(false);
   const [newClient, setNewClient] = useState({
     name: "",
     email: "",
@@ -2709,17 +2713,20 @@ export default function ModernAdminPanel() {
     contactPerson2Phone: "",
     status: "Active",
     companyLogo: null,
-  })
-
-  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1024)
+  });
+  const [windowWidth, setWindowWidth] = useState(typeof window !== "undefined" ? window.innerWidth : 1024);
+  const [primarySlot, setPrimarySlot] = useState(null);
+  const [offerAlternate, setOfferAlternate] = useState(null);
+  const [alternateSlot, setAlternateSlot] = useState(null);
+  const [showAlternateScheduler, setShowAlternateScheduler] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth)
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
-  const isDesktop = windowWidth >= 768
+  const isDesktop = windowWidth >= 768;
 
   const handleFileChange = (e) => {
     const file = e.target.files[0]
@@ -2731,6 +2738,17 @@ export default function ModernAdminPanel() {
       }))
     }
   }
+
+  const handleDateSelected = (date) => {
+    console.log("Selected date:", date);
+    // you can save it in state if you want
+    // setSelectedDate(date);
+  };
+
+  const handleScheduleSubmit = (scheduleData) => {
+    console.log("Schedule submitted:", scheduleData);
+    // here you can call Firestore or API to save the schedule
+  };
 
   const sampleClient = {
     name: "Acme Corporation",
@@ -2795,7 +2813,119 @@ export default function ModernAdminPanel() {
       case "view-client":
         return <ViewClients />;
       case "view-employees":
-        return <EmployeeCard />;
+        return (
+          <EmployeeCard
+            setActiveMenuItem={setActiveMenuItem}
+            setSelectedEmployeeId={setSelectedEmployeeId}
+          />
+        );
+      case "employee-details":
+        return (
+          <EmployeeDetail
+            employeeId={selectedEmployeeId}
+            setActiveMenuItem={setActiveMenuItem}
+            setSelectedEmployee={setSelectedEmployee}   // 👈 new
+          />
+        );
+      case "calendar-scheduler":
+        return (
+          <div>
+            {/* Primary Scheduler */}
+            {!primarySlot && (
+              <CalendarScheduler
+                onDateSelected={handleDateSelected}
+                onScheduleSubmit={(slot) => setPrimarySlot(slot)}
+                title={
+                  selectedEmployee
+                    ? `Schedule an Interview with ${selectedEmployee.name}`
+                    : "Schedule an Interview"
+                }
+                prefillData={
+                  selectedEmployee
+                    ? { name: selectedEmployee.name, email: selectedEmployee.email }
+                    : {}
+                }
+                isAdminPanel={true}
+              />
+            )}
+
+            {/* Show primary slot summary */}
+            {primarySlot && (
+              <div style={{ marginBottom: "20px" }}>
+                <h3>Primary Slot Selected</h3>
+                <p>
+                  {primarySlot.date}, {primarySlot.time} ({primarySlot.timeZone})
+                </p>
+                <button onClick={() => setPrimarySlot(null)}>Edit</button>
+              </div>
+            )}
+
+            {/* Ask if alternate slot is needed */}
+            {primarySlot && offerAlternate === null && (
+              <div style={{ margin: "20px 0" }}>
+                <p>
+                  Do you want to offer the candidate another date and time for their
+                  convenience?
+                </p>
+                <button onClick={() => setOfferAlternate(true)}>Yes</button>
+                <button onClick={() => setOfferAlternate(false)}>No</button>
+              </div>
+            )}
+
+            {/* Alternate Scheduler */}
+            {offerAlternate && !alternateSlot && (
+              <CalendarScheduler
+                isAlternate
+                title="Select Alternate Slot"
+                onScheduleSubmit={(slot) => setAlternateSlot(slot)}
+                prefillData={
+                  selectedEmployee
+                    ? { name: selectedEmployee.name, email: selectedEmployee.email }
+                    : {}
+                }
+                isAdminPanel={true}
+              />
+            )}
+
+            {/* Show alternate slot summary */}
+            {alternateSlot && (
+              <div style={{ marginBottom: "20px" }}>
+                <h3>Alternate Slot Selected</h3>
+                <p>
+                  {alternateSlot.date}, {alternateSlot.time} ({alternateSlot.timeZone})
+                </p>
+                <button onClick={() => setAlternateSlot(null)}>Edit</button>
+              </div>
+            )}
+
+            {/* Final button */}
+            {(primarySlot && offerAlternate !== null) && (
+              <button
+                onClick={handleFinalSubmit}
+                disabled={offerAlternate && !alternateSlot}
+              >
+                Schedule Interview
+              </button>
+            )}
+          </div>
+        );
+        return (
+          <CalendarScheduler
+            onDateSelected={handleDateSelected}
+            onScheduleSubmit={handleScheduleSubmit}
+            title={
+              selectedEmployee
+                ? `Schedule an Interview with ${selectedEmployee.name}`
+                : "Schedule an Interview"
+            }
+            prefillData={
+              selectedEmployee
+                ? { name: selectedEmployee.name, email: selectedEmployee.email }
+                : {}
+            }
+            isAdminPanel={true} // ✅ new flag so the form knows to hide extra fields
+          />
+        );
       case "view-member":
         return <ViewMember />;
       case "generate-credentials":
@@ -3119,6 +3249,30 @@ export default function ModernAdminPanel() {
         );
     }
   };
+
+  const handleFinalSubmit = async () => {
+    const body = {
+      clientId: "882Fgk08q4e8HBYonUeI", // replace with real clientId
+      clientName: "HBL",               // replace with real clientName
+      employeeId: selectedEmployee?.id,
+      employeeName: selectedEmployee?.name,
+      primarySlot,
+      alternateSlot: offerAlternate ? alternateSlot : null,
+      createdAt: new Date().toISOString(),
+    };
+
+    console.log("Final submission body:", body);
+
+    // TODO: send to Firestore
+    // await addDoc(collection(db, "scheduledInterviews"), body)
+
+    // Reset flow
+    setPrimarySlot(null);
+    setAlternateSlot(null);
+    setOfferAlternate(null);
+    setActiveMenuItem("dashboard");
+  };
+
 
   return (
     <div

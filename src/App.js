@@ -91,7 +91,9 @@ function Layout() {
           <Route path="/slots-manager" element={<BlockedSlotsManager />} />
           <Route path="/schedule-appointment" element={<CalendarScheduler />} />
           <Route path="/employee/:id" element={<EmployeeDetail />} />
-          <Route path="/admin-panel" element={<ModernAdminPanel />} />
+          <Route path="/admin-panel" element={<ModernAdminPanel />}>
+            <Route path="employee/:id" element={<EmployeeDetail />} />
+          </Route>
         </Routes>
 
         {/* Add WhatsAppChat component here */}

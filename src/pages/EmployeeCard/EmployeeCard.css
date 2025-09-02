@@ -849,3 +849,29 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
+
+.name-button {
+  background: none;
+  border: none;
+  color: #2a2d7c;            /* primary color */
+  text-decoration: none;     /* clean look, no underline by default */
+  cursor: pointer;
+  font-size: 1.5rem;         /* slightly smaller for balance */
+  font-weight: 700;          /* medium weight for clarity */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 0;
+  transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+.name-button:hover {
+  color: #1d1f5c;            /* darker hover */
+  text-decoration: underline;/* show underline only on hover */
+}
+
+
+
+.name-button:active {
+  transform: translateY(0);
+  box-shadow: none;
+}

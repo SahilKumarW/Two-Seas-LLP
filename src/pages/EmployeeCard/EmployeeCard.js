@@ -42,12 +42,12 @@ export const useEmployees = (archived = false, refresh = false) => {
   return { employees, loading, error, setEmployees };
 };
 
-const EmployeeCard = ({ archived = false, currentClientId = null }) => {
+const EmployeeCard = ({ archived = false, currentClientId = null, setActiveMenuItem, setSelectedEmployeeId }) => {
   const [refresh, setRefresh] = useState(false); // 👈 define refresh first
   const { employees, loading, error, setEmployees } = useEmployees(archived, refresh);
   const location = useLocation();
   const isAdminPanel = location.pathname === "/admin-panel";
-  
+
   const [wishlist, setWishlist] = useState({});
   const [expandedCards, setExpandedCards] = useState({});
   const [selectedNiche, setSelectedNiche] = useState('All');
@@ -333,9 +333,16 @@ const EmployeeCard = ({ archived = false, currentClientId = null }) => {
                       </div>
                       <div className="profile-info">
                         <h3 className="employee-name">
-                          <Link to={`/employee/${employee.id}`} className="employee-link">
+                          <button
+                            className="name-button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedEmployeeId(employee.id);
+                              setActiveMenuItem("employee-details");
+                            }}
+                          >
                             {employee.name}
-                          </Link>
+                          </button>
                         </h3>
                         <p className="employee-position">{employee.expertise}</p>
                       </div>

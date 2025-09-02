@@ -9,7 +9,7 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
     const navigate = useNavigate();
     const [employee, setEmployee] = useState({
         name: '',
-        currency: currencies[0].code,
+        email: '',
         experience: '',
         expertise: '',
         intro: '',
@@ -24,7 +24,6 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
     const [selectedNiche, setSelectedNiche] = useState('');
-    const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadStatus, setUploadStatus] = useState(''); // For tracking upload status
 
@@ -51,6 +50,11 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
         fetchClients();
     }, []);
 
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
     const handleHiddenClientsChange = (e) => {
         const options = Array.from(e.target.selectedOptions);
         const selectedIds = options.map(opt => opt.value);
@@ -63,7 +67,6 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
     }));
 
     const fileInputRef = useRef(null);
-    const currencyDropdownRef = useRef(null);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -119,8 +122,13 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
 
         try {
             // Validate required fields
-            if (!employee.name || !selectedNiche) {
+            if (!employee.name || !selectedNiche || !employee.email) {
                 throw new Error('Please fill in all required fields');
+            }
+
+            // Validate email format
+            if (!validateEmail(employee.email)) {
+                throw new Error('Please enter a valid email address');
             }
 
             // Validate Google Drive links
@@ -135,7 +143,7 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
             // Prepare employee data
             const employeeData = {
                 name: employee.name,
-                currency: employee.currency,
+                email: employee.email, // Include email
                 experience: employee.experience,
                 expertise: employee.expertise,
                 intro: employee.intro,
@@ -158,7 +166,6 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                 hiddenFromClients: employee.hiddenFromClients || [],
             };
 
-
             // Add to Firestore
             await addDoc(collection(db, "employees"), employeeData);
 
@@ -171,25 +178,6 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
             setIsSubmitting(false);
         }
     };
-
-    const handleCurrencySelect = (currency) => {
-        setEmployee({ ...employee, currency: currency.code });
-        setShowCurrencyDropdown(false);
-    };
-
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (currencyDropdownRef.current &&
-                !currencyDropdownRef.current.contains(event.target)) {
-                setShowCurrencyDropdown(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
 
     // Function to extract YouTube video ID from URL
     const extractYouTubeId = (url) => {
@@ -277,55 +265,23 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                                         </div>
                                     </div>
 
-                                    {/* <div className="form-group">
-                                        <label>Hourly Rate <span className="required">*</span></label>
-                                        <div className="rate-input-container">
-                                            <div className="currency-selector" ref={currencyDropdownRef}>
-                                                <button
-                                                    type="button"
-                                                    className="currency-btn"
-                                                    onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-                                                >
-                                                    <img
-                                                        src={currencies.find(c => c.code === employee.currency)?.flag}
-                                                        alt="Currency"
-                                                        className="currency-flag"
-                                                    />
-                                                    {employee.currency}
-                                                    <span className="dropdown-arrow">▼</span>
-                                                </button>
-                                                {showCurrencyDropdown && (
-                                                    <div className="currency-dropdown">
-                                                        {currencies.map(currency => (
-                                                            <div
-                                                                key={currency.code}
-                                                                className="currency-option"
-                                                                onClick={() => handleCurrencySelect(currency)}
-                                                            >
-                                                                <img src={currency.flag} alt={currency.name} className="currency-flag" />
-                                                                <span>{currency.code} ({currency.symbol})</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="input-with-icon">
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 20C7.59 20 4 16.41 4 12C4 7.59 7.59 4 12 4C16.41 4 20 7.59 20 12C20 16.41 16.41 20 12 20Z" fill="#64748B" />
-                                                    <path d="M12.31 11.14C11.71 10.87 11.35 10.71 11.35 10.18C11.35 9.77 11.68 9.42 12.14 9.42C12.62 9.42 12.94 9.79 12.96 10.28H14.64C14.62 9.33 13.88 8.5 12.66 8.5C11.41 8.5 10.67 9.36 10.67 10.22C10.67 11.32 11.49 11.68 12.43 12.03C12.78 12.17 13.12 12.31 13.45 12.5C13.76 12.67 13.97 12.99 13.97 13.44C13.97 14.13 13.38 14.6 12.66 14.6C11.83 14.6 11.3 14.08 11.28 13.44H9.6C9.62 14.83 10.77 15.8 12.66 15.8C14.55 15.8 15.65 14.77 15.65 13.42C15.65 12.18 14.8 11.68 13.66 11.19C13.17 10.97 12.68 10.75 12.31 10.57V11.14Z" fill="#64748B" />
-                                                </svg>
-                                                <input
-                                                    type="number"
-                                                    name="rate"
-                                                    value={employee.rate}
-                                                    onChange={handleInputChange}
-                                                    placeholder="0.00"
-                                                    required
-                                                />
-                                                <span className="rate-suffix">/hr</span>
-                                            </div>
+                                    {/* Add Email Field */}
+                                    <div className="form-group">
+                                        <label>Email Address <span className="required">*</span></label>
+                                        <div className="input-with-icon">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M20 4H4C2.9 4 2.01 4.9 2.01 6L2 18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z" fill="#64748B" />
+                                            </svg>
+                                            <input
+                                                type="email"
+                                                name="email"
+                                                value={employee.email}
+                                                onChange={handleInputChange}
+                                                placeholder="john.doe@example.com"
+                                                required
+                                            />
                                         </div>
-                                    </div> */}
+                                    </div>
                                 </div>
 
                                 <div className="form-group">

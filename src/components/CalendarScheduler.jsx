@@ -9,6 +9,7 @@ import {
   FaSpinner,
   FaTimes,
   FaChevronDown,
+  FaEdit
 } from "react-icons/fa"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { db } from "../firebase"
@@ -204,82 +205,82 @@ const WorldClock = ({ isOpen, onClose, timeFormat, onTimeZoneSelect }) => {
       </div>
 
       <style jsx>{`
-  .world-clock-modal {
-    position: fixed;
-    inset: 0; /* shorthand for top/left/right/bottom: 0 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
+        .world-clock-modal {
+          position: fixed;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
 
-  .modal-overlay {
-    position: absolute;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(2px);
-  }
+        .modal-overlay {
+          position: absolute;
+          inset: 0;
+          background-color: rgba(0, 0, 0, 0.45);
+          backdrop-filter: blur(2px);
+        }
 
-  .modal-content {
-    background: #ffffff;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow: hidden;
-    z-index: 1001;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    animation: fadeInUp 0.25s ease-out;
-  }
+        .modal-content {
+          background: #ffffff;
+          border-radius: 12px;
+          width: 90%;
+          max-width: 500px;
+          max-height: 90vh;
+          overflow: hidden;
+          z-index: 1001;
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+          display: flex;
+          flex-direction: column;
+          animation: fadeInUp 0.25s ease-out;
+        }
 
-  .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid #e5e7eb;
-    background: #f9fafb;
-  }
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 1rem 1.25rem;
+          border-bottom: 1px solid #e5e7eb;
+          background: #f9fafb;
+        }
 
-  .modal-header h3 {
-    margin: 0;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #2a2d7c;
-  }
+        .modal-header h3 {
+          margin: 0;
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: #2a2d7c;
+        }
 
-  .close-btn {
-    background: none;
-    border: none;
-    font-size: 1.25rem;
-    cursor: pointer;
-    color: #6b7280;
-    transition: color 0.2s ease;
-  }
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 1.25rem;
+          cursor: pointer;
+          color: #6b7280;
+          transition: color 0.2s ease;
+        }
 
-  .close-btn:hover {
-    color: #111827;
-  }
+        .close-btn:hover {
+          color: #111827;
+        }
 
-  .modal-body {
-    padding: 1.25rem;
-    overflow-y: auto;
-    flex: 1;
-  }
+        .modal-body {
+          padding: 1.25rem;
+          overflow-y: auto;
+          flex: 1;
+        }
 
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`}</style>
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   )
 }
@@ -289,9 +290,16 @@ const CalendarScheduler = ({
   onScheduleSubmit,
   unavailableDates = [],
   title = "Schedule a Meeting",
-  submitButtonText = "Send Appointment Request",
+  submitButtonText = "Schedule Interview",
   successMessage = "We'll contact you shortly to confirm your appointment.",
   workingHours = { start: 9, end: 21 },
+  prefillData = {},
+  isAdminPanel = false,
+  selectedEmployee = null,
+  isAlternate = false,
+  primarySlot = null,
+  isAlternateScheduler = false,
+  onAlternateSlotSelect = null,
 }) => {
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedTime, setSelectedTime] = useState(null)
@@ -320,6 +328,23 @@ const CalendarScheduler = ({
   const [timeFormat, setTimeFormat] = useState("12h")
   const [showRegionDropdown, setShowRegionDropdown] = useState(false)
   const [currentTimes, setCurrentTimes] = useState({});
+
+  // New state for alternate scheduling
+  const [offerAlternate, setOfferAlternate] = useState(null);
+  const [alternateSlot, setAlternateSlot] = useState(null);
+  const [showAlternateScheduler, setShowAlternateScheduler] = useState(false);
+  const [showAlternateModal, setShowAlternateModal] = useState(false);
+
+  useEffect(() => {
+    if (prefillData?.name || prefillData?.email) {
+      setUserDetails((prev) => ({
+        ...prev,
+        name: prefillData.name || prev.name,
+        email: prefillData.email || prev.email,
+      }));
+    }
+  }, [prefillData]);
+
 
   // Get current timezone label
   const currentTimezoneLabel = useMemo(() => {
@@ -351,6 +376,16 @@ const CalendarScheduler = ({
     const interval = setInterval(updateTimes, 1000);
     return () => clearInterval(interval);
   }, [timeFormat]);
+
+  useEffect(() => {
+    if (isAdminPanel && selectedEmployee?.name && selectedEmployee?.email) {
+      setUserDetails((prev) => ({
+        ...prev,
+        name: selectedEmployee.name,
+        email: selectedEmployee.email,
+      }));
+    }
+  }, [isAdminPanel, selectedEmployee]);
 
   const formatDateLocal = useCallback((date) => {
     const year = date.getFullYear()
@@ -590,38 +625,25 @@ const CalendarScheduler = ({
   const validateForm = useCallback(() => {
     const newErrors = {}
 
-    if (!userDetails.name.trim()) {
-      newErrors.name = "Name is required"
-    } else if (userDetails.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters"
-    }
+    // Always require name/email
+    if (!userDetails.name.trim()) newErrors.name = "Name is required"
+    if (!userDetails.email.trim()) newErrors.email = "Email is required"
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!userDetails.email.trim()) {
-      newErrors.email = "Email is required"
-    } else if (!emailRegex.test(userDetails.email)) {
-      newErrors.email = "Please enter a valid email address"
-    }
-
-    if (!userDetails.phone.trim()) {
-      newErrors.phone = "Phone number is required"
-    } else if (!/^[0-9+\-\s()]{10,}$/.test(userDetails.phone)) {
-      newErrors.phone = "Please enter a valid phone number"
-    }
-
-    if (!userDetails.niche) {
-      newErrors.niche = "Please select a niche"
+    // Only enforce phone + niche if NOT alternate
+    if (!isAlternate) {
+      if (!userDetails.phone.trim()) newErrors.phone = "Phone number is required"
+      if (!userDetails.niche) newErrors.niche = "Please select a niche"
     }
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
-  }, [userDetails])
+  }, [userDetails, isAlternate])
 
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault()
 
-      if (!validateForm() || !selectedDate || !selectedTime) {
+      if (!selectedDate || !selectedTime) {
         setError("Please fill in all required fields")
         return
       }
@@ -630,75 +652,48 @@ const CalendarScheduler = ({
       setError("")
 
       try {
-        const meetingHour = Number.parseInt(selectedTime.split(":")[0])
-        const meetingMinutes = Number.parseInt(selectedTime.split(":")[1].split(" ")[0])
-        const isPM = selectedTime.includes("PM")
-
-        const meetingData = {
-          ...userDetails,
-          appointmentDate: selectedDate.toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-          appointmentTime: selectedTime,
-          timeZone: selectedTimeZone,
-          timestamp: new Date(
-            selectedDate.getFullYear(),
-            selectedDate.getMonth(),
-            selectedDate.getDate(),
-            isPM && meetingHour !== 12 ? meetingHour + 12 : meetingHour,
-            meetingMinutes,
-            0,
-            0,
-          ).toISOString(),
-          status: "pending",
+        // Create interview data object
+        const interviewData = {
+          clientId: "882Fgk08q4e8HBYonUeI", // Hardcoded as requested
+          clientName: "HBL", // Hardcoded as requested
+          employeeId: selectedEmployee?.id || "",
+          employeeName: selectedEmployee?.name || userDetails.name,
+          employeeEmail: selectedEmployee?.email || userDetails.email,
+          primaryDate: formatDateLocal(selectedDate),
+          primaryTime: selectedTime,
+          primaryTimeZone: selectedTimeZone,
+          alternateDate: alternateSlot ? formatDateLocal(new Date(alternateSlot.date)) : null,
+          alternateTime: alternateSlot ? alternateSlot.time : null,
+          alternateTimeZone: alternateSlot ? alternateSlot.timeZone : null,
+          status: "scheduled",
           createdAt: serverTimestamp(),
-        }
+          scheduledBy: 'admin'
+        };
 
-        const docRef = await addDoc(collection(db, "meetings"), meetingData)
-        console.log("Meeting submitted with ID:", docRef.id)
+        // Add to Firestore
+        await addDoc(collection(db, "scheduledInterviews"), interviewData);
 
-        try {
-          const templateParams = {
-            to_name: userDetails.name,
-            to_email: userDetails.email,
-            appointment_date: formatDateDisplay(selectedDate),
-            appointment_time: convertTimeToTimezone(selectedTime, "Asia/Karachi", selectedTimeZone),
-            timezone: selectedTimeZone,
-            from_name: "Two Seas",
-            reply_to: "support@twoseas.org",
-          }
-
-          await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams, EMAILJS_PUBLIC_KEY)
-        } catch (emailError) {
-          console.error("Email sending failed:", emailError)
-          // Don't fail the entire submission if email fails
-        }
-
-        setUserDetails({
-          name: "",
-          email: "",
-          phone: "",
-          company: "",
-          website: "",
-          niche: "",
-          details: "",
-        })
-        setIsSuccess(true)
-
+        // Call the success callback if provided
         if (onScheduleSubmit) {
-          onScheduleSubmit(meetingData)
+          onScheduleSubmit(interviewData);
         }
+
+        alert('Interview scheduled successfully!');
+
+        // Reset form
+        setSelectedDate(null);
+        setSelectedTime(null);
+        setAlternateSlot(null);
+        setOfferAlternate(null);
+        setShowAlternateScheduler(false);
       } catch (error) {
-        console.error("Submission error:", error)
-        setError(`Failed to schedule appointment: ${error instanceof Error ? error.message : "Unknown error"}`)
+        console.error('Error scheduling interview:', error);
+        setError('Failed to schedule interview. Please try again.');
       } finally {
-        setIsSubmitting(false)
+        setIsSubmitting(false);
       }
     },
-    [validateForm, selectedDate, selectedTime, userDetails, selectedTimeZone, convertTimeToTimezone, onScheduleSubmit],
+    [validateForm, selectedDate, selectedTime, userDetails, selectedTimeZone, selectedEmployee, alternateSlot, onScheduleSubmit, formatDateLocal],
   )
 
   const changeMonth = useCallback(
@@ -750,6 +745,233 @@ const CalendarScheduler = ({
       day: "numeric",
     })
   }, [])
+
+  // Handle alternate slot selection
+  const handleAlternateSlotSelect = useCallback((slot) => {
+    setAlternateSlot(slot);
+    setShowAlternateScheduler(false);
+
+    if (onAlternateSlotSelect) {
+      onAlternateSlotSelect(slot);
+    }
+  }, [onAlternateSlotSelect]);
+
+  // Edit primary slot
+  const handleEditPrimarySlot = useCallback(() => {
+    setSelectedDate(null);
+    setSelectedTime(null);
+    setAlternateSlot(null);
+    setOfferAlternate(null);
+  }, []);
+
+  // Edit alternate slot
+  const handleEditAlternateSlot = useCallback(() => {
+    setAlternateSlot(null);
+    setShowAlternateScheduler(true);
+  }, []);
+
+  {
+    showAlternateScheduler && (
+      <div className="alternate-scheduler-overlay">
+        <div className="alternate-scheduler-modal">
+          {/* Modal Header with Close Button */}
+          <div className="alternate-scheduler-header">
+            <h3>Select Alternate Date & Time</h3>
+            <button
+              className="close-alternate-btn"
+              onClick={() => setShowAlternateScheduler(false)}
+              aria-label="Close"
+            >
+              <FaTimes />
+            </button>
+          </div>
+
+          {/* Modal Content */}
+          <div className="alternate-scheduler-content">
+            {!selectedDate ? (
+              // Calendar View
+              <div className="calendar-view">
+                <div className="calendar-header">
+                  <button onClick={() => changeMonth(-1)} aria-label="Previous month">
+                    <FaChevronLeft />
+                  </button>
+                  <h3>{monthName} {currentYear}</h3>
+                  <button onClick={() => changeMonth(1)} aria-label="Next month">
+                    <FaChevronRight />
+                  </button>
+                </div>
+
+                <div className="calendar-grid-container">
+                  <div className="day-names">
+                    {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                      <div key={day} className="day-name">{day}</div>
+                    ))}
+                  </div>
+
+                  <div className="days-grid">
+                    {days.map((date, index) => (
+                      <button
+                        key={index}
+                        className={`day-cell ${!date ? "empty" : ""} ${date && isDateDisabled(date) ? "disabled" : ""}`}
+                        disabled={!date || isDateDisabled(date)}
+                        onClick={() => handleDateClick(date)}
+                      >
+                        {date && <div className="day-number">{date.getDate()}</div>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : !selectedTime ? (
+              // Time Slot Selection
+              <div className="time-slot-view">
+                <h3>Select a Time Slot</h3>
+                <p className="selected-date">{formatDateDisplay(selectedDate)}</p>
+
+                <div className="time-slots-grid">
+                  {timeSlots.length > 0 ? (
+                    timeSlots.map((slot, index) => (
+                      <button
+                        key={index}
+                        className={`time-slot-btn ${!slot.isAvailable ? "blocked" : ""}`}
+                        disabled={!slot.isAvailable}
+                        onClick={() => handleTimeClick(slot.systemTime)}
+                      >
+                        {slot.displayTime}
+                        {!slot.isAvailable && <span className="blocked-label">Booked</span>}
+                      </button>
+                    ))
+                  ) : (
+                    <p>No available time slots for this date</p>
+                  )}
+                </div>
+
+                <button className="back-btn" onClick={() => setSelectedDate(null)}>
+                  Back to Calendar
+                </button>
+              </div>
+            ) : (
+              // Confirmation Only
+              <div className="alternate-confirmation">
+                <h4>Confirm Alternate Slot</h4>
+                <p className="selected-slot">{formatDateDisplay(selectedDate)}, {selectedTime}</p>
+
+                <div className="confirmation-buttons">
+                  <button
+                    className="confirm-btn"
+                    onClick={() => handleAlternateSlotSelect({ date: selectedDate, time: selectedTime })}
+                  >
+                    Confirm
+                  </button>
+                  <button className="back-btn" onClick={() => setSelectedTime(null)}>
+                    Back to Time Slots
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+
+
+  // Modified render logic for alternate scheduler
+  // if (isAlternateScheduler) {
+  //   return (
+  //     <div className="calendar-scheduler alternate-scheduler">
+  //       <h2>Select Alternate Date & Time</h2>
+
+  //       <div className="form-group">
+  //         <label>Date:</label>
+  //         <input
+  //           type="date"
+  //           value={selectedDate}
+  //           onChange={(e) => setSelectedDate(e.target.value)}
+  //           min={new Date().toISOString().split('T')[0]}
+  //           required
+  //         />
+  //       </div>
+
+  //       <div className="form-group">
+  //         <label>Time:</label>
+  //         <select
+  //           value={selectedTime}
+  //           onChange={(e) => setSelectedTime(e.target.value)}
+  //           required
+  //         >
+  //           <option value="">Select a time</option>
+  //           {timeSlots.map(time => (
+  //             <option key={time} value={time}>{time}</option>
+  //           ))}
+  //         </select>
+  //       </div>
+
+  //       <button
+  //         type="button"
+  //         onClick={() => {
+  //           if (selectedDate && selectedTime) {
+  //             onAlternateSlotSelect({
+  //               date: selectedDate,
+  //               time: selectedTime,
+  //               timeZone: selectedTimeZone
+  //             });
+  //           }
+  //         }}
+  //         disabled={!selectedDate || !selectedTime}
+  //         className="submit-btn"
+  //       >
+  //         Confirm Alternate Slot
+  //       </button>
+  //     </div>
+  //   );
+  // }
+
+  // Render the selected slots section
+  const renderSelectedSlots = () => {
+    if (!selectedDate || !selectedTime) return null;
+
+    return (
+      <div className="selected-slots-section">
+        <h4>Selected Time Slots</h4>
+
+        {/* Primary Slot */}
+        <div className="slot-item">
+          <div className="slot-info">
+            <span className="slot-type">Primary:</span>
+            <span className="slot-details">
+              {formatDateDisplay(selectedDate)}, {selectedTime} ({currentTimezoneLabel})
+            </span>
+          </div>
+          <button
+            className="edit-slot-btn"
+            onClick={handleEditPrimarySlot}
+          >
+            <FaEdit /> Edit
+          </button>
+        </div>
+
+        {/* Alternate Slot (if selected) */}
+        {alternateSlot && (
+          <div className="slot-item">
+            <div className="slot-info">
+              <span className="slot-type">Alternate:</span>
+              <span className="slot-details">
+                {formatDateDisplay(new Date(alternateSlot.date))}, {alternateSlot.time} ({alternateSlot.timeZone})
+              </span>
+            </div>
+            <button
+              className="edit-slot-btn"
+              onClick={handleEditAlternateSlot}
+            >
+              <FaEdit /> Edit
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="calendar-scheduler" onClick={(e) => e.stopPropagation()}>
@@ -886,7 +1108,7 @@ const CalendarScheduler = ({
                               {/* Right side: fixed time column */}
                               <span
                                 style={{
-                                  width: "80px", // adjust column width
+                                  width: "80px",
                                   textAlign: "right",
                                   flexShrink: 0,
                                 }}
@@ -896,8 +1118,6 @@ const CalendarScheduler = ({
                             </button>
                           ))}
                         </div>
-
-
                       ))}
                     </div>
                   )}
@@ -979,12 +1199,17 @@ const CalendarScheduler = ({
           ) : (
             // Appointment Form
             <div className="appointment-form-container">
-              <h3>Confirm Your Appointment</h3>
+              <h3>
+                {isAdminPanel && selectedEmployee
+                  ? `Schedule an Interview with ${selectedEmployee.name}`
+                  : "Confirm Schedule"}
+              </h3>
+
               <p className="selected-slot">
                 {formatDateDisplay(selectedDate)}
-                {selectedTime && `, ${convertTimeToTimezone(selectedTime, "Asia/Karachi", selectedTimeZone)}`}
-                {selectedTimeZone &&
-                  ` (${currentTimezoneLabel})`}
+                {selectedTime &&
+                  `, ${convertTimeToTimezone(selectedTime, "Asia/Karachi", selectedTimeZone)}`}
+                {selectedTimeZone && ` (${currentTimezoneLabel})`}
               </p>
 
               {error && (
@@ -995,18 +1220,24 @@ const CalendarScheduler = ({
 
               <div className="form-scroll-container">
                 <form onSubmit={handleSubmit} className="appointment-form">
+                  {/* Name */}
                   <div className="form-group">
                     <label htmlFor="name">Full Name *</label>
                     <input
                       type="text"
                       id="name"
                       name="name"
-                      value={userDetails.name}
+                      value={
+                        isAdminPanel && selectedEmployee
+                          ? selectedEmployee.name
+                          : userDetails.name
+                      }
                       onChange={handleInputChange}
                       required
                       minLength={2}
                       maxLength={50}
                       aria-describedby={errors.name ? "name-error" : undefined}
+                      disabled={isAdminPanel}
                     />
                     {errors.name && (
                       <span id="name-error" className="error-text" role="alert">
@@ -1015,16 +1246,22 @@ const CalendarScheduler = ({
                     )}
                   </div>
 
+                  {/* Email */}
                   <div className="form-group">
                     <label htmlFor="email">Email *</label>
                     <input
                       type="email"
                       id="email"
                       name="email"
-                      value={userDetails.email}
+                      value={
+                        isAdminPanel && selectedEmployee
+                          ? selectedEmployee.email
+                          : userDetails.email
+                      }
                       onChange={handleInputChange}
                       required
                       aria-describedby={errors.email ? "email-error" : undefined}
+                      disabled={isAdminPanel}
                     />
                     {errors.email && (
                       <span id="email-error" className="error-text" role="alert">
@@ -1033,104 +1270,149 @@ const CalendarScheduler = ({
                     )}
                   </div>
 
-                  <div className="form-group">
-                    <label htmlFor="phone">Phone Number *</label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={userDetails.phone}
-                      onChange={handleInputChange}
-                      required
-                      aria-describedby={errors.phone ? "phone-error" : undefined}
-                    />
-                    {errors.phone && (
-                      <span id="phone-error" className="error-text" role="alert">
-                        {errors.phone}
-                      </span>
-                    )}
-                  </div>
+                  {/* Only show other fields if NOT admin-panel */}
+                  {!isAdminPanel && (
+                    <>
+                      <div className="form-group">
+                        <label htmlFor="phone">Phone Number *</label>
+                        <input
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          value={userDetails.phone}
+                          onChange={handleInputChange}
+                          required
+                          aria-describedby={errors.phone ? "phone-error" : undefined}
+                        />
+                        {errors.phone && (
+                          <span id="phone-error" className="error-text" role="alert">
+                            {errors.phone}
+                          </span>
+                        )}
+                      </div>
 
-                  <div className="form-group">
-                    <label htmlFor="company">Company Name</label>
-                    <input
-                      type="text"
-                      id="company"
-                      name="company"
-                      value={userDetails.company}
-                      onChange={handleInputChange}
-                      maxLength={50}
-                    />
-                  </div>
+                      <div className="form-group">
+                        <label htmlFor="company">Company Name</label>
+                        <input
+                          type="text"
+                          id="company"
+                          name="company"
+                          value={userDetails.company}
+                          onChange={handleInputChange}
+                          maxLength={50}
+                        />
+                      </div>
 
-                  <div className="form-group">
-                    <label htmlFor="website">Company Website</label>
-                    <input
-                      type="url"
-                      id="website"
-                      name="website"
-                      value={userDetails.website}
-                      onChange={handleInputChange}
-                      placeholder="https://example.com"
-                      aria-describedby={errors.website ? "website-error" : undefined}
-                    />
-                    {errors.website && (
-                      <span id="website-error" className="error-text" role="alert">
-                        {errors.website}
-                      </span>
-                    )}
-                  </div>
+                      <div className="form-group">
+                        <label htmlFor="website">Company Website</label>
+                        <input
+                          type="url"
+                          id="website"
+                          name="website"
+                          value={userDetails.website}
+                          onChange={handleInputChange}
+                          placeholder="https://example.com"
+                          aria-describedby={errors.website ? "website-error" : undefined}
+                        />
+                        {errors.website && (
+                          <span id="website-error" className="error-text" role="alert">
+                            {errors.website}
+                          </span>
+                        )}
+                      </div>
 
-                  <div className="form-group">
-                    <label htmlFor="niche">Niche of Hiring *</label>
-                    <select
-                      id="niche"
-                      name="niche"
-                      value={userDetails.niche}
-                      onChange={handleInputChange}
-                      required
-                      aria-describedby={errors.niche ? "niche-error" : undefined}
-                    >
-                      <option value="">Select a niche</option>
-                      {niches.map((niche) => (
-                        <option key={niche.id} value={niche.name}>
-                          {niche.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.niche && (
-                      <span id="niche-error" className="error-text" role="alert">
-                        {errors.niche}
-                      </span>
-                    )}
-                  </div>
+                      <div className="form-group">
+                        <label htmlFor="niche">Niche of Hiring *</label>
+                        <select
+                          id="niche"
+                          name="niche"
+                          value={userDetails.niche}
+                          onChange={handleInputChange}
+                          required
+                          aria-describedby={errors.niche ? "niche-error" : undefined}
+                        >
+                          <option value="">Select a niche</option>
+                          {niches.map((niche) => (
+                            <option key={niche.id} value={niche.name}>
+                              {niche.name}
+                            </option>
+                          ))}
+                        </select>
+                        {errors.niche && (
+                          <span id="niche-error" className="error-text" role="alert">
+                            {errors.niche}
+                          </span>
+                        )}
+                      </div>
 
-                  <div className="form-group">
-                    <label htmlFor="details">Additional Details</label>
-                    <textarea
-                      id="details"
-                      name="details"
-                      value={userDetails.details}
-                      onChange={handleInputChange}
-                      rows={4}
-                      placeholder="Please share any specific requirements..."
-                      maxLength={500}
-                    />
-                  </div>
+                      <div className="form-group">
+                        <label htmlFor="details">Additional Details</label>
+                        <textarea
+                          id="details"
+                          name="details"
+                          value={userDetails.details}
+                          onChange={handleInputChange}
+                          rows={4}
+                          placeholder="Please share any specific requirements..."
+                          maxLength={500}
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {/* Selected slots display */}
+                  {renderSelectedSlots()}
+
+                  {/* Alternate option question - only show if no alternate slot selected yet */}
+                  {isAdminPanel && !isAlternateScheduler && (
+                    <div className="alternate-question">
+                      <p>
+                        Do you want to offer the candidate another date and time for interview too,
+                        for his convenience?
+                      </p>
+                      <div className="yes-no-buttons">
+                        <button
+                          type="button"
+                          className={`yes-btn ${offerAlternate === true ? "selected" : ""}`}
+                          onClick={() => setShowAlternateModal(true)}
+                        >
+                          Yes
+                        </button>
+                        <button
+                          type="button"
+                          className={`no-btn ${offerAlternate === false ? "selected" : ""}`}
+                          onClick={() => setOfferAlternate(false)}
+                        >
+                          No
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  {showAlternateModal && (
+                    <div className="alternate-modal-overlay">
+                      <div className="alternate-modal">
+                        <div className="alternate-modal-header">
+                          <h3>Select Alternate Date & Time</h3>
+                          <button
+                            className="close-modal-btn"
+                            onClick={() => setShowAlternateModal(false)}
+                          >
+                            <FaTimes />
+                          </button>
+                        </div>
+
+                        <CalendarScheduler
+                          isAlternateScheduler={true}
+                          onAlternateSlotSelect={handleAlternateSlotSelect}
+                          selectedEmployee={selectedEmployee}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </form>
               </div>
 
               <div className="form-buttons">
-                <button type="submit" className="confirm-btn" disabled={isSubmitting} onClick={handleSubmit}>
-                  {isSubmitting ? (
-                    <>
-                      <FaSpinner className="spinner" aria-hidden="true" /> Sending...
-                    </>
-                  ) : (
-                    submitButtonText
-                  )}
-                </button>
-
                 <button
                   type="button"
                   className="back-btn"
@@ -1139,19 +1421,215 @@ const CalendarScheduler = ({
                 >
                   Back to Time Slots
                 </button>
+                <button
+                  type="submit"
+                  className="confirm-btn"
+                  disabled={isSubmitting || (offerAlternate === null && !alternateSlot)}
+                  onClick={handleSubmit} // <-- call your submit handler here
+                >
+                  {submitButtonText}
+                </button>
               </div>
             </div>
           )}
         </div>
       </div>
 
+      {/* Alternate Scheduler Overlay */}
+      {/* {renderAlternateScheduler()} */}
+
       <style jsx>{`
+      .alternate-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .alternate-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .alternate-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .alternate-modal-header h3 {
+    margin: 0;
+    color: #2a2d7c;
+  }
+  
+  .close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+    padding: 5px;
+  }
+  
+  .close-modal-btn:hover {
+    color: #000;
+  }
+    
         .calendar-scheduler {
           max-width: 800px;
           margin: 0 auto;
           font-family: 'Arial', sans-serif;
+          position: relative;
         }
         
+        .alternate-scheduler-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+        
+        .alternate-scheduler-modal {
+          background: white;
+          border-radius: 12px;
+          padding: 20px;
+          max-width: 600px;
+          width: 90%;
+          max-height: 90vh;
+          overflow-y: auto;
+          position: relative;
+        }
+        
+        .alternate-scheduler-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        
+        .close-alternate-btn {
+          background: none;
+          border: none;
+          font-size: 20px;
+          cursor: pointer;
+          color: #666;
+        }
+        
+        .selected-slots-section {
+          margin: 20px 0;
+          padding: 15px;
+          background: #f9f9f9;
+          border-radius: 8px;
+          border: 1px solid #eee;
+        }
+        
+        .selected-slots-section h4 {
+          margin: 0 0 15px 0;
+          color: #2a2d7c;
+        }
+        
+        .slot-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px;
+          background: white;
+          border-radius: 6px;
+          margin-bottom: 10px;
+          border: 1px solid #ddd;
+        }
+        
+        .slot-info {
+          flex: 1;
+        }
+        
+        .slot-type {
+          font-weight: bold;
+          color: #2a2d7c;
+          margin-right: 8px;
+        }
+        
+        .slot-details {
+          color: #555;
+        }
+        
+        .edit-slot-btn {
+          background: #f0f8ff;
+          border: 1px solid #06a3c2;
+          color: #06a3c2;
+          padding: 6px 12px;
+          border-radius: 4px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 14px;
+        }
+        
+        .edit-slot-btn:hover {
+          background: #e1f5fe;
+        }
+        
+        .alternate-question {
+          margin: 20px 0;
+          padding: 15px;
+          background: #f0f8ff;
+          border-radius: 8px;
+          border-left: 4px solid #06a3c2;
+        }
+        
+        .alternate-question p {
+          margin: 0 0 15px 0;
+          font-weight: 500;
+          color: #2a2d7c;
+        }
+        
+        .yes-no-buttons {
+          display: flex;
+          gap: 10px;
+        }
+        
+        .yes-btn, .no-btn {
+          padding: 10px 20px;
+          border: 2px solid #ddd;
+          background: white;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+        
+        .yes-btn.selected, .no-btn.selected {
+          border-color: #06a3c2;
+          background: #06a3c2;
+          color: white;
+        }
+        
+        .yes-btn:hover, .no-btn:hover {
+          border-color: #06a3c2;
+        }
+        
+        /* Rest of the CSS remains the same as before */
         .scheduler-header {
           text-align: center;
           margin-bottom: 2rem;
@@ -1318,591 +1796,484 @@ const CalendarScheduler = ({
         .selected-date {
           color: #2A2D7C;
           font-weight:  bold;
-      margin-bottom: 1.5rem;
-    }
-    
-    .current-time-display {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: 1rem;
-      margin-bottom: 16px;
-      padding: 10px 14px;
-      background-color: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      color: #333;
-    }
-    
-    .current-time-display strong {
-      color: #2A2D7C;
-      font-weight: bold;
-    }
-    
-    .time-slots-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 10px;
-      margin-bottom: 1.5rem;
-    }
-    
-    .time-slot-btn {
-      padding: 10px;
-      background-color: #06a3c2;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-size: 0.9rem;
-    }
-    
-    .time-slot-btn:hover:not(:disabled) {
-      background-color: #2A2D7C;
-      transform: translateY(-1px);
-    }
-    
-    .time-slot-btn:focus {
-      outline: 2px solid #06a3c2;
-      outline-offset: 2px;
-    }
-    
-    .time-slot-btn.blocked {
-      background-color: #f8d7da;
-      color: #721c24;
-      cursor: not-allowed;
-      position: relative;
-    }
-    
-    .time-slot-btn.blocked:hover {
-      background-color: #f8d7da;
-      transform: none;
-    }
-    
-    .blocked-label {
-      display: block;
-      font-size: 0.7em;
-      color: #dc3545;
-      margin-top: 4px;
-    }
-    
-    .time-slot-actions {
-      display: flex;
-      justify-content: center;
-    }
-    
-    .appointment-form-container {
-      display: flex;
-      flex-direction: column;
-      max-height: 80vh;
-    }
-    
-    .selected-slot {
-      font-size: 1.1rem;
-      color: #2A2D7C;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-    
-    .form-scroll-container {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding-right: 8px;
-      margin-bottom: 15px;
-    }
-    
-    .form-scroll-container::-webkit-scrollbar {
-      width: 6px;
-    }
-    
-    .form-scroll-container::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    
-    .form-scroll-container::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 10px;
-    }
-    
-    .form-scroll-container::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
-    
-    .form-group {
-      margin-bottom: 1rem;
-      text-align: left;
-    }
-    
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: bold;
-      color: #333;
-    }
-    
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-      transition: border-color 0.2s;
-    }
-    
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: #06a3c2;
-      box-shadow: 0 0 0 2px rgba(6, 163, 194, 0.2);
-    }
-    
-    .form-group textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    
-    .error-text {
-      color: #dc3545;
-      font-size: 0.875rem;
-      margin-top: 0.25rem;
-      display: block;
-    }
-    
-    .error-notification {
-      background-color: #f8d7da;
-      color: #721c24;
-      padding: 12px;
-      border-radius: 4px;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .form-buttons {
-      display: flex;
-      justify-content: space-between;
-      margin-top: auto;
-      padding-top: 15px;
-      flex-shrink: 0;
-      border-top: 1px solid #eee;
-      gap: 1rem;
-    }
-    
-    .confirm-btn,
-    .back-btn,
-    .primary-btn {
-      padding: 12px 24px;
-      background-color: #2A2D7C;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .confirm-btn:hover:not(:disabled),
-    .back-btn:hover:not(:disabled),
-    .primary-btn:hover:not(:disabled) {
-      background-color: #1a1c52;
-      transform: translateY(-1px);
-    }
-    
-    .confirm-btn:disabled {
-      background-color: #cccccc;
-      cursor: not-allowed;
-      transform: none;
-    }
-    
-    .success-message {
-      text-align: center;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    
-    .success-message h3 {
-      color: #2A2D7C;
-      margin-bottom: 1rem;
-    }
-    
-    .confirmation-details {
-      font-size: 1.1rem;
-      margin: 1.5rem 0;
-      padding: 1rem;
-      background-color: #f0f8ff;
-      border-radius: 4px;
-      border-left: 4px solid #06a3c2;
-    }
-    
-    .button-container {
-      margin-top: 1.5rem;
-    }
-    
-    .time-zone-selector {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: #f5f5f5;
-      padding: 10px 15px;
-      border-radius: 6px;
-      flex-wrap: wrap;
-      position: relative;
-    }
-    
-    .detected-location {
-      font-size: 0.9rem;
-      color: #2A2D7C;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 150px;
-    }
-    
-    .regional-dropdown-container {
-      position: relative;
-      flex: 1;
-    }
-    
-    .regional-dropdown-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      background: white;
-      font-size: 14px;
-      cursor: pointer;
-      transition: border-color 0.2s;
-    }
-    
-    .regional-dropdown-toggle:hover {
-      border-color: #06a3c2;
-    }
-    
-    .regional-dropdown-toggle:focus {
-      outline: none;
-      border-color: #06a3c2;
-      box-shadow: 0 0 0 2px rgba(6, 163, 194, 0.2);
-    }
-    
-    .chevron {
-      transition: transform 0.2s;
-    }
-    
-    .chevron.rotate-180 {
-      transform: rotate(180deg);
-    }
-    
-    .regional-dropdown-menu {
-      position: absolute;
-      top: 100%;
+          margin-bottom: 1.5rem;
+        }
+        
+        .current-time-display {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          font-size: 1rem;
+          margin-bottom: 16px;
+          padding: 10px 14px;
+          background-color: #f9f9f9;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          color: #333;
+        }
+        
+        .current-time-display strong {
+          color: #2A2D7C;
+          font-weight: bold;
+        }
+        
+        .time-slots-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+          gap: 10px;
+          margin-bottom: 1.5rem;
+        }
+        
+        .time-slot-btn {
+          padding: 10px;
+          background-color: #06a3c2;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.3s;
+          font-size: 0.9rem;
+        }
+        
+        .time-slot-btn:hover:not(:disabled) {
+          background-color: #2A2D7C;
+          transform: translateY(-1px);
+        }
+        
+        .time-slot-btn:focus {
+          outline: 2px solid #06a3c2;
+          outline-offset: 2px;
+        }
+        
+        .time-slot-btn.blocked {
+          background-color: #f8d7da;
+          color: #721c24;
+          cursor: not-allowed;
+          position: relative;
+        }
+        
+        .time-slot-btn.blocked:hover {
+          background-color: #f8d7da;
+          transform: none;
+        }
+        
+        .blocked-label {
+          display: block;
+          font-size: 0.7em;
+          color: #dc3545;
+          margin-top: 4px;
+        }
+        
+        .time-slot-actions {
+          display: flex;
+          justify-content: center;
+        }
+        
+        .appointment-form-container {
+          display: flex;
+          flex-direction: column;
+          max-height: 80vh;
+        }
+        
+        .selected-slot {
+          font-size: 1.1rem;
+          color: #2A2D7C;
+          margin-bottom: 1.5rem;
+          text-align: center;
+          font-weight: bold;
+          flex-shrink: 0;
+        }
+        
+        .form-scroll-container {
+          flex-grow: 1;
+          overflow-y: auto;
+          padding-right: 8px;
+          margin-bottom: 15px;
+        }
+        
+        .form-scroll-container::-webkit-scrollbar {
+          width: 6px;
+        }
+        
+        .form-scroll-container::-webkit-scrollbar-track {
+          background: #f1f1f1;
+          border-radius: 10px;
+        }
+        
+        .form-scroll-container::-webkit-scrollbar-thumb {
+          background: #888;
+          border-radius: 10px;
+        }
+        
+        .form-scroll-container::-webkit-scrollbar-thumb:hover {
+          background: #555;
+        }
+        
+        .form-group {
+          margin-bottom: 1rem;
+          text-align: left;
+        }
+        
+        .form-group label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: bold;
+          color: #333;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 1rem;
+          transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+          outline: none;
+          border-color: #06a3c2;
+          box-shadow: 0 0 0 2px rgba(6, 163, 194, 0.2);
+        }
+        
+        .form-group textarea {
+          min-height: 100px;
+          resize: vertical;
+        }
+        
+        .error-text {
+          color: #dc3545;
+          font-size: 0.875rem;
+          margin-top: 0.25rem;
+          display: block;
+        }
+        
+        .error-notification {
+          background-color: #f8d7da;
+          color: #721c24;
+          padding: 12px;
+          border-radius: 4px;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .form-buttons {
+          display: flex;
+          justify-content: center;
+          margin-top: auto;
+          padding-top: 15px;
+          flex-shrink: 0;
+          border-top: 1px solid #eee;
+          gap: 1rem;
+        }
+        
+        .confirm-btn,
+        .back-btn,
+        .primary-btn {
+          padding: 12px 24px;
+          background-color: #2A2D7C;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 1rem;
+          transition: all 0.3s;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .confirm-btn:hover:not(:disabled),
+        .back-btn:hover:not(:disabled),
+        .primary-btn:hover:not(:disabled) {
+          background-color: #1a1c52;
+          transform: translateY(-1px);
+        }
+        
+        .confirm-btn:disabled {
+          background-color: #cccccc;
+          cursor: not-allowed;
+          transform: none;
+        }
+        
+        .success-message {
+          text-align: center;
+          max-width: 500px;
+          margin: 0 auto;
+        }
+        
+        .success-message h3 {
+          color: #2A2D7C;
+          margin-bottom: 1rem;
+        }
+        
+        .confirmation-details {
+          font-size: 1.1rem;
+          margin: 1.5rem 0;
+          padding: 1rem;
+          background-color: #f0f8ff;
+          border-radius: 4px;
+          border-left: 4px solid #06a3c2;
+        }
+        
+        .button-container {
+          margin-top: 1.5rem;
+        }
+        
+        .time-zone-selector {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 20px;
+          background: #f5f5f5;
+          padding: 10px 15px;
+          border-radius: 6px;
+          flex-wrap: wrap;
+          position: relative;
+        }
+        
+        .detected-location {
+          font-size: 0.9rem;
+          color: #2A2D7C;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 150px;
+        }
+        
+        .regional-dropdown-container {
+          position: relative;
+          flex: 1;
+        }
+        
+        .regional-dropdown-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          padding: 8px 12px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          background: white;
+          font-size: 14px;
+          cursor: pointer;
+          transition: border-color 0.2s;
+        }
+        
+        .regional-dropdown-toggle:hover {
+          border-color: #06a3c2;
+        }
+        
+        .regional-dropdown-toggle:focus {
+          outline: none;
+          border-color: #06a3c2;
+          box-shadow: 0 0 0 2px rgba(6, 163, 194, 0.2);
+        }
+        
+        .chevron {
+          transition: transform 0.2s;
+        }
+        
+        .chevron.rotate-180 {
+          transform: rotate(180deg);
+        }
+        
+        .regional-dropdown-menu {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background: white;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          z-index: 100;
+          max-height: 300px;
+          overflow-y: auto;
+          margin-top: 4px;
+        }
+        
+        .regional-group {
+          border-bottom: 1px solid #eee;
+        }
+        
+        .regional-group:last-child {
+          border-bottom: none;
+        }
+        
+        .regional-group-header {
+          padding: 8px 12px;
+          background-color: #f8f9fa;
+          font-weight: 600;
+          font-size: 0.875rem;
+          color: #2A2D7C;
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
+        
+        .regional-option {
+          display: block;
+          width: 100%;
+          padding: 8px 12px;
+          text-align: left;
+          border: none;
+          background: white;
+          cursor: pointer;
+          font-size: 0.875rem;
+          transition: background-color 0.2s;
+        }
+        
+        .regional-option:hover {
+          background-color: #f0f8ff;
+        }
+        
+        .regional-option.selected {
+          background-color: #06a3c2;
+          color: white;
+        }
+        
+        .world-clock-btn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #2A2D7C;
+          font-size: 18px;
+          padding: 5px;
+          border-radius: 4px;
+          transition: background-color 0.2s;
+        }
+        
+        .world-clock-btn:hover {
+          background-color: rgba(42, 45, 124, 0.1);
+        }
+        
+        .time-zone-icon {
+          color: #2A2D7C;
+          font-size: 18px;
+          flex-shrink: 0;
+        }
+        
+        .spinner {
+          animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        
+        .time-format-toggle {
+          display: inline-flex;
+          background: #f3f4f6;
+          border-radius: 9999px;
+          padding: 4px;
+          gap: 4px;
+          margin-right: auto;
+        }
+        
+        .time-format-toggle button {
+          flex: 1;
+          padding: 6px 14px;
+          border: none;
+          border-radius: 9999px;
+          background: transparent;
+          font-size: 14px;
+          font-weight: 500;
+          color: #4b5563;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          white-space: nowrap;
+        }
+        
+        .time-format-toggle button:hover {
+          background: #e5e7eb;
+        }
+        
+        .time-format-toggle button.active {
+          background: #ffffff;
+          color: #111827;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+          .scheduler-container {
+            padding: 1rem;
+          }
+          
+          .appointment-form-container {
+            max-height: 70vh;
+          }
+          
+          .form-buttons {
+            flex-direction: column;
+          }
+          
+          .confirm-btn, .back-btn {
+            width: 100%;
+          }
+          
+          .time-zone-selector {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          
+          .regional-dropdown-container {
+            width: 100%;
+          }
+          
+          .yes-no-buttons {
+            flex-direction: column;
+          }
+          
+          .slot-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+          }
+          
+          .edit-slot-btn {
+            align-self: flex-end;
+          }
+        }
+          .alternate-scheduler-overlay {
+      position: fixed;
+      top: 0;
       left: 0;
       right: 0;
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      z-index: 100;
-      max-height: 300px;
-      overflow-y: auto;
-      margin-top: 4px;
-    }
-    
-    .regional-group {
-      border-bottom: 1px solid #eee;
-    }
-    
-    .regional-group:last-child {
-      border-bottom: none;
-    }
-    
-    .regional-group-header {
-      padding: 8px 12px;
-      background-color: #f8f9fa;
-      font-weight: 600;
-      font-size: 0.875rem;
-      color: #2A2D7C;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    
-    .regional-option {
-      display: block;
-      width: 100%;
-      padding: 8px 12px;
-      text-align: left;
-      border: none;
-      background: white;
-      cursor: pointer;
-      font-size: 0.875rem;
-      transition: background-color 0.2s;
-    }
-    
-    .regional-option:hover {
-      background-color: #f0f8ff;
-    }
-    
-    .regional-option.selected {
-      background-color: #06a3c2;
-      color: white;
-    }
-    
-    .world-clock-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #2A2D7C;
-      font-size: 18px;
-      padding: 5px;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-    
-    .world-clock-btn:hover {
-      background-color: rgba(42, 45, 124, 0.1);
-    }
-    
-    .time-zone-icon {
-      color: #2A2D7C;
-      font-size: 18px;
-      flex-shrink: 0;
-    }
-    
-    .spinner {
-      animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Mobile Responsive Styles */
-    @media (max-width: 768px) {
-      .scheduler-container {
-        padding: 1rem;
-      }
-      
-      .appointment-form-container {
-        max-height: 70vh;
-      }
-      
-      .form-buttons {
-        flex-direction: column;
-      }
-      
-      .confirm-btn, .back-btn {
-        width: 100%;
-      }
-      
-      .time-zone-selector {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      
-      .regional-dropdown-container {
-        width: 100%;
-      }
-    }
-    
-    @media (max-width: 600px) {
-      .calendar-header h3 {
-        font-size: 1rem;
-      }
-      
-      .month-nav-btn {
-        padding: 5px;
-      }
-      
-      .day-names {
-        grid-template-columns: repeat(7, 60px);
-        min-width: 420px;
-        font-size: 0.8rem;
-      }
-      
-      .days-grid {
-        grid-template-columns: repeat(7, 60px);
-        min-width: 420px;
-      }
-      
-      .day-cell {
-        min-height: 60px;
-      }
-      
-      .day-number {
-        font-size: 0.8rem;
-      }
-      
-      .booked-indicator {
-        font-size: 0.5rem;
-      }
-      
-      .time-slots-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      
-      .time-slot-btn {
-        padding: 8px;
-        font-size: 0.8rem;
-      }
-
-      .time-zone-selector {
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: #f5f5f5;
-      padding: 10px 15px;
-      border-radius: 6px;
-      flex-wrap: wrap;
-      position: relative;
+      justify-content: center;
+      z-index: 1000;
     }
-
-    .regional-dropdown-container {
-      position: relative;
-      flex: 1;
+    
+    .alternate-scheduler-modal {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 400px;
+      width: 90%;
     }
-
-  .regional-dropdown-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-  }
-
-  .regional-dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 100;
-    max-height: 300px;
-    overflow-y: auto;
-    margin-top: 4px;
-  }
-
-  .regional-group {
-    border-bottom: 1px solid #eee;
-  }
-
-  .regional-group-header {
-    padding: 8px 12px;
-    background-color: #f8f9fa;
-    font-weight: 600;
-    font-size: 0.875rem;
-    color: #2A2D7C;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  .regional-option {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 8px 12px;
-    text-align: left;
-    border: none;
-    background: white;
-    cursor: pointer;
-    font-size: 0.875rem;
-    transition: background-color 0.2s;
-  }
-
-  .regional-option:hover {
-    background-color: #f0f8ff;
-  }
-
-  .regional-option.selected {
-    background-color: #06a3c2;
-    color: white;
-  }
-
-  .timezone-label {
-    flex: 1;
-    text-align: left;
-  }
-
-  .timezone-time {
-    font-feature-settings: "tnum";
-    font-variant-numeric: tabular-nums;
-    color: #666;
-    margin-left: 8px;
-  }
-
-  .regional-option.selected .timezone-time {
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-/* Focus styles for accessibility */
-.time-format-toggle button:focus {
-  outline: 2px solid #06a3c2;
-  outline-offset: 2px;
-}
+    
+    .alternate-scheduler {
+      background: #f8fafc;
+      border: 2px solid #e5e7eb;
+      padding: 20px;
+      border-radius: 8px;
     }
-
-    .time-format-toggle {
-  display: inline-flex;
-  background: #f3f4f6;
-  border-radius: 9999px;
-  padding: 4px;
-  gap: 4px;
-  margin-right: auto; /* Pushes it to the left */
-}
-
-.time-format-toggle button {
-  flex: 1;
-  padding: 6px 14px;
-  border: none;
-  border-radius: 9999px;
-  background: transparent;
-  font-size: 14px;
-  font-weight: 500;
-  color: #4b5563;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.time-format-toggle button:hover {
-  background: #e5e7eb;
-}
-
-.time-format-toggle button.active {
-  background: #ffffff;
-  color: #111827;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-  `}</style>
+      `}
+      </style>
     </div>
-
   )
 }
 

@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { FaFileAlt, FaTimes, FaArrowLeft, FaExternalLinkAlt } from 'react-icons/fa';
-import { getEmployeeById } from '../../services/employeeService';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../firebase';
 import './EmployeeDetail.css';
 import defaultProfileImage from "../../assets/no image found.png";
 
-const EmployeeDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) => {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeDocument, setActiveDocument] = useState(null);
-  const [documentType, setDocumentType] = useState(null);
   const [viewerState, setViewerState] = useState({
     isOpen: false,
     document: null,
     type: '',
     isLoading: true
   });
+
+  // Function to fetch employee data from Firestore
+  const getEmployeeById = async (id) => {
+    try {
+      const docRef = doc(db, "employees", id);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() };
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching employee:", error);
+      throw error;
+    }
+  };
 
   const openDocument = (doc, type) => {
     setViewerState({
@@ -47,15 +60,19 @@ const EmployeeDetail = () => {
 
   useEffect(() => {
     const fetchEmployee = async () => {
+      if (!employeeId) return;
+      
       try {
-        const employeeData = await getEmployeeById(id);
+        setLoading(true);
+        const employeeData = await getEmployeeById(employeeId);
         if (employeeData) {
           setEmployee(employeeData);
+          if (setSelectedEmployee) setSelectedEmployee(employeeData);
         } else {
-          setError('Professional not found');
+          setError("Professional not found");
         }
       } catch (err) {
-        setError('Failed to load professional');
+        setError("Failed to load professional");
         console.error(err);
       } finally {
         setLoading(false);
@@ -63,7 +80,7 @@ const EmployeeDetail = () => {
     };
 
     fetchEmployee();
-  }, [id]);
+  }, [employeeId, setSelectedEmployee]);
 
   const extractYouTubeId = (url) => {
     if (!url) return null;
@@ -72,15 +89,8 @@ const EmployeeDetail = () => {
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    const date = timestamp.toDate();
-    return date.toLocaleString();
-  };
-
   const getEmbedUrl = (url) => {
     if (!url) return null;
-    // Convert Google Drive view URL to embed URL
     if (url.includes('drive.google.com')) {
       const fileId = url.match(/\/d\/([^\/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
       if (fileId) {
@@ -103,8 +113,19 @@ const EmployeeDetail = () => {
     return (
       <div className="error-container">
         <p>{error}</p>
-        <button onClick={() => navigate(-1)} className="back-button">
-          <FaArrowLeft /> Back to Professionals
+        <button onClick={() => setActiveMenuItem("view-employees")} className="back-button">
+          <FaArrowLeft /> Back to Employees
+        </button>
+      </div>
+    );
+  }
+
+  if (!employee) {
+    return (
+      <div className="error-container">
+        <p>No employee data available</p>
+        <button onClick={() => setActiveMenuItem("view-employees")} className="back-button">
+          <FaArrowLeft /> Back to Employees
         </button>
       </div>
     );
@@ -114,6 +135,9 @@ const EmployeeDetail = () => {
     <div className="employee-detail-container">
       <div className="detail-header">
         <div className="header-content">
+          <button onClick={() => setActiveMenuItem("view-employees")} className="back-button">
+            <FaArrowLeft /> Back to Employees
+          </button>
           <h1>Professional Profile</h1>
           <p>Detailed information about {employee.name}</p>
         </div>
@@ -137,8 +161,36 @@ const EmployeeDetail = () => {
             <p className="position" style={{ color: 'white' }}>{employee.expertise}</p>
             <div className="meta-info">
               <span>{employee.experience} years experience</span>
-              {/* <span>{employee.currency} {employee.rate}/hr</span> */}
+              {employee.rate && <span>{employee.currency} {employee.rate}/hr</span>}
+              {employee.email && <span>{employee.email}</span>}
             </div>
+          </div>
+
+          <div className="top-actions">
+            {employee.resume && (
+              <button
+                className="action-button"
+                onClick={() => openDocument(employee.resume, "resume")}
+              >
+                <FaFileAlt /> View Resume
+              </button>
+            )}
+
+            {employee.assessment && (
+              <button
+                className="action-button"
+                onClick={() => openDocument(employee.assessment, "assessment")}
+              >
+                <FaFileAlt /> View Assessment
+              </button>
+            )}
+
+            <button
+              className="action-button schedule-button"
+              onClick={() => setActiveMenuItem("calendar-scheduler")}
+            >
+              Schedule Interview
+            </button>
           </div>
         </div>
 
@@ -185,30 +237,19 @@ const EmployeeDetail = () => {
             )}
           </div>
 
-          <div className="documents-section">
-            {/* <h3>Documents</h3> */}
+          {employee.niche && (
+            <div className="niche-section">
+              <h3>Niche Category</h3>
+              <p>{employee.niche}</p>
+            </div>
+          )}
 
-            {employee.resume && (
-              <div
-                className="document-card"
-                style={{ cursor: "pointer" }}
-                onClick={() => openDocument(employee.resume, "resume")}
-              >
-                <span className="doc-link">View Resume</span>
-              </div>
-
-            )}
-
-            {employee.assessment && (
-              <div
-                className="document-card"
-                style={{ cursor: "pointer" }}
-                onClick={() => openDocument(employee.assessment, 'assessment')}
-              >
-                <span className="doc-link">View Assessment</span>
-              </div>
-            )}
-          </div>
+          {employee.hiddenFromClients && employee.hiddenFromClients.length > 0 && (
+            <div className="visibility-section">
+              <h3>Visibility Settings</h3>
+              <p>Hidden from {employee.hiddenFromClients.length} client(s)</p>
+            </div>
+          )}
         </div>
       </div>
 
