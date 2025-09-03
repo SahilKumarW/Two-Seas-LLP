@@ -335,17 +335,29 @@ const EmployeeCard = ({ archived = false, currentClientId = null, setActiveMenuI
                   <div className="card-background">
                     <div className="employee-profile">
                       <div className="avatar-container">
-                        <div className="avatar-wrapper">
-                          <img
-                            src={employee.imageBase64 || defaultProfileImage}
-                            alt={employee.name}
-                            className="employee-avatar"
-                            onError={(e) => {
-                              e.target.src = defaultProfileImage; // fallback if broken
-                            }}
-                          />
-                        </div>
+                        <img
+                          src={employee.imageBase64 || defaultProfileImage}
+                          alt={employee.name}
+                          className="employee-avatar"
+                          onError={(e) => {
+                            e.target.src = defaultProfileImage;
+                          }}
+                        />
 
+                        {/* Wishlist Icon Overlay */}
+                        <button
+                          className="wishlist-icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleWishlist(employee.id);
+                          }}
+                        >
+                          {wishlist[employee.id] ? (
+                            <FaHeart className="wishlist-heart filled" />
+                          ) : (
+                            <FaRegHeart className="wishlist-heart" />
+                          )}
+                        </button>
                       </div>
                       <div className="profile-info">
                         <h3 className="employee-name">
