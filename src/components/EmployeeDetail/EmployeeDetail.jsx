@@ -111,12 +111,12 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
 
   return (
     <div className="employee-detail-container">
-      <div className="detail-header">
+      {/* <div className="detail-header">
         <div className="header-content">
           <h1>Professional Profile</h1>
           <p>Detailed information about {employee.name}</p>
         </div>
-      </div>
+      </div> */}
 
       <div className="detail-card">
         <div className="profile-section">

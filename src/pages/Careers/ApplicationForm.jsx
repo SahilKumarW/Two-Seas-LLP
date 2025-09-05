@@ -817,7 +817,7 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
                     className={`toggle-option ${formData.videoSource === 'record' ? 'active' : ''}`}
                     onClick={() => handleVideoSourceChange('record')}
                   >
-                    Record Video (Upto 90s)
+                    Record Video (Upto 3 minutes)
                   </button>
                 </div>
 

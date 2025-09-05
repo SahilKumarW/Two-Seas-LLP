@@ -877,8 +877,8 @@
 /* T-Key Ribbon */
 .tkey-ribbon {
   position: absolute;
-  top: -2px;
-  right: -2px;
+  top: -5px;
+  left: 19px;
   width: 30px;
   height: 30px;
   border-radius: 80%;
