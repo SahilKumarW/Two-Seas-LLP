@@ -238,3 +238,23 @@ p {
 .footer-bottom a {
   color: white;
 }
+
+.theme-default {
+  --bg: #ffffff;
+  --text: #2a2d7c;
+}
+
+.theme-dark {
+  --bg: #1a1a1a;
+  --text: #f0f0f0;
+}
+
+.theme-candyfloss {
+  --bg: #e0ffe0;   /* light green */
+  --text: #06a3c2; /* candy blue */
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+}

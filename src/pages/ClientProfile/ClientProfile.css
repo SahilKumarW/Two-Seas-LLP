@@ -1,0 +1,34 @@
+.client-profile {
+  padding: 24px;
+  background: var(--background, #f9f9f9);
+  min-height: 100vh;
+}
+
+.client-profile h1 {
+  color: #2a2d7c;
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.client-profile p {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.client-profile h2 {
+  margin-top: 20px;
+  font-size: 22px;
+  color: #06a3c2;
+}
+
+.client-profile ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.client-profile li {
+  font-size: 15px;
+  color: #444;
+  margin-bottom: 6px;
+}

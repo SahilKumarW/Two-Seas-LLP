@@ -1,0 +1,17 @@
+.client-employees {
+  padding: 24px;
+  background: var(--background, #f9f9f9);
+  min-height: 100vh;
+}
+
+.client-employees h1 {
+  color: #2a2d7c;
+  margin-bottom: 16px;
+  font-size: 28px;
+}
+
+.employees-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}

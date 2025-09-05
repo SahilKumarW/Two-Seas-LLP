@@ -39,43 +39,49 @@ import CalendarScheduler from "./components/CalendarScheduler.jsx";
 import EmployeeDetail from "./components/EmployeeDetail/EmployeeDetail.jsx";
 import ModernAdminPanel from "./pages/AdminPanel/AdminPanel.jsx";
 
+import ClientLogin from "./pages/ClientLogin/ClientLogin.js";
+import ClientDashboard from "./pages/ClientDashboard/ClientDashboard.jsx";
+import ClientEmployees from "./pages/ClientEmployees/ClientEmployees.jsx";
+import ClientSchedule from "./pages/ClientSchedule/ClientSchedule.jsx";
+import ClientProfile from "./pages/ClientProfile/ClientProfile.jsx";
+
+import { ThemeProvider } from "./context/ThemeContext";
+
 function Layout() {
   const location = useLocation();
 
   const isBookCallPage = location.pathname === "/book-call";
-  const isContactPage = location.pathname === "/contact-us";
   const isAdminLoginPage = location.pathname === "/admin-login";
   const isAdminDashboardPage = location.pathname === "/admin-dashboard";
   const isAdminPanelPage = location.pathname === "/admin-panel";
+  const isClientPage = location.pathname.startsWith("/client");
 
   return (
     <>
       <Tracking>
-        {!isBookCallPage && !isAdminLoginPage && !isAdminPanelPage && <Navbar />}
+        {/* Hide Navbar on admin/book-call/client pages */}
+        {!isBookCallPage && !isAdminLoginPage && !isAdminPanelPage && !isClientPage && <Navbar />}
 
         <Routes>
-          <Route path="/" element={
-            <>
-              <Hero />
-              <WhoWeAre />
-              <Services />
-              <WhyUs />
-              <TalentSolutions />
-              {/* <TalentComparison />
-            <Testimonials />
-            <Solutions />
-            <Industries />
-            <Difference /> */}
-              <CTA />
-            </>
-          } />
+          <Route
+            path="/"
+            element={
+              <>
+                <Hero />
+                <WhoWeAre />
+                <Services />
+                <WhyUs />
+                <TalentSolutions />
+                <CTA />
+              </>
+            }
+          />
           <Route path="/process" element={<Process />} />
           <Route path="/book-call" element={<BookCall />} />
           <Route path="/contact-us" element={<Contact />} />
           <Route path="/careers" element={<Careers />} />
           <Route path="/how-we-work" element={<HowWeWork />} />
           <Route path="/admin-login" element={<AdminLogin />} />
-          {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
           <Route path="/managed-services" element={<ManagedServices />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/services" element={<Services />} />
@@ -94,13 +100,21 @@ function Layout() {
           <Route path="/admin-panel" element={<ModernAdminPanel />}>
             <Route path="employee/:id" element={<EmployeeDetail />} />
           </Route>
+
+          {/* CLIENT ROUTES */}
+          <Route path="/client-login" element={<ClientLogin />} />
+          <Route path="/client-dashboard" element={<ClientDashboard />} />
+          <Route path="/client-employees" element={<ClientEmployees />} />
+          <Route path="/client-schedule" element={<ClientSchedule />} />
+          <Route path="/client-profile" element={<ClientProfile />} />
         </Routes>
 
-        {/* Add WhatsAppChat component here */}
-        {!isAdminDashboardPage && !isAdminPanelPage && <WhatsAppChat />}
+        {/* WhatsAppChat should also be hidden on client pages */}
+        {!isAdminDashboardPage && !isAdminPanelPage && !isClientPage && <WhatsAppChat />}
 
-        {/* Hide Footer on book-call, admin-login, and admin-panel */}
-        {!isBookCallPage && !isAdminLoginPage && !isAdminPanelPage && <Footer />}      </Tracking>
+        {/* Hide Footer on admin/book-call/client pages */}
+        {!isBookCallPage && !isAdminLoginPage && !isAdminPanelPage && !isClientPage && <Footer />}
+      </Tracking>
     </>
   );
 }
@@ -108,7 +122,9 @@ function Layout() {
 function App() {
   return (
     <Router>
-      <Layout />
+      <ThemeProvider>
+        <Layout />
+      </ThemeProvider>
     </Router>
   );
 }
