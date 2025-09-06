@@ -51,7 +51,8 @@ p {
 .cta-button,
 .solution-link,
 .profile-link {
-  background-color: #09034b;
+  /* background-color: #09034b; */
+  background-color: #393c69;
   color: #ffffff;
   border: none;
   padding: 0.8rem 1.5rem;

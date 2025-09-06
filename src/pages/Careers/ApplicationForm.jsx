@@ -11,7 +11,7 @@ const VideoRecorderOverlay = ({ onComplete, onClose }) => {
   const streamRef = useRef(null);
   const timerRef = useRef(null);
 
-  const MAX_RECORDING_TIME = 90; // 90 seconds maximum
+  const MAX_RECORDING_TIME = 180; // 90 seconds maximum
 
   const startCountdown = async () => {
     try {
@@ -22,7 +22,7 @@ const VideoRecorderOverlay = ({ onComplete, onClose }) => {
       streamRef.current = stream;
       videoRef.current.srcObject = stream;
       videoRef.current.play();
-      setCountdown(5); // Start with 5 second countdown
+      setCountdown(4); // Start with 5 second countdown
     } catch (err) {
       console.error("Error accessing camera:", err);
       onClose();
@@ -1193,6 +1193,13 @@ const ApplicationForm = ({ jobTitle, onClose }) => {
           transform: translateY(-50%);
           color: ${colors.textSecondary};
           font-size: 1rem;
+        }
+
+        .upload-content {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          justify-content: center;
         }
 
         .file-upload {

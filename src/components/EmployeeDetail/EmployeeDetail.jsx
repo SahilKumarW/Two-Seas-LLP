@@ -133,7 +133,12 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
 
           <div className="profile-info">
             <h2 style={{ color: 'white' }}>{employee.name}</h2>
-            <p className="position" style={{ color: 'white' }}>{employee.expertise}</p>
+            <p
+              className="position"
+              style={{ color: 'white', marginTop: '-10px' }}
+            >
+              {employee.expertise}
+            </p>
             <div className="meta-info">
               <span>{employee.experience} years experience</span>
               {/* <span>{employee.currency} {employee.rate}/hr</span> */}
@@ -174,8 +179,14 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
             <p>{employee.intro}</p>
           </div>
 
-          <div className="expertise-section">
-            <h3>Core Expertise</h3>
+          <div className="expertise-section" style={{
+              borderLeft: '3px solid #393c69',
+              borderRight: '3px solid #393c69',
+              borderRadius: '9px',
+            }}>
+            <h3>
+              Core Expertise
+            </h3>
             <div className="skills-container">
               {employee.expertise?.split(',').map((skill, index) => (
                 <span key={index} className="skill-tag">{skill.trim()}</span>
@@ -183,7 +194,26 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
             </div>
           </div>
 
-          <div className="media-section">
+          <div className="personality-traits-section" style={{
+              borderLeft: '3px solid #393c69',
+              borderRight: '3px solid #393c69',
+              borderRadius: '9px',
+            }}>
+            <h3>
+              Personality Traits
+            </h3>
+            <div className="traits-container">
+              {/* {employee.expertise?.split(',').map((skill, index) => (
+                <span key={index} className="skill-tag">{skill.trim()}</span>
+              ))} */}
+            </div>
+          </div>
+
+          <div className="media-section" style={{
+                  borderLeft: '3px solid #06a3c2',
+                  borderRight: '3px solid #06a3c2',
+                  borderRadius: '10px',
+                }}>
             {employee.introductionVideoLink && (
               <div className="video-container">
                 <h3>Introduction Video</h3>

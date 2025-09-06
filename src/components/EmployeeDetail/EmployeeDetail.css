@@ -76,9 +76,9 @@
   font-size: 0.9rem;
 }
 
-.content-section {
+/* .content-section {
   padding: 2rem;
-}
+} */
 
 .intro-section,
 .expertise-section,
@@ -117,7 +117,8 @@
 
 .video-wrapper {
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 56.25%;
+  /* 16:9 aspect ratio */
   height: 0;
   overflow: hidden;
 }
@@ -159,22 +160,23 @@
     align-items: center;
     text-align: center;
   }
-  
+
   .profile-info {
     margin-left: 0;
     margin-top: 1.5rem;
   }
-  
+
   .meta-info {
     justify-content: center;
   }
-  
+
   .documents-section {
     flex-direction: column;
   }
 }
 
-.loading-container, .error-container {
+.loading-container,
+.error-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -194,8 +196,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .back-button {
@@ -276,7 +283,8 @@
   align-items: center;
 }
 
-.close-button, .external-link {
+.close-button,
+.external-link {
   color: white;
   background: none;
   border: none;
@@ -287,7 +295,8 @@
   padding: 6px;
 }
 
-.close-button:hover, .external-link:hover {
+.close-button:hover,
+.external-link:hover {
   opacity: 1;
   transform: scale(1.1);
 }
@@ -334,8 +343,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeInUp {
@@ -343,6 +357,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -359,16 +374,17 @@
 
 .top-actions {
   display: flex;
-  flex-direction: column;  /* stack vertically */
+  flex-direction: column;
   gap: 12px;
-  margin-top: 15px;
-  width: 100%;
-  max-width: 180px;  /* keeps button column neat */
+  margin-top: 5px;
+  /* width: 40%; */
+  max-width: 190px;
 }
 
 .action-button {
   padding: 12px 20px;
-  background-color: #2a2d7c;   /* primary navy */
+  background-color: #2a2d7c;
+  /* primary navy */
   color: white;
   border: none;
   border-radius: 8px;
@@ -380,15 +396,18 @@
 }
 
 .action-button:hover {
-  background-color: #06a3c2;   /* hover → cyan */
+  background-color: #06a3c2;
+  /* hover → cyan */
   color: white;
 }
 
 .schedule-button {
-  background-color: #2a2d7c;   /* schedule gets cyan */
+  background-color: #2a2d7c;
+  /* schedule gets cyan */
   color: white;
 }
 
 .schedule-button:hover {
-  background-color: #06a3c2;   /* hover → navy */
+  background-color: #06a3c2;
+  /* hover → navy */
 }
