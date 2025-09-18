@@ -883,8 +883,16 @@ const ClientCard = memo(({ client, onClick, onEdit, onDelete }) => {
 const ClientDetailsModal = memo(({ client, isOpen, onClose }) => {
   if (!isOpen || !client) return null;
 
+  const handleOverlayClick = (e) => {
+    // Only close if the user clicks directly on the overlay, not inside modal content
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
     <div
+      onClick={handleOverlayClick} // ✅ Close on outside click
       style={{
         position: "fixed",
         top: 0,
@@ -900,6 +908,7 @@ const ClientDetailsModal = memo(({ client, isOpen, onClose }) => {
       }}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         style={{
           backgroundColor: "white",
           borderRadius: "16px",
@@ -2788,11 +2797,11 @@ export default function ModernAdminPanel() {
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: <FiHome size={18} /> },
+    { id: "add-employee", label: "Add Employee", icon: <FiUser size={18} /> },
+    { id: "view-employees", label: "View Employees", icon: <FiUsers size={18} /> },
     { id: "add-client", label: "Add Client", icon: <FiPlus size={18} /> },
     { id: "view-client", label: "View Clients", icon: <FiEye size={18} /> },
     { id: "generate-credentials", label: "Generate Credentials", icon: <FiKey size={18} /> },
-    { id: "add-employee", label: "Add Employee", icon: <FiUser size={18} /> },
-    { id: "view-employees", label: "View Employees", icon: <FiUsers size={18} /> },
     { id: "view-member", label: "View as Member", icon: <FiUser size={18} /> },
     { id: "archived", label: "Archived Employees", icon: <FiArchive size={18} /> },
     { id: "view-interview-requests", label: "View Interview Requests", icon: <FiCalendar size={18} /> }, // ✅ New item

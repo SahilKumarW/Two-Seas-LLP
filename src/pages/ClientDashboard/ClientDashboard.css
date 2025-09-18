@@ -7,49 +7,136 @@
 }
 
 /* Sidebar Styles */
+/* Sidebar container */
 .side {
-  width: 280px;
-  background: #2a2d7c;
-  color: white;
-  padding: 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  justify-content: space-between;
+  width: 260px;
+  background: #2a2d7c;
+  padding: 20px;
+  box-sizing: border-box;
+  /* height: max-content; */
+  color: white;
+  /* Default text color */
 }
 
+/* Logo and title */
 .side-header {
-  padding: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
 }
 
 .side-header .logo {
   display: flex;
-  flex-direction: column; /* stack vertically */
-  align-items: center;    /* center both logo + text */
-  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
-.logo-icon {
-  width: 32px;
-  height: 32px;
+.side-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 8px;
+  color: inherit;
+}
+
+/* Theme buttons row */
+.theme-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: background 0.3s;
+  color: inherit;
+  /* Inherit text color from parent */
+}
+
+.theme-toggle:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Navigation */
+.sideNav ul {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sideNav li button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: none;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.2);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+  text-align: left;
+  color: inherit;
+  /* Inherit text color from parent */
+}
+
+.sideNav li.active button,
+.sideNav li button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+}
+
+/* User profile pinned bottom */
+.user-profile {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
 }
 
-.side-header .logo h2 {
-  margin-top: 12px;
-  font-size: 18px;
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
   font-weight: 600;
-  color: white;
+  margin: 0;
+  color: inherit;
+  /* Inherit text color from parent */
+}
+
+.user-role {
+  font-size: 12px;
+  opacity: 0.7;
+  margin: 0;
+  color: inherit;
+  /* Inherit text color from parent */
 }
 
 .theme-toggle {
@@ -277,16 +364,12 @@
   background: #111827;
 }
 
-.client-dashboard.theme-candy .main {
-  background: linear-gradient(to right, #a8e6cf, #dcedc1, #81ecec);
-}
-
 /* Responsive Design */
 @media (max-width: 1024px) {
   .side {
     width: 240px;
   }
-  
+
   .employee-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
@@ -296,34 +379,34 @@
   .client-dashboard {
     flex-direction: column;
   }
-  
+
   .side {
     width: 100%;
     height: auto;
   }
-  
+
   .sideNav ul {
     display: flex;
     gap: 8px;
   }
-  
+
   .sideNav button {
     flex-direction: column;
     gap: 8px;
     padding: 12px;
     font-size: 12px;
   }
-  
+
   .dashboard-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
-  
+
   .header-actions {
     width: 100%;
   }
-  
+
   .search-bar input {
     width: 100%;
   }
@@ -333,8 +416,538 @@
   .dashboard-content {
     padding: 24px 16px;
   }
-  
+
   .employee-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Theme-specific sidebar text and icon colors */
+/* Default: white text and icons */
+.side {
+  color: white;
+}
+
+.sideNav button svg,
+.theme-toggle svg {
+  color: inherit;
+}
+
+/* Glassy Sidebar */
+.side {
+  background: rgba(42, 45, 124, 0.9);
+  /* default navy tone with transparency */
+  backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 0 20px 20px 0;
+  transition: all 0.4s ease-in-out;
+}
+
+/* Logo + Title */
+.side-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: inherit;
+  text-transform: uppercase;
+}
+
+/* Sidebar Nav */
+.sideNav button {
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 12px 18px;
+  transition: all 0.25s ease;
+}
+
+.sideNav li.active button,
+.sideNav button:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* Smooth icon highlight */
+.sideNav button svg {
+  transition: all 0.25s ease;
+}
+
+.sideNav button:hover svg,
+.sideNav li.active button svg {
+  color: #6366F1;
+  /* Purple-blue glow */
+  transform: scale(1.2);
+}
+
+/* User profile elegant card */
+.user-profile {
+  border-radius: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  margin-top: auto;
+}
+
+/* Dashboard Header Glass */
+.dashboard-header {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border-radius: 0 0 20px 20px;
+}
+
+/* Search Bar Polished */
+.search-bar input {
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(6px);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.1);
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+  background: #fff;
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.25);
+}
+
+/* Employee cards polish */
+.employee-grid {
+  gap: 28px;
+}
+
+/* Reset Button Style */
+.theme-dropdown-item.reset {
+  color: #e11d48;
+  /* Elegant red */
+  font-weight: 600;
+}
+
+.theme-dropdown-item.reset:hover {
+  background: rgba(225, 29, 72, 0.1);
+}
+
+.theme-dropdown-item.reset svg {
+  color: #e11d48;
+}
+
+/* Night mode: black background, white text and icons */
+.theme-dark .side {
+  background: #000000;
+  color: white;
+}
+
+.theme-dark .side-header h2 {
+  color: white;
+}
+
+/* Candy green: change "Two Seas | Client Portal" color to white */
+.theme-candy-green .side-header h2 {
+  color: white;
+}
+
+/* Candy light green: change all side nav text and icons to black */
+.theme-candy-lightgreen .side {
+  color: black;
+}
+
+.theme-candy-lightgreen .side-header h2,
+.theme-candy-lightgreen .sideNav button,
+.theme-candy-lightgreen .user-name,
+.theme-candy-lightgreen .user-role,
+.theme-candy-lightgreen .sideNav button svg,
+.theme-candy-lightgreen .theme-toggle svg {
+  color: black;
+}
+
+.theme-candy-lightgreen .sideNav button:hover,
+.theme-candy-lightgreen .sideNav li.active button {
+  color: black;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.theme-candy-lightgreen .sideNav button:hover svg,
+.theme-candy-lightgreen .sideNav li.active button svg {
+  color: black;
+}
+
+/* Candy blue: change all side nav text and icons to #2a2d7c */
+.theme-candy-blue .side {
+  color: #2a2d7c;
+}
+
+.theme-candy-blue .side-header h2,
+.theme-candy-blue .sideNav button,
+.theme-candy-blue .user-name,
+.theme-candy-blue .user-role,
+.theme-candy-blue .sideNav button svg,
+.theme-candy-blue .theme-toggle svg {
+  color: #2a2d7c;
+}
+
+.theme-candy-blue .sideNav button:hover,
+.theme-candy-blue .sideNav li.active button {
+  color: #2a2d7c;
+  background: rgba(42, 45, 124, 0.1);
+}
+
+.theme-candy-blue .sideNav button:hover svg,
+.theme-candy-blue .sideNav li.active button svg {
+  color: #2a2d7c;
+}
+
+/* Candy blend: change all side nav text and icons to #2a2d7c */
+.theme-candy-blend .side {
+  color: #2a2d7c;
+}
+
+.theme-candy-blend .side-header h2,
+.theme-candy-blend .sideNav button,
+.theme-candy-blend .user-name,
+.theme-candy-blend .user-role,
+.theme-candy-blend .sideNav button svg,
+.theme-candy-blend .theme-toggle svg {
+  color: #2a2d7c;
+}
+
+.theme-candy-blend .sideNav button:hover,
+.theme-candy-blend .sideNav li.active button {
+  color: #2a2d7c;
+  background: rgba(42, 45, 124, 0.1);
+}
+
+.theme-candy-blend .sideNav button:hover svg,
+.theme-candy-blend .sideNav li.active button svg {
+  color: #2a2d7c;
+}
+
+/* Candy theme with light tint blue, orange, peel orange, navy blue, and green */
+.theme-candy .side {
+  background: linear-gradient(135deg, #a8d8ea, #ff9a3d, #ff6b6b, #1a237e, #4caf50);
+  color: #1a237e;
+  /* Navy blue as default text color */
+}
+
+.theme-candy .side-header h2 {
+  color: #1a237e;
+  /* Navy blue */
+}
+
+.theme-candy .sideNav button,
+.theme-candy .user-name,
+.theme-candy .user-role,
+.theme-candy .sideNav button svg,
+.theme-candy .theme-toggle svg {
+  color: #1a237e;
+  /* Navy blue */
+}
+
+.theme-candy .sideNav button:hover,
+.theme-candy .sideNav li.active button {
+  color: #ff6b6b;
+  /* Peel orange on hover/active */
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.theme-candy .sideNav button:hover svg,
+.theme-candy .sideNav li.active button svg {
+  color: #ff6b6b;
+  /* Peel orange */
+}
+
+.theme-candy .theme-toggle:hover {
+  background: rgba(255, 154, 61, 0.2);
+  /* Dash of orange */
+}
+
+.theme-candy .user-avatar {
+  background: rgba(26, 35, 126, 0.1);
+  /* Navy blue tint */
+}
+
+.theme-candy .user-profile {
+  border-top: 1px solid rgba(26, 35, 126, 0.2);
+  /* Navy blue subtle border */
+}
+
+/* Main content background for candy theme */
+.client-dashboard.theme-candy .main {
+  background: linear-gradient(to right, #a8d8ea, #ff9a3d, #ff6b6b, #1a237e, #4caf50);
+}
+
+.theme-candy .dashboard-header {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.theme-candy .search-bar input {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: #a8d8ea;
+  /* Light tint blue */
+}
+
+.theme-candy .search-bar input:focus {
+  border-color: #ff9a3d;
+  /* Dash of orange */
+  box-shadow: 0 0 0 3px rgba(255, 154, 61, 0.1);
+}
+
+/* Candy Floss Evening Modes */
+.theme-candy-green {
+  background: linear-gradient(135deg, #1a4d2e, #2ecc71);
+  color: #fff;
+}
+
+.theme-candy-lightgreen {
+  background: linear-gradient(135deg, #a8e6cf, #dcedc1);
+  color: #003300;
+}
+
+.theme-candy-blue {
+  background: linear-gradient(135deg, #2193b0, #6dd5ed);
+  color: #fff;
+}
+
+.theme-candy-blend {
+  background: linear-gradient(135deg, #2ecc71, #a8e6cf, #2193b0);
+  color: #fff;
+}
+
+/* Ensure sidebar & header adapt */
+.theme-candy-green .side,
+.theme-candy-lightgreen .side,
+.theme-candy-blue .side,
+.theme-candy-blend .side {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+}
+
+.theme-candy-green .dashboard-header,
+.theme-candy-lightgreen .dashboard-header,
+.theme-candy-blue .dashboard-header,
+.theme-candy-blend .dashboard-header {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.theme-controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Theme Dropdown Styles - Wrapped Items */
+.theme-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.theme-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+}
+
+.theme-dropdown-toggle:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 8px;
+  z-index: 1000;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  /* NEW: allow vertical expansion without horizontal scroll */
+  max-height: 300px;
+  /* optional: cap height to enable vertical scroll if content is long */
+  overflow-y: auto;
+  /* enable vertical scrollbar when needed */
+  white-space: normal;
+  /* allow wrapping inside the menu */
+  scrollbar-width: thin;
+}
+
+.theme-options-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+/* Theme Dropdown Item: allow multi-line labels and full-width tap target */
+.theme-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  text-align: left;
+  white-space: normal;
+  /* NEW: allow text to wrap to multiple lines */
+}
+
+.theme-dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.theme-dropdown-item.active {
+  background: rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.theme-dropdown-item.reset {
+  color: #666;
+  grid-column: span 2;
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.theme-dropdown-divider {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 12px 0;
+  grid-column: span 2;
+}
+
+.theme-icon {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.theme-dropdown-item.reset .theme-icon {
+  margin-bottom: 0;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+/* Theme-specific dropdown styles */
+.theme-dark .theme-dropdown-menu {
+  background: rgba(0, 0, 0, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.theme-dark .theme-dropdown-item {
+  color: #fff;
+}
+
+.theme-dark .theme-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-dark .theme-dropdown-item.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.theme-dark .theme-dropdown-divider {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-dark .theme-dropdown-item.reset {
+  color: #ccc;
+}
+
+/* Adjust theme controls spacing */
+.theme-controls {
+  margin-top: 16px;
+}
+
+/* Ensure dropdown stays within viewport on mobile */
+@media (max-width: 768px) {
+  .theme-dropdown-menu {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    max-width: calc(100vw - 40px);
+  }
+
+  .theme-options-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-dropdown-item.reset {
+    grid-column: span 1;
+  }
+
+  .theme-dropdown-divider {
+    grid-column: span 1;
+  }
+}
+
+.theme-dark .theme-dropdown-menu::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-dark .theme-dropdown-menu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.theme-dark .theme-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+/* Adjust theme controls spacing */
+.theme-controls {
+  margin-top: 16px;
+}
+
+/* Ensure dropdown stays within viewport on mobile */
+@media (max-width: 768px) {
+  .theme-dropdown-menu {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    max-height: 60vh;
+    /* Use viewport height on mobile */
   }
 }
