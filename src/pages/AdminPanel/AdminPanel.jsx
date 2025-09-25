@@ -13,6 +13,7 @@ import {
   FiHome,
   FiBarChart2,
   FiUsers,
+  FiUserCheck,
   FiSave,
   FiCalendar
 } from "react-icons/fi"
@@ -35,6 +36,7 @@ import {
   query,
   where
 } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
 
 // Add these imports at the top with other imports
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiSearch } from "react-icons/fi";
@@ -2728,6 +2730,7 @@ const AddClientModal = memo(({
 });
 
 export default function ModernAdminPanel() {
+  const navigate = useNavigate();
   const [activeMenuItem, setActiveMenuItem] = useState("dashboard");
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
@@ -2799,12 +2802,13 @@ export default function ModernAdminPanel() {
     { id: "dashboard", label: "Dashboard", icon: <FiHome size={18} /> },
     { id: "add-employee", label: "Add Employee", icon: <FiUser size={18} /> },
     { id: "view-employees", label: "View Employees", icon: <FiUsers size={18} /> },
+    { id: "my-employees", label: "My Employees", icon: <FiUserCheck size={18} /> },
     { id: "add-client", label: "Add Client", icon: <FiPlus size={18} /> },
     { id: "view-client", label: "View Clients", icon: <FiEye size={18} /> },
     { id: "generate-credentials", label: "Generate Credentials", icon: <FiKey size={18} /> },
     { id: "view-member", label: "View as Member", icon: <FiUser size={18} /> },
     { id: "archived", label: "Archived Employees", icon: <FiArchive size={18} /> },
-    { id: "view-interview-requests", label: "View Interview Requests", icon: <FiCalendar size={18} /> }, // ✅ New item
+    { id: "view-interview-requests", label: "View Interview Requests", icon: <FiCalendar size={18} /> },
   ];
 
   const stats = [
@@ -2850,6 +2854,15 @@ export default function ModernAdminPanel() {
           <EmployeeCard
             setActiveMenuItem={setActiveMenuItem}
             setSelectedEmployeeId={setSelectedEmployeeId}
+            visibilityFilter="client"
+          />
+        );
+      case "my-employees":
+        return (
+          <EmployeeCard
+            setActiveMenuItem={setActiveMenuItem}
+            setSelectedEmployeeId={setSelectedEmployeeId}
+            visibilityFilter="admin"
           />
         );
       case "employee-details":
@@ -2857,7 +2870,7 @@ export default function ModernAdminPanel() {
           <EmployeeDetail
             employeeId={selectedEmployeeId}
             setActiveMenuItem={setActiveMenuItem}
-            setSelectedEmployee={setSelectedEmployee}   // 👈 new
+            setSelectedEmployee={setSelectedEmployee}
           />
         );
       case "calendar-scheduler":
@@ -3200,6 +3213,7 @@ export default function ModernAdminPanel() {
                     <button
                       onClick={() => {
                         setActiveMenuItem("add-client")
+                        navigate("/admin/c9j7x3");
                         setShowAddClientModal(true)
                       }}
                       style={{
@@ -3241,7 +3255,10 @@ export default function ModernAdminPanel() {
                       }}
                       onMouseOver={(e) => (e.target.style.backgroundColor = "#0891b2")}
                       onMouseOut={(e) => (e.target.style.backgroundColor = "#06a3c2")}
-                      onClick={() => setActiveMenuItem("add-employee")}  // 👈 this is the key
+                      onClick={() => {
+                        setActiveMenuItem("add-employee");
+                        navigate("/admin/z4m8q1");
+                      }}
                     >
                       <FiPlus size={18} />
                       <span>Add New Employee</span>
@@ -3399,6 +3416,23 @@ export default function ModernAdminPanel() {
                   onClick={() => {
                     setActiveMenuItem(item.id)
                     setMobileMenuOpen(false)
+
+                    // ✅ Update URL based on menu item
+                    const routeMap = {
+                      'dashboard': '/admin/x7k9p2',
+                      'add-employee': '/admin/z4m8q1',
+                      'view-employees': '/admin/r3t6y0',
+                      'my-employees': '/admin/b5n2v8',
+                      'add-client': '/admin/c9j7x3',
+                      'view-client': '/admin/k8h4d6',
+                      'generate-credentials': '/admin/w1f5s9',
+                      'view-member': '/admin/l2m7p4',
+                      'archived': '/admin/g6t8k2',
+                      'view-interview-requests': '/admin/v3q9n5'
+                    };
+
+                    navigate(routeMap[item.id] || '/admin/x7k9p2');
+
                     if (item.id === "add-client") {
                       setShowAddClientModal(true)
                     }
@@ -3494,8 +3528,10 @@ export default function ModernAdminPanel() {
                       : activeMenuItem === "view-client"
                         ? "Clients that we're proud of!"
                         : activeMenuItem === "view-employees"
-                          ? "Showcasing employees that are our assets!"
-                          : "Welcome back! Here's what's happening with your business today."
+                          ? "Showcasing all employees"
+                          : activeMenuItem === "my-employees"
+                            ? "Employees visible only to admin"
+                            : "Welcome back! Here's what's happening with your business today."
                 }
               </p>
             </div>

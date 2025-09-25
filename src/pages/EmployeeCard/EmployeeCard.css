@@ -912,6 +912,7 @@
   position: relative;
   display: inline-block;
   height: 96px;
+  width: 96px;
 }
 
 .employee-avatar {
@@ -955,3 +956,4 @@
 .wishlist-heart.filled {
   color: #2a2d7c;
 }
+

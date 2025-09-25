@@ -28,6 +28,9 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadStatus, setUploadStatus] = useState('');
     const [searchTerm, setSearchTerm] = useState("");
+    // ✅ New state for visibility modal
+    const [showVisibilityModal, setShowVisibilityModal] = useState(false);
+    const [selectedVisibility, setSelectedVisibility] = useState('admin'); // 'client', 'admin', 'both'
 
     const filteredClients = clients.filter((client) =>
         client.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -187,6 +190,12 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
             </div>
         );
     };
+
+    const handleSubmitWithVisibility = async (e) => {
+        e.preventDefault();
+        setShowVisibilityModal(true);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -236,7 +245,8 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                     uploadedAt: new Date()
                 },
                 hiddenFromClients: employee.hiddenFromClients || [],
-                tKeyColor: employee.tKeyColor // Include T-Key color
+                tKeyColor: employee.tKeyColor, // Include T-Key color
+                visibleTo: selectedVisibility
             };
 
             // Add to Firestore
@@ -271,7 +281,7 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                     <div className="header-accent"></div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="add-employee-form">
+                <form onSubmit={handleSubmitWithVisibility} className="add-employee-form">
                     <div className="form-card">
                         <div className="card-header">
                             <div className="form-card-icon">
@@ -728,6 +738,91 @@ const AddEmployee = ({ noPadding, setActiveMenuItem }) => {
                         </button>
                     </div>
                 </form>
+
+                {/* ✅ Visibility Selection Modal */}
+                {showVisibilityModal && (
+                    <div className="modal-overlay">
+                        <div className="visibility-modal">
+                            <div className="modal-header">
+                                <h3>Select Visibility</h3>
+                                <button
+                                    className="modal-close"
+                                    onClick={() => setShowVisibilityModal(false)}
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                        <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="#64748B" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="modal-content">
+                                <p>Who should be able to see this employee profile?</p>
+
+                                <div className="visibility-options">
+                                    <label className="visibility-option">
+                                        <input
+                                            type="radio"
+                                            value="client"
+                                            checked={selectedVisibility === 'client'}
+                                            onChange={(e) => setSelectedVisibility(e.target.value)}
+                                        />
+                                        <div className="option-card">
+                                            <div className="option-icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="#3B82F6" />
+                                                </svg>
+                                            </div>
+                                            <div className="option-content">
+                                                <h4>Client Only</h4>
+                                                <p>Visible to clients only (hidden from admin)</p>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <label className="visibility-option">
+                                        <input
+                                            type="radio"
+                                            value="admin"
+                                            checked={selectedVisibility === 'admin'}
+                                            onChange={(e) => setSelectedVisibility(e.target.value)}
+                                        />
+                                        <div className="option-card">
+                                            <div className="option-icon">
+                                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 5.5V7H9V5.5L3 7V9L9 10.5V12H15V10.5L21 9Z" fill="#10B981" />
+                                                </svg>
+                                            </div>
+                                            <div className="option-content">
+                                                <h4>Admin Only</h4>
+                                                <p>Visible to admin only (hidden from clients)</p>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="visibility-modal-actions">
+                                <button
+                                    type="button"
+                                    className="cancel-btn"
+                                    onClick={() => setShowVisibilityModal(false)}
+                                    disabled={isSubmitting}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    className="onboarding-btn"
+                                    onClick={handleSubmit}
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? 'Submitting...' : 'Confirm Onboarding'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Add this section to show upload status */}
                 {uploadStatus && (
                     <div className="upload-status">

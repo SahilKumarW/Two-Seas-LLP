@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom"; // ✅ Added Navigate import
 import Navbar from './components/Navbar/Navbar';
 import Hero from './components/Hero/Hero';
 import WhoWeAre from './components/WhoWeAre/WhoWeAre';
@@ -53,7 +53,7 @@ function Layout() {
   const isBookCallPage = location.pathname === "/book-call";
   const isAdminLoginPage = location.pathname === "/admin-login";
   const isAdminDashboardPage = location.pathname === "/admin-dashboard";
-  const isAdminPanelPage = location.pathname === "/admin-panel";
+  const isAdminPanelPage = location.pathname.startsWith("/admin/"); // ✅ Updated to match cryptic paths
   const isClientPage = location.pathname.startsWith("/client");
 
   return (
@@ -97,9 +97,25 @@ function Layout() {
           <Route path="/slots-manager" element={<BlockedSlotsManager />} />
           <Route path="/schedule-appointment" element={<CalendarScheduler />} />
           <Route path="/employee/:id" element={<EmployeeDetail />} />
-          <Route path="/admin-panel" element={<ModernAdminPanel />}>
-            <Route path="employee/:id" element={<EmployeeDetail />} />
-          </Route>
+
+          {/* ✅ CORRECTED CRYPTIC ADMIN ROUTES */}
+          <Route path="/admin/x7k9p2" element={<ModernAdminPanel />} />
+          <Route path="/admin/z4m8q1" element={<ModernAdminPanel />} />
+          <Route path="/admin/r3t6y0" element={<ModernAdminPanel />} />
+          <Route path="/admin/b5n2v8" element={<ModernAdminPanel />} />
+          <Route path="/admin/c9j7x3" element={<ModernAdminPanel />} />
+          <Route path="/admin/k8h4d6" element={<ModernAdminPanel />} />
+          <Route path="/admin/w1f5s9" element={<ModernAdminPanel />} />
+          <Route path="/admin/l2m7p4" element={<ModernAdminPanel />} />
+          <Route path="/admin/g6t8k2" element={<ModernAdminPanel />} />
+          <Route path="/admin/v3q9n5" element={<ModernAdminPanel />} />
+          
+          {/* ✅ Redirect old admin routes to cryptic dashboard */}
+          <Route path="/admin-panel" element={<Navigate to="/admin/x7k9p2" replace />} />
+          <Route path="/admin-dashboard" element={<Navigate to="/admin/x7k9p2" replace />} />
+          
+          {/* ✅ Catch-all for invalid admin paths (must be at the end) */}
+          <Route path="/admin/*" element={<Navigate to="/admin/x7k9p2" replace />} />
 
           {/* CLIENT ROUTES */}
           <Route path="/client-login" element={<ClientLogin />} />

@@ -1343,3 +1343,165 @@
 .clear-search-text-btn:hover {
   background: #058ba5;
 }
+
+/* Visibility Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.visibility-modal {
+    background: white;
+    border-radius: 12px;
+    padding: 0;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 24px 0;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2a2d7c;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #2a2d7c;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.modal-content {
+    padding: 0 24px;
+}
+
+.modal-content p {
+    margin: 0 0 24px 0;
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.visibility-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.visibility-option {
+    display: block;
+    cursor: pointer;
+}
+
+.visibility-option input {
+    display: none;
+}
+
+.option-card {
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.2s;
+    gap: 12px;
+}
+
+.visibility-option input:checked + .option-card {
+    border-color: #2a2d7c;
+    background: #f0f9ff;
+}
+
+.option-icon {
+    padding: 8px;
+    background: #f8fafc;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.visibility-option input:checked + .option-card .option-icon {
+    background: #dbeafe;
+}
+
+.option-content h4 {
+    margin: 0 0 4px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.option-content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.visibility-modal-actions {
+    display: flex;
+    gap: 12px;
+    padding: 24px;
+    background: #f8fafc;
+    border-radius: 0 0 12px 12px;
+}
+
+.visibility-modal-actions .cancel-btn {
+    flex: 1;
+    padding: 12px 24px;
+    border: 1px solid #d1d5db;
+    background: white;
+    color: #2a2d7c;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.visibility-modal-actions .cancel-btn:hover:not(:disabled) {
+    background: #f9fafb;
+}
+
+.visibility-modal-actions .onboarding-btn {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    background: #2a2d7c;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.visibility-modal-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

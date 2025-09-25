@@ -10,7 +10,7 @@ import { doc, getDoc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
 import EditEmployeeModal from '../../components/EditEmployeeModal';
 import defaultProfileImage from "../../assets/no image found.png";
 
-export const useEmployees = (archived = false, refresh = false) => {
+export const useEmployees = (archived = false, refresh = false, visibilityFilter = null) => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,7 +28,28 @@ export const useEmployees = (archived = false, refresh = false) => {
             imageBase64: data.imageBase64 || defaultProfileImage,
           };
         });
-        setEmployees(employeesData);
+
+        // ✅ Updated visibility filtering - no "both" concept
+        let filteredData = employeesData;
+        if (visibilityFilter === 'admin') {
+          filteredData = employeesData.filter(emp => {
+            // Show only employees visible to admin
+            return emp.visibleTo === 'admin';
+          });
+        } else if (visibilityFilter === 'client') {
+          filteredData = employeesData.filter(emp => {
+            // Show only employees visible to client
+            return emp.visibleTo === 'client';
+          });
+        }
+        // If no filter, show all employees
+
+        // ✅ Debug logging
+        console.log('Visibility filter:', visibilityFilter);
+        console.log('Total employees before filter:', employeesData.length);
+        console.log('Employees after filter:', filteredData.length);
+
+        setEmployees(filteredData);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -37,14 +58,24 @@ export const useEmployees = (archived = false, refresh = false) => {
     };
 
     fetchEmployees();
-  }, [archived, refresh]); // ✅ re-run when refresh changes
+  }, [archived, refresh, visibilityFilter]);
 
   return { employees, loading, error, setEmployees };
 };
 
-const EmployeeCard = ({ archived = false, currentClientId = null, setActiveMenuItem, setSelectedEmployeeId }) => {
+const EmployeeCard = ({
+  archived = false,
+  currentClientId = null,
+  setActiveMenuItem,
+  setSelectedEmployeeId,
+  visibilityFilter = null
+}) => {
   const [refresh, setRefresh] = useState(false); // 👈 define refresh first
-  const { employees, loading, error, setEmployees } = useEmployees(archived, refresh);
+  const { employees, loading, error, setEmployees } = useEmployees(
+    archived,
+    refresh,
+    visibilityFilter
+  );
   const location = useLocation();
   const isAdminPanel = location.pathname === "/admin-panel";
 

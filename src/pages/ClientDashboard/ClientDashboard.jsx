@@ -90,17 +90,6 @@ export default function ClientDashboard() {
                       <span>{option.label}</span>
                     </button>
                   ))}
-                  <div className="theme-dropdown-divider"></div>
-                  <button
-                    className="theme-dropdown-item reset"
-                    onClick={() => {
-                      resetTheme();
-                      setIsThemeDropdownOpen(false);
-                    }}
-                  >
-                    <FiRefreshCcw size={16} />
-                    <span>Reset to Default</span>
-                  </button>
                 </div>
               )}
             </div>
@@ -149,16 +138,16 @@ export default function ClientDashboard() {
             {activeTab === "wishlist" && "Your Wishlist"}
             {activeTab === "schedule" && "Schedule an Interview"}
           </h1>
-          <div className="header-actions">
+          {/* <div className="header-actions">
             <div className="search-bar">
               <input type="text" placeholder="Search..." />
             </div>
-          </div>
+          </div> */}
         </header>
 
         <div className="dashboard-content">
           {activeTab === "employees" && (
-            <div className="employee-list">
+            <div className="employees-list">
               {employees.map(emp => (
                 <EmployeeCard key={emp.id} employee={emp} />
               ))}

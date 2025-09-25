@@ -120,7 +120,7 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
 
       <div className="detail-card">
         <div className="profile-section">
-          <div className="avatar-container">
+          <div className="avatarcontainer">
             <img
               src={employee.imageBase64 || defaultProfileImage}
               alt={employee.name}

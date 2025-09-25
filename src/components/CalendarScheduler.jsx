@@ -619,8 +619,14 @@ const CalendarScheduler = ({
   )
 
   const handleTimeClick = useCallback((time) => {
-    setSelectedTime(time)
-  }, [])
+    setSelectedTime(time);
+
+    // If this is alternate scheduler, automatically proceed to show the slot as secondary
+    if (isAlternateScheduler) {
+      // The selection will be handled in the alternate scheduler's UI
+      // No need to show confirmation form
+    }
+  }, [isAlternateScheduler]);
 
   const validateForm = useCallback(() => {
     const newErrors = {}
@@ -747,14 +753,25 @@ const CalendarScheduler = ({
   }, [])
 
   // Handle alternate slot selection
-  const handleAlternateSlotSelect = useCallback((slot) => {
+  const handleAlternateSlotSelect = useCallback((date, time) => {
+    // Ensure date is properly handled
+    const dateObj = date instanceof Date ? date : new Date(date);
+
+    const slot = {
+      date: dateObj,
+      time: time,
+      timeZone: selectedTimeZone,
+      timeZoneLabel: currentTimezoneLabel
+    };
+
     setAlternateSlot(slot);
-    setShowAlternateScheduler(false);
+    setShowAlternateModal(false);
+    setOfferAlternate(true);
 
     if (onAlternateSlotSelect) {
       onAlternateSlotSelect(slot);
     }
-  }, [onAlternateSlotSelect]);
+  }, [selectedTimeZone, currentTimezoneLabel, onAlternateSlotSelect]);
 
   // Edit primary slot
   const handleEditPrimarySlot = useCallback(() => {
@@ -876,57 +893,212 @@ const CalendarScheduler = ({
   }
 
 
+  // Modified CalendarScheduler for alternate mode - WITH ALL FEATURES
+  if (isAlternateScheduler) {
+    return (
+      <div className="alternate-scheduler">
+        <WorldClock
+          isOpen={showWorldClock}
+          onClose={() => setShowWorldClock(false)}
+          timeFormat={timeFormat}
+          onTimeZoneSelect={handleTimeZoneSelect}
+        />
 
-  // Modified render logic for alternate scheduler
-  // if (isAlternateScheduler) {
-  //   return (
-  //     <div className="calendar-scheduler alternate-scheduler">
-  //       <h2>Select Alternate Date & Time</h2>
+        <div className="alternate-scheduler-header">
+          <h3>Select Alternate Date & Time</h3>
+          <button
+            className="close-modal-btn"
+            onClick={() => setShowAlternateModal(false)}
+          >
+            <FaTimes />
+          </button>
+        </div>
 
-  //       <div className="form-group">
-  //         <label>Date:</label>
-  //         <input
-  //           type="date"
-  //           value={selectedDate}
-  //           onChange={(e) => setSelectedDate(e.target.value)}
-  //           min={new Date().toISOString().split('T')[0]}
-  //           required
-  //         />
-  //       </div>
+        <div className="alternate-scheduler-content">
+          {!selectedDate ? (
+            // Calendar View for Alternate
+            <div className="calendar-view">
+              <div className="calendar-header">
+                <button onClick={() => changeMonth(-1)} aria-label="Previous month">
+                  <FaChevronLeft />
+                </button>
+                <h3>{monthName} {currentYear}</h3>
+                <button onClick={() => changeMonth(1)} aria-label="Next month">
+                  <FaChevronRight />
+                </button>
+              </div>
 
-  //       <div className="form-group">
-  //         <label>Time:</label>
-  //         <select
-  //           value={selectedTime}
-  //           onChange={(e) => setSelectedTime(e.target.value)}
-  //           required
-  //         >
-  //           <option value="">Select a time</option>
-  //           {timeSlots.map(time => (
-  //             <option key={time} value={time}>{time}</option>
-  //           ))}
-  //         </select>
-  //       </div>
+              <div className="calendar-grid-container">
+                <div className="day-names">
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                    <div key={day} className="day-name">{day}</div>
+                  ))}
+                </div>
 
-  //       <button
-  //         type="button"
-  //         onClick={() => {
-  //           if (selectedDate && selectedTime) {
-  //             onAlternateSlotSelect({
-  //               date: selectedDate,
-  //               time: selectedTime,
-  //               timeZone: selectedTimeZone
-  //             });
-  //           }
-  //         }}
-  //         disabled={!selectedDate || !selectedTime}
-  //         className="submit-btn"
-  //       >
-  //         Confirm Alternate Slot
-  //       </button>
-  //     </div>
-  //   );
-  // }
+                <div className="days-grid">
+                  {days.map((date, index) => (
+                    <button
+                      key={index}
+                      className={`day-cell ${!date ? "empty" : ""} ${date && isDateDisabled(date) ? "disabled" : ""}`}
+                      disabled={!date || isDateDisabled(date)}
+                      onClick={() => handleDateClick(date)}
+                    >
+                      {date && <div className="day-number">{date.getDate()}</div>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : !selectedTime ? (
+            // Time Slot Selection for Alternate - WITH TIME ZONE SELECTOR
+            <div className="time-slot-view">
+              {/* Time Zone Selector */}
+              <div className="time-zone-selector">
+                <FaGlobe className="time-zone-icon" aria-hidden="true" />
+
+                {/* Time format toggle */}
+                <div className="time-format-toggle">
+                  <button
+                    onClick={() => setTimeFormat("12h")}
+                    className={timeFormat === "12h" ? "active" : ""}
+                  >
+                    12h
+                  </button>
+                  <button
+                    onClick={() => setTimeFormat("24h")}
+                    className={timeFormat === "24h" ? "active" : ""}
+                  >
+                    24h
+                  </button>
+                </div>
+
+                {/* Regional Dropdown */}
+                <div className="regional-dropdown-container">
+                  <button
+                    className="regional-dropdown-toggle"
+                    onClick={() => setShowRegionDropdown(!showRegionDropdown)}
+                    aria-expanded={showRegionDropdown}
+                  >
+                    <span>{currentTimezoneLabel}</span>
+                    <FaChevronDown className={`chevron ${showRegionDropdown ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {showRegionDropdown && (
+                    <div className="regional-dropdown-menu">
+                      {Object.entries(regionalTimeZones).map(([region, timezones]) => (
+                        <div key={region} className="regional-group">
+                          <div className="regional-group-header">{region}</div>
+                          {timezones.map((tz) => (
+                            <button
+                              key={tz.value}
+                              className={`regional-option ${selectedTimeZone === tz.value ? "selected" : ""}`}
+                              onClick={() => handleTimeZoneSelect(tz.value)}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                padding: "8px 12px",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  flex: 1,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  paddingRight: "16px",
+                                }}
+                              >
+                                {tz.label}
+                              </span>
+                              <span
+                                style={{
+                                  width: "80px",
+                                  textAlign: "right",
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {currentTimes[tz.value] || "--:--"}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  className="world-clock-btn"
+                  onClick={() => setShowWorldClock(true)}
+                  aria-label="Open world clock"
+                >
+                  <FaClock />
+                </button>
+              </div>
+
+              <h3>Select a Time Slot</h3>
+              <p className="selected-date">{formatDateDisplay(selectedDate)}</p>
+
+              <div className="current-time-display">
+                <FaClock aria-hidden="true" />
+                Current time in {selectedTimeZone.split("/")[1] || selectedTimeZone}: <strong>{currentTime}</strong>
+              </div>
+
+              <div className="time-slots-grid">
+                {timeSlots.length > 0 ? (
+                  timeSlots.map((slot, index) => (
+                    <button
+                      key={index}
+                      className={`time-slot-btn ${!slot.isAvailable ? "blocked" : ""}`}
+                      disabled={!slot.isAvailable}
+                      onClick={() => slot.isAvailable && handleTimeClick(slot.systemTime)}
+                    >
+                      {slot.displayTime}
+                      {!slot.isAvailable && <span className="blocked-label">Booked</span>}
+                    </button>
+                  ))
+                ) : (
+                  <p>No available time slots for this date</p>
+                )}
+              </div>
+
+              <button className="back-btn" onClick={() => setSelectedDate(null)}>
+                Back to Calendar
+              </button>
+            </div>
+          ) : (
+            // Time Selected - Show confirmation for alternate slot
+            <div className="alternate-time-selected">
+              <div className="success-message">
+                <h4>Alternate Time Selected!</h4>
+                <p className="selected-slot">
+                  {formatDateDisplay(selectedDate)}, {selectedTime} ({currentTimezoneLabel})
+                </p>
+                <p>This time has been set as your alternate option.</p>
+              </div>
+
+              <div className="form-buttons">
+                <button
+                  className="confirm-btn"
+                  onClick={() => handleAlternateSlotSelect(selectedDate, selectedTime)}
+                >
+                  Confirm Alternate Slot
+                </button>
+                <button
+                  className="back-btn"
+                  onClick={() => setSelectedTime(null)}
+                >
+                  Choose Different Time
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // Render the selected slots section
   const renderSelectedSlots = () => {
@@ -937,7 +1109,7 @@ const CalendarScheduler = ({
         <h4>Selected Time Slots</h4>
 
         {/* Primary Slot */}
-        <div className="slot-item">
+        <div className="slot-item primary-slot">
           <div className="slot-info">
             <span className="slot-type">Primary:</span>
             <span className="slot-details">
@@ -946,7 +1118,10 @@ const CalendarScheduler = ({
           </div>
           <button
             className="edit-slot-btn"
-            onClick={handleEditPrimarySlot}
+            onClick={() => {
+              setSelectedDate(null);
+              setSelectedTime(null);
+            }}
           >
             <FaEdit /> Edit
           </button>
@@ -954,16 +1129,20 @@ const CalendarScheduler = ({
 
         {/* Alternate Slot (if selected) */}
         {alternateSlot && (
-          <div className="slot-item">
+          <div className="slot-item secondary-slot">
             <div className="slot-info">
               <span className="slot-type">Alternate:</span>
               <span className="slot-details">
-                {formatDateDisplay(new Date(alternateSlot.date))}, {alternateSlot.time} ({alternateSlot.timeZone})
+                {safeFormatDateDisplay(alternateSlot.date)}
+                {alternateSlot.time} ({alternateSlot.timeZoneLabel || alternateSlot.timeZone})
               </span>
             </div>
             <button
               className="edit-slot-btn"
-              onClick={handleEditAlternateSlot}
+              onClick={() => {
+                setAlternateSlot(null);
+                setShowAlternateModal(true);
+              }}
             >
               <FaEdit /> Edit
             </button>
@@ -971,6 +1150,24 @@ const CalendarScheduler = ({
         )}
       </div>
     );
+  };
+
+  // Safe date formatting function
+  const safeFormatDateDisplay = (date) => {
+    if (!date) return "Invalid Date";
+
+    try {
+      if (date instanceof Date) {
+        return formatDateDisplay(date);
+      } else if (typeof date === 'string' || typeof date === 'number') {
+        const dateObj = new Date(date);
+        return isNaN(dateObj.getTime()) ? "Invalid Date" : formatDateDisplay(dateObj);
+      }
+      return "Invalid Date";
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return "Invalid Date";
+    }
   };
 
   return (
@@ -1391,16 +1588,6 @@ const CalendarScheduler = ({
                   {showAlternateModal && (
                     <div className="alternate-modal-overlay">
                       <div className="alternate-modal">
-                        <div className="alternate-modal-header">
-                          <h3>Select Alternate Date & Time</h3>
-                          <button
-                            className="close-modal-btn"
-                            onClick={() => setShowAlternateModal(false)}
-                          >
-                            <FaTimes />
-                          </button>
-                        </div>
-
                         <CalendarScheduler
                           isAlternateScheduler={true}
                           onAlternateSlotSelect={handleAlternateSlotSelect}
@@ -1424,8 +1611,8 @@ const CalendarScheduler = ({
                 <button
                   type="submit"
                   className="confirm-btn"
-                  disabled={isSubmitting || (offerAlternate === null && !alternateSlot)}
-                  onClick={handleSubmit} // <-- call your submit handler here
+                  disabled={isSubmitting || (offerAlternate === null && isAdminPanel)}
+                  onClick={handleSubmit}
                 >
                   {submitButtonText}
                 </button>
@@ -2266,11 +2453,108 @@ const CalendarScheduler = ({
     }
     
     .alternate-scheduler {
-      background: #f8fafc;
-      border: 2px solid #e5e7eb;
-      padding: 20px;
-      border-radius: 8px;
-    }
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.alternate-scheduler-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.alternate-scheduler-header h3 {
+  margin: 0;
+  color: #2a2d7c;
+}
+
+.alternate-scheduler-content {
+  padding: 20px;
+}
+
+.alternate-time-selected {
+  text-align: center;
+  padding: 20px;
+}
+
+.alternate-time-selected .success-message {
+  margin-bottom: 20px;
+}
+
+.alternate-time-selected .form-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* Ensure time zone selector works in modal */
+.alternate-scheduler .time-zone-selector {
+  margin: 0 0 20px 0;
+}
+
+.alternate-scheduler .time-slots-grid {
+  margin: 20px 0;
+}
+
+.alternate-time-selected {
+  padding: 20px;
+  text-align: center;
+}
+
+.secondary-slot {
+  border-left: 4px solid #06a3c2;
+  background: #f0f8ff;
+}
+
+.primary-slot {
+  border-left: 4px solid #2A2D7C;
+  background: #f8f9fa;
+}
+
+.slot-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.slot-info {
+  flex: 1;
+}
+
+.slot-type {
+  font-weight: bold;
+  margin-right: 8px;
+  color: #2A2D7C;
+}
+
+.slot-details {
+  color: #555;
+}
+
+.edit-slot-btn {
+  background: #f0f8ff;
+  border: 1px solid #06a3c2;
+  color: #06a3c2;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.edit-slot-btn:hover {
+  background: #e1f5fe;
+}
       `}
       </style>
     </div>
