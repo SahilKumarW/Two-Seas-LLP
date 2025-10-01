@@ -80,7 +80,7 @@ const EmployeeCard = ({
   const isAdminPanel = location.pathname === "/admin-panel";
 
   const [wishlist, setWishlist] = useState({});
-  const [expandedCards, setExpandedCards] = useState({});
+  const [expandedCardId, setExpandedCardId] = useState(null);
   const [selectedNiche, setSelectedNiche] = useState('All');
   const [miniPlayerUrl, setMiniPlayerUrl] = useState(null);
   const [viewerState, setViewerState] = useState({
@@ -131,13 +131,11 @@ const EmployeeCard = ({
   });
 
   const toggleCardExpand = (id) => {
-    setExpandedCards(prev => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    setExpandedCardId(prev => prev === id ? null : id);
   };
 
-  const toggleWishlist = (id) => {
+  const toggleWishlist = (id, e) => {
+    e.stopPropagation();
     setWishlist(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
@@ -208,7 +206,8 @@ const EmployeeCard = ({
   };
 
   // Archive employee
-  const handleArchive = async (employee) => {
+  const handleArchive = async (employee, e) => {
+    e.stopPropagation();
     try {
       // add to archivedEmployees
       await setDoc(doc(db, "archivedEmployees", employee.id), employee);
@@ -221,7 +220,8 @@ const EmployeeCard = ({
     }
   };
 
-  const handleUnarchive = async (employee) => {
+  const handleUnarchive = async (employee, e) => {
+    e.stopPropagation();
     try {
       // move back to employees
       await setDoc(doc(db, "employees", employee.id), employee);
@@ -235,7 +235,8 @@ const EmployeeCard = ({
   };
 
   // Delete employee
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, e) => {
+    if (e) e.stopPropagation();
     try {
       const collectionName = archived ? "archivedEmployees" : "employees";
       await deleteDoc(doc(db, collectionName, id));
@@ -251,7 +252,8 @@ const EmployeeCard = ({
   };
 
   // ✅ Open Edit Modal and fetch fresh data
-  const openEditModal = async (employeeId) => {
+  const openEditModal = async (employeeId, e) => {
+    e.stopPropagation();
     try {
       const snap = await getDoc(doc(db, "employees", employeeId));
       if (snap.exists()) {
@@ -333,16 +335,16 @@ const EmployeeCard = ({
         />
       </div>
 
-
       <div className="employee-grid">
         {filteredEmployees.length > 0 ? (
           filteredEmployees.map((employee, index) => {
             const videoId = extractYouTubeId(employee.introductionVideoLink);
+            const isExpanded = expandedCardId === employee.id;
 
             return (
               <div
                 key={employee.id}
-                className={`employee-card ${expandedCards[employee.id] ? 'expanded' : ''} ${isAdminPanel ? 'admin-card' : ''}`}
+                className={`employee-card ${isExpanded ? 'expanded' : ''} ${isAdminPanel ? 'admin-card' : ''}`}
                 onClick={() => toggleCardExpand(employee.id)}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -352,9 +354,14 @@ const EmployeeCard = ({
                     <div
                       className="tkey-ribbon"
                       style={{ backgroundColor: employee.tKeyColor }}
-                    // title={`T-Key: ${employee.tKeyColor}`}
                     >
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M17.5 12C17.5 14.21 16.54 16.22 15 17.66L16.5 19.23C18.47 17.45 19.5 14.76 19.5 12C19.5 9.24 18.47 6.55 16.5 4.77L15 6.34C16.54 7.78 17.5 9.79 17.5 12Z" fill="white" /> <path d="M12 7.5C13.93 7.5 15.5 9.07 15.5 11H17.5C17.5 7.97 15.03 5.5 12 5.5V7.5Z" fill="white" /> <path d="M6.5 12C6.5 9.07 8.07 7.5 10 7.5V5.5C6.97 5.5 4.5 7.97 4.5 11H6.5Z" fill="white" /> <path d="M10 16.5C8.07 16.5 6.5 14.93 6.5 13H4.5C4.5 16.03 6.97 18.5 10 18.5V16.5Z" fill="white" /> <path d="M12 16.5C10.07 16.5 8.5 14.93 8.5 13H6.5C6.5 16.03 8.97 18.5 12 18.5V16.5Z" fill="white" /> </svg>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.5 12C17.5 14.21 16.54 16.22 15 17.66L16.5 19.23C18.47 17.45 19.5 14.76 19.5 12C19.5 9.24 18.47 6.55 16.5 4.77L15 6.34C16.54 7.78 17.5 9.79 17.5 12Z" fill="white" />
+                        <path d="M12 7.5C13.93 7.5 15.5 9.07 15.5 11H17.5C17.5 7.97 15.03 5.5 12 5.5V7.5Z" fill="white" />
+                        <path d="M6.5 12C6.5 9.07 8.07 7.5 10 7.5V5.5C6.97 5.5 4.5 7.97 4.5 11H6.5Z" fill="white" />
+                        <path d="M10 16.5C8.07 16.5 6.5 14.93 6.5 13H4.5C4.5 16.03 6.97 18.5 10 18.5V16.5Z" fill="white" />
+                        <path d="M12 16.5C10.07 16.5 8.5 14.93 8.5 13H6.5C6.5 16.03 8.97 18.5 12 18.5V16.5Z" fill="white" />
+                      </svg>
                     </div>
                   )}
                   <div className="card-background">
@@ -372,10 +379,7 @@ const EmployeeCard = ({
                         {/* Wishlist Icon Overlay */}
                         <button
                           className="wishlist-icon"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleWishlist(employee.id);
-                          }}
+                          onClick={(e) => toggleWishlist(employee.id, e)}
                         >
                           {wishlist[employee.id] ? (
                             <FaHeart className="wishlist-heart filled" />
@@ -397,22 +401,22 @@ const EmployeeCard = ({
                             {employee.name}
                           </button>
                         </h3>
-                        <p className="employee-position">{employee.expertise}</p>
+                        <p className="employee-skills">{employee.expertise}</p>
                       </div>
                     </div>
 
-                    <div className="employee-intro">
-                      <p style={{ color: '#2A2D7C' }}>{employee.intro}</p>
+                    <div className="employee-description">
+                      <p style={{ marginBottom: 0 }}>{employee.intro}</p>
                     </div>
 
-                    {/* Document Buttons - Always Visible (Moved outside expandable-content) */}
+                    {/* Document Buttons - Always Visible */}
                     <div className="document-buttons-container">
                       {employee.resume && (
                         <button
                           className="document-button resume-button"
                           onClick={(e) => openDocument(employee.resume, 'resume', e)}
                         >
-                          <FaFileAlt className="document-icon" /> View Resume
+                          <FaFileAlt className="document-icon" /> Resume
                         </button>
                       )}
                       {employee.assessment && (
@@ -420,10 +424,11 @@ const EmployeeCard = ({
                           className="document-button assessment-btn"
                           onClick={(e) => openDocument(employee.assessment, 'assessment', e)}
                         >
-                          <FaClipboardCheck className="document-icon" /> View Assessment
+                          <FaClipboardCheck className="document-icon" />Assessment
                         </button>
                       )}
                     </div>
+
                     {/* ✅ Show icons only in /admin-panel */}
                     {isAdminPanel && (
                       <div className="admin-actions">
@@ -431,28 +436,19 @@ const EmployeeCard = ({
                           <FiArchive
                             className="admin-icon"
                             title="Unarchive"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUnarchive(employee);
-                            }}
+                            onClick={(e) => handleUnarchive(employee, e)}
                           />
                         ) : (
                           <FiArchive
                             className="admin-icon"
                             title="Archive"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleArchive(employee);
-                            }}
+                            onClick={(e) => handleArchive(employee, e)}
                           />
                         )}
                         {!archived && (
                           <FiEdit
                             className="admin-icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              openEditModal(employee.id);
-                            }}
+                            onClick={(e) => openEditModal(employee.id, e)}
                           />
                         )}
                         <FiTrash2
@@ -465,56 +461,38 @@ const EmployeeCard = ({
                         />
                       </div>
                     )}
-                    <div className={`expandable-content ${expandedCards[employee.id] ? 'visible' : ''}`}>
-                      {/* <div className="expertise-section">
-                        <h4 className="section-label">Core Expertise</h4>
-                        <div className="expertise-tags-container">
-                          {employee.expertise?.split(',').map((skill, index) => (
-                            <span key={index} className="skill-tag">{skill.trim()}</span>
-                          )) || <span className="skill-tag">No skills listed</span>}
-                        </div>
-                      </div> */}
 
-                      {/* <div className="details-grid">
-                        <div className="detail-item">
-                          <span className="detail-label">Rate</span>
-                          <span className="detail-value centered-value">
-                            {employee.currency || 'USD'} {employee.rate || 'N/A'}/hr
-                          </span>
+                    {/* Expandable Content - Only visible when expanded */}
+                    {isExpanded && (
+                      <div className="expandable-content visible">
+                        <div className="video-buttons-container">
+                          {employee.introductionVideoLink && (
+                            <button
+                              className="video-button intro-video-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const videoId = extractYouTubeId(employee.introductionVideoLink);
+                                if (videoId) setMiniPlayerUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1`);
+                              }}
+                            >
+                              <FaPlay className="video-icon" /> Intro Video
+                            </button>
+                          )}
+                          {employee.interviewVideoLink && (
+                            <button
+                              className="video-button interview-video-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const videoId = extractYouTubeId(employee.interviewVideoLink);
+                                if (videoId) setMiniPlayerUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1`);
+                              }}
+                            >
+                              <FaPlay className="video-icon" /> Interview Video
+                            </button>
+                          )}
                         </div>
-                        <div className="detail-item">
-                          <span className="detail-label">Experience</span>
-                          <span className="detail-value centered-value">{employee.experience || 'N/A'} years</span>
-                        </div>
-                      </div> */}
-
-                      <div className="video-buttons-container">
-                        {employee.introductionVideoLink && (
-                          <button
-                            className="video-button intro-video-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const videoId = extractYouTubeId(employee.introductionVideoLink);
-                              if (videoId) setMiniPlayerUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1`);
-                            }}
-                          >
-                            <FaPlay className="video-icon" /> Intro Video
-                          </button>
-                        )}
-                        {employee.interviewVideoLink && (
-                          <button
-                            className="video-button interview-video-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const videoId = extractYouTubeId(employee.interviewVideoLink);
-                              if (videoId) setMiniPlayerUrl(`https://www.youtube.com/embed/${videoId}?autoplay=1`);
-                            }}
-                          >
-                            <FaPlay className="video-icon" /> Interview
-                          </button>
-                        )}
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -659,7 +637,6 @@ const EmployeeCard = ({
           </div>
         </div>
       )}
-
     </div>
   );
 };

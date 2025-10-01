@@ -179,14 +179,9 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
             <p>{employee.intro}</p>
           </div>
 
-          <div className="expertise-section" style={{
-              borderLeft: '3px solid #393c69',
-              borderRight: '3px solid #393c69',
-              borderRadius: '9px',
-            }}>
-            <h3>
-              Core Expertise
-            </h3>
+          {/* Updated Core Expertise section - styled like Professional Introduction */}
+          <div className="intro-section">
+            <h3>Core Expertise</h3>
             <div className="skills-container">
               {employee.expertise?.split(',').map((skill, index) => (
                 <span key={index} className="skill-tag">{skill.trim()}</span>
@@ -194,28 +189,12 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
             </div>
           </div>
 
-          <div className="personality-traits-section" style={{
-              borderLeft: '3px solid #393c69',
-              borderRight: '3px solid #393c69',
-              borderRadius: '9px',
-            }}>
-            <h3>
-              Personality Traits
-            </h3>
-            <div className="traits-container">
-              {/* {employee.expertise?.split(',').map((skill, index) => (
-                <span key={index} className="skill-tag">{skill.trim()}</span>
-              ))} */}
-            </div>
-          </div>
+          {/* Removed Personality Traits section */}
 
-          <div className="media-section" style={{
-                  borderLeft: '3px solid #06a3c2',
-                  borderRight: '3px solid #06a3c2',
-                  borderRadius: '10px',
-                }}>
+          <div className="media-section">
+            {/* Updated Video sections - styled like Professional Introduction */}
             {employee.introductionVideoLink && (
-              <div className="video-container">
+              <div className="intro-section">
                 <h3>Introduction Video</h3>
                 <div className="video-wrapper">
                   <iframe
@@ -228,7 +207,7 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
             )}
 
             {employee.interviewVideoLink && (
-              <div className="video-container">
+              <div className="intro-section">
                 <h3>Interview Video</h3>
                 <div className="video-wrapper">
                   <iframe
