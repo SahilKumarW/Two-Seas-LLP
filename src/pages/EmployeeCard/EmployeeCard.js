@@ -4,9 +4,8 @@ import { FiArchive, FiEdit, FiTrash2 } from "react-icons/fi";
 import { useLocation, Link } from 'react-router-dom';
 import './EmployeeCard.css';
 import { db } from '../../firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import { niches } from '../AdminDashboard/constants';
-import { doc, getDoc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, addDoc, getDoc, getDocs, query, where, setDoc, deleteDoc, updateDoc, onSnapshot } from "firebase/firestore";
 import EditEmployeeModal from '../../components/EditEmployeeModal';
 import defaultProfileImage from "../../assets/no image found.png";
 
@@ -80,6 +79,26 @@ const EmployeeCard = ({
   const isAdminPanel = location.pathname === "/admin-panel";
 
   const [wishlist, setWishlist] = useState({});
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("clientUser"));
+    const clientId = storedUser?.clientId;
+    if (!clientId) return;
+
+    const wishlistRef = collection(db, "clients", clientId, "wishlist");
+
+    // Real-time listener
+    const unsubscribe = onSnapshot(wishlistRef, (snapshot) => {
+      const wishlistData = {};
+      snapshot.forEach((doc) => {
+        wishlistData[doc.id] = true; // employeeId is the doc.id
+      });
+      setWishlist(wishlistData);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [selectedNiche, setSelectedNiche] = useState('All');
   const [miniPlayerUrl, setMiniPlayerUrl] = useState(null);
@@ -134,9 +153,33 @@ const EmployeeCard = ({
     setExpandedCardId(prev => prev === id ? null : id);
   };
 
-  const toggleWishlist = (id, e) => {
-    e.stopPropagation();
-    setWishlist(prev => ({ ...prev, [id]: !prev[id] }));
+  const toggleWishlist = async (employee) => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("clientUser"));
+      const clientId = storedUser?.clientId;
+
+      if (!clientId) {
+        console.error("❌ No clientId found in localStorage");
+        return;
+      }
+
+      const wishlistRef = doc(db, "clients", clientId, "wishlist", employee.id);
+      const docSnap = await getDoc(wishlistRef);
+
+      if (docSnap.exists()) {
+        // ❌ Remove
+        await deleteDoc(wishlistRef);
+      } else {
+        // ✅ Add
+        await setDoc(wishlistRef, {
+          employeeId: employee.id,
+          addedAt: new Date(),
+        });
+      }
+      // No need to call setWishlist manually — onSnapshot updates it
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+    }
   };
 
   const extractYouTubeId = (url) => {
@@ -379,7 +422,7 @@ const EmployeeCard = ({
                         {/* Wishlist Icon Overlay */}
                         <button
                           className="wishlist-icon"
-                          onClick={(e) => toggleWishlist(employee.id, e)}
+                          onClick={() => toggleWishlist(employee)}
                         >
                           {wishlist[employee.id] ? (
                             <FaHeart className="wishlist-heart filled" />
@@ -387,6 +430,7 @@ const EmployeeCard = ({
                             <FaRegHeart className="wishlist-heart" />
                           )}
                         </button>
+
                       </div>
                       <div className="profile-info">
                         <h3 className="employee-name">

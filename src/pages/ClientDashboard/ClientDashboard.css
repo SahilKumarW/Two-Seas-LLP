@@ -435,7 +435,7 @@
 
 /* Glassy Sidebar */
 .side {
-  background: rgba(42, 45, 124, 0.9);
+  background: #2a2d7c;
   /* default navy tone with transparency */
   backdrop-filter: blur(14px);
   border-right: 1px solid rgba(255, 255, 255, 0.15);
@@ -771,6 +771,7 @@
   transition: all 0.3s ease;
   font-size: 14px;
   backdrop-filter: blur(10px);
+  width: 10rem;
 }
 
 .theme-dropdown-toggle:hover {

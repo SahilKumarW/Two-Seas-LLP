@@ -153,7 +153,6 @@ const GeneratePasswordComponent = memo(({ email, onPasswordGenerated }) => {
   );
 });
 
-
 // Update the ContactPersonCredentials component
 const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCredentials, credentialsExist }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -162,6 +161,7 @@ const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCre
   const [password, setPassword] = useState("");
   const [emailCopied, setEmailCopied] = useState(false);
   const [passwordCopied, setPasswordCopied] = useState(false);
+  const [existingCredentials, setExistingCredentials] = useState(null);
 
   const handlePasswordGenerated = useCallback((email, generatedPassword) => {
     setPassword(generatedPassword);
@@ -178,6 +178,19 @@ const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCre
       setPasswordCopied(false);
     }, 2000);
   }, [contact.email, password]);
+
+  const copyExistingCredentials = useCallback(() => {
+    if (existingCredentials) {
+      const text = `Email: ${existingCredentials.email}\nPassword: ${existingCredentials.password}`;
+      navigator.clipboard.writeText(text);
+      setEmailCopied(true);
+      setPasswordCopied(true);
+      setTimeout(() => {
+        setEmailCopied(false);
+        setPasswordCopied(false);
+      }, 2000);
+    }
+  }, [existingCredentials]);
 
   const handleSave = async () => {
     if (!password) return;
@@ -198,6 +211,31 @@ const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCre
     }
   };
 
+  // Fetch existing credentials when component mounts
+  useEffect(() => {
+    const fetchExistingCredentials = async () => {
+      if (credentialsExist) {
+        try {
+          const usersRef = collection(db, "clients-login");
+          const q = query(usersRef, where("email", "==", contact.email));
+          const querySnapshot = await getDocs(q);
+          
+          if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
+            setExistingCredentials({
+              email: userData.email,
+              password: userData.password
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching existing credentials:", error);
+        }
+      }
+    };
+
+    fetchExistingCredentials();
+  }, [credentialsExist, contact.email]);
+
   return (
     <div style={{
       border: "1px solid #e5e7eb",
@@ -209,17 +247,59 @@ const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCre
         style={{
           padding: "12px",
           backgroundColor: credentialsExist ? "#f0fdf4" : "#f9fafb",
-          cursor: "pointer",
+          cursor: credentialsExist ? "default" : "pointer",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center"
         }}
         onClick={() => !credentialsExist && setIsExpanded(!isExpanded)}
       >
-        <div>
+        <div style={{ flex: 1 }}>
           <div style={{ fontWeight: "500", color: "#374151" }}>{contact.name}</div>
           <div style={{ fontSize: "14px", color: "#6b7280" }}>{contact.email}</div>
-          {credentialsExist && (
+          {credentialsExist && existingCredentials && (
+            <div style={{ marginTop: "8px" }}>
+              <div style={{
+                fontStyle: "italic",
+                color: "#15803d",
+                fontSize: "12px",
+                fontWeight: "500",
+                marginBottom: "4px"
+              }}>
+                Credentials already generated:
+              </div>
+              <div style={{ fontSize: "13px", color: "#374151", marginBottom: "2px" }}>
+                <strong>Email:</strong> {existingCredentials.email}
+              </div>
+              <div style={{ fontSize: "13px", color: "#374151" }}>
+                <strong>Password:</strong> {existingCredentials.password}
+              </div>
+              <button
+                onClick={copyExistingCredentials}
+                style={{
+                  marginTop: "6px",
+                  padding: "4px 8px",
+                  backgroundColor: emailCopied && passwordCopied ? "#10b981" : "#22A2D7",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "11px",
+                  color: "white",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {emailCopied && passwordCopied ? (
+                  <>Copied!</>
+                ) : (
+                  <>Copy Credentials</>
+                )}
+              </button>
+            </div>
+          )}
+          {credentialsExist && !existingCredentials && (
             <div style={{ marginTop: "4px" }}>
               <span style={{
                 fontStyle: "italic",
@@ -235,7 +315,9 @@ const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCre
         {!credentialsExist && (
           <div style={{
             transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-            transition: "transform 0.2s"
+            transition: "transform 0.2s",
+            flexShrink: 0,
+            marginLeft: "12px"
           }}>
             <FiChevronDown size={16} />
           </div>
@@ -314,10 +396,11 @@ const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCre
   );
 });
 
-// Update the ClientCredentialsModal component
+// Update the ClientCredentialsModal component to pass the existing credentials
 const ClientCredentialsModal = memo(({ client, isOpen, onClose }) => {
   const [generatedCredentials, setGeneratedCredentials] = useState({});
   const [existingUsers, setExistingUsers] = useState([]);
+  const [existingCredentials, setExistingCredentials] = useState({});
   const [loading, setLoading] = useState(true);
 
   const handlePasswordGenerated = useCallback((email, password) => {
@@ -367,10 +450,19 @@ const ClientCredentialsModal = memo(({ client, isOpen, onClose }) => {
       const usersRef = collection(db, "clients-login");
       const querySnapshot = await getDocs(usersRef);
       const usersData = [];
+      const credentialsData = {};
+      
       querySnapshot.forEach((doc) => {
-        usersData.push(doc.data().email);
+        const userData = doc.data();
+        usersData.push(userData.email);
+        credentialsData[userData.email] = {
+          email: userData.email,
+          password: userData.password
+        };
       });
+      
       setExistingUsers(usersData);
+      setExistingCredentials(credentialsData);
     } catch (error) {
       console.error("Error fetching existing users:", error);
     } finally {
@@ -476,59 +568,9 @@ const ClientCredentialsModal = memo(({ client, isOpen, onClose }) => {
               onPasswordGenerated={handlePasswordGenerated}
               onSaveCredentials={saveCredentialsToFirebase}
               credentialsExist={existingUsers.includes(contact.email)}
+              existingCredentials={existingCredentials[contact.email]}
             />
           ))}
-
-          {/* {Object.keys(generatedCredentials).length > 0 && (
-            <div style={{ display: "flex", gap: "8px", marginTop: "16px", flexWrap: "wrap" }}>
-              <button
-                onClick={copyAllCredentials}
-                style={{
-                  padding: "10px 16px",
-                  backgroundColor: "#22A2D7",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontSize: "14px",
-                  fontWeight: "500"
-                }}
-              >
-                <FiCopy size={16} /> Copy All Credentials
-              </button>
-
-              <button
-                onClick={async () => {
-                  // Save all credentials
-                  for (const [email, password] of Object.entries(generatedCredentials)) {
-                    try {
-                      await saveCredentialsToFirebase(email, password);
-                    } catch (error) {
-                      console.error(`Error saving credentials for ${email}:`, error);
-                    }
-                  }
-                }}
-                style={{
-                  padding: "10px 16px",
-                  backgroundColor: "#2a2d7c",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontSize: "14px",
-                  fontWeight: "500"
-                }}
-              >
-                <FiSave size={16} /> Create Client User
-              </button>
-            </div>
-          )} */}
         </div>
       </div>
     </div>
