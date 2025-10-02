@@ -67,7 +67,12 @@ const EmployeeCard = ({
   currentClientId = null,
   setActiveMenuItem,
   setSelectedEmployeeId,
-  visibilityFilter = null
+  visibilityFilter = null,
+  onAddToWishlist, 
+  onRemoveFromWishlist, 
+  isInWishlist, 
+  showRemoveButton = false,
+  employee = null, // Single employee prop when used in wishlist
 }) => {
   const [refresh, setRefresh] = useState(false); // 👈 define refresh first
   const { employees, loading, error, setEmployees } = useEmployees(
@@ -78,27 +83,7 @@ const EmployeeCard = ({
   const location = useLocation();
   const isAdminPanel = location.pathname === "/admin-panel";
 
-  const [wishlist, setWishlist] = useState({});
-
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("clientUser"));
-    const clientId = storedUser?.clientId;
-    if (!clientId) return;
-
-    const wishlistRef = collection(db, "clients", clientId, "wishlist");
-
-    // Real-time listener
-    const unsubscribe = onSnapshot(wishlistRef, (snapshot) => {
-      const wishlistData = {};
-      snapshot.forEach((doc) => {
-        wishlistData[doc.id] = true; // employeeId is the doc.id
-      });
-      setWishlist(wishlistData);
-    });
-
-    return () => unsubscribe();
-  }, []);
-
+  // Remove the internal wishlist state - use props from parent
   const [expandedCardId, setExpandedCardId] = useState(null);
   const [selectedNiche, setSelectedNiche] = useState('All');
   const [miniPlayerUrl, setMiniPlayerUrl] = useState(null);
@@ -130,8 +115,12 @@ const EmployeeCard = ({
   // Add 'All' option to the niches
   const allNiches = [{ id: 'All', name: 'All' }, ...niches];
 
-  // Filter employees based on selected niche
-  const filteredEmployees = employees.filter(emp => {
+  // If we're in wishlist mode (single employee prop), use that employee
+  // Otherwise, use the filtered employees list
+  const displayEmployees = employee ? [employee] : employees;
+
+  // Filter employees based on selected niche (only when not in single employee mode)
+  const filteredEmployees = employee ? [employee] : employees.filter(emp => {
     const matchesNiche =
       selectedNiche === 'All'
         ? emp.status !== 'hidden'
@@ -153,32 +142,16 @@ const EmployeeCard = ({
     setExpandedCardId(prev => prev === id ? null : id);
   };
 
-  const toggleWishlist = async (employee) => {
-    try {
-      const storedUser = JSON.parse(localStorage.getItem("clientUser"));
-      const clientId = storedUser?.clientId;
-
-      if (!clientId) {
-        console.error("❌ No clientId found in localStorage");
-        return;
-      }
-
-      const wishlistRef = doc(db, "clients", clientId, "wishlist", employee.id);
-      const docSnap = await getDoc(wishlistRef);
-
-      if (docSnap.exists()) {
-        // ❌ Remove
-        await deleteDoc(wishlistRef);
-      } else {
-        // ✅ Add
-        await setDoc(wishlistRef, {
-          employeeId: employee.id,
-          addedAt: new Date(),
-        });
-      }
-      // No need to call setWishlist manually — onSnapshot updates it
-    } catch (error) {
-      console.error("Error updating wishlist:", error);
+  // Use the props from parent for wishlist operations
+  const handleWishlistToggle = (employee, e) => {
+    e.stopPropagation();
+    
+    if (showRemoveButton && onRemoveFromWishlist) {
+      // In wishlist tab - remove
+      onRemoveFromWishlist(employee.id);
+    } else if (onAddToWishlist) {
+      // In employees tab - add
+      onAddToWishlist(employee);
     }
   };
 
@@ -345,44 +318,50 @@ const EmployeeCard = ({
 
   return (
     <div className="employee-portal">
-      <header className="portal-header">
-        <div className="header-content">
-          <h1 className="portal-title">Talent Nexus</h1>
-          <p className="portal-subtitle">Discover Exceptional Tech Professionals</p>
-        </div>
-      </header>
+      {/* Only show header and filters when not in single employee mode (wishlist) */}
+      {!employee && (
+        <>
+          <header className="portal-header">
+            <div className="header-content">
+              <h1 className="portal-title">Talent Nexus</h1>
+              <p className="portal-subtitle">Discover Exceptional Tech Professionals</p>
+            </div>
+          </header>
 
-      {/* Niche Filter */}
-      <div className="niche-filter-container">
-        <div className="niche-filter">
-          {allNiches.map(niche => (
-            <button
-              key={niche.id}
-              className={`niche-button ${selectedNiche === niche.id ? 'active' : ''}`}
-              onClick={() => setSelectedNiche(niche.id)}
-            >
-              {niche.name}
-            </button>
-          ))}
-        </div>
-      </div>
+          {/* Niche Filter */}
+          <div className="niche-filter-container">
+            <div className="niche-filter">
+              {allNiches.map(niche => (
+                <button
+                  key={niche.id}
+                  className={`niche-button ${selectedNiche === niche.id ? 'active' : ''}`}
+                  onClick={() => setSelectedNiche(niche.id)}
+                >
+                  {niche.name}
+                </button>
+              ))}
+            </div>
+          </div>
 
-      {/* 🔍 Search Bar */}
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search professionals..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="search-input"
-        />
-      </div>
+          {/* 🔍 Search Bar */}
+          <div className="search-container">
+            <input
+              type="text"
+              placeholder="Search professionals..."
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="search-input"
+            />
+          </div>
+        </>
+      )}
 
       <div className="employee-grid">
         {filteredEmployees.length > 0 ? (
           filteredEmployees.map((employee, index) => {
             const videoId = extractYouTubeId(employee.introductionVideoLink);
             const isExpanded = expandedCardId === employee.id;
+            const isInWishlistStatus = isInWishlist?.(employee.id);
 
             return (
               <div
@@ -422,12 +401,14 @@ const EmployeeCard = ({
                         {/* Wishlist Icon Overlay */}
                         <button
                           className="wishlist-icon"
-                          onClick={() => toggleWishlist(employee)}
+                          onClick={(e) => handleWishlistToggle(employee, e)}
                         >
-                          {wishlist[employee.id] ? (
-                            <FaHeart className="wishlist-heart filled" />
+                          {showRemoveButton ? (
+                            <FaHeart className="wishlist-heart filled" title="Remove from wishlist" />
+                          ) : isInWishlistStatus ? (
+                            <FaHeart className="wishlist-heart filled" title="In wishlist" />
                           ) : (
-                            <FaRegHeart className="wishlist-heart" />
+                            <FaRegHeart className="wishlist-heart" title="Add to wishlist" />
                           )}
                         </button>
 
@@ -472,6 +453,18 @@ const EmployeeCard = ({
                         </button>
                       )}
                     </div>
+
+                    {/* Remove button for wishlist items */}
+                    {/* {showRemoveButton && (
+                      <div className="wishlist-remove-container">
+                        <button
+                          className="remove-wishlist-btn"
+                          onClick={(e) => handleWishlistToggle(employee, e)}
+                        >
+                          Remove from Wishlist
+                        </button>
+                      </div>
+                    )} */}
 
                     {/* ✅ Show icons only in /admin-panel */}
                     {isAdminPanel && (

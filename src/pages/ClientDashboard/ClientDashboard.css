@@ -952,3 +952,16 @@
     /* Use viewport height on mobile */
   }
 }
+
+.wishlist-grid {
+  display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 28px;
+}
+
+/* Small screens (mobile) */
+@media (max-width: 768px) {
+  .wishlist-grid {
+    grid-template-columns: 1fr; /* 1 card per row */
+  }
+}

@@ -15,6 +15,7 @@ import {
   FiRefreshCcw
 } from "react-icons/fi";
 import { doc, getDoc, getDocs, addDoc, collection, db, deleteDoc } from "../../firebase";
+import { onSnapshot, setDoc } from "firebase/firestore";
 
 export default function ClientDashboard() {
   const { theme, changeTheme } = useTheme();
@@ -31,39 +32,36 @@ export default function ClientDashboard() {
   });
 
   const [wishlistEmployees, setWishlistEmployees] = useState([]);
+  const [wishlistEmployeeIds, setWishlistEmployeeIds] = useState(new Set()); // Track IDs for quick lookup
 
+  // Real-time wishlist listener
   useEffect(() => {
-    const fetchWishlistEmployees = async () => {
-      try {
-        const storedUser = JSON.parse(localStorage.getItem("clientUser"));
-        const clientId = storedUser?.clientId;
-        if (!clientId) return;
+    const storedUser = JSON.parse(localStorage.getItem("clientUser"));
+    const clientId = storedUser?.clientId;
+    if (!clientId) return;
 
-        // go inside clients/{clientId}/wishlist
-        const wishlistRef = collection(db, "clients", clientId, "wishlist");
-        const snapshot = await getDocs(wishlistRef);
+    const wishlistRef = collection(db, "clients", clientId, "wishlist");
 
-        const employees = [];
+    const unsubscribe = onSnapshot(wishlistRef, async (snapshot) => {
+      const employeeIds = new Set();
+      const employees = [];
 
-        for (const docSnap of snapshot.docs) {
-          const employeeId = docSnap.id; // 👈 employeeId is the document ID in wishlist
+      for (const docSnap of snapshot.docs) {
+        const employeeId = docSnap.id;
+        employeeIds.add(employeeId);
 
-          // fetch actual employee from employees/{employeeId}
-          const employeeRef = doc(db, "employees", employeeId);
-          const employeeSnap = await getDoc(employeeRef);
-
-          if (employeeSnap.exists()) {
-            employees.push({ id: employeeSnap.id, ...employeeSnap.data() });
-          }
+        const employeeRef = doc(db, "employees", employeeId);
+        const employeeSnap = await getDoc(employeeRef);
+        if (employeeSnap.exists()) {
+          employees.push({ id: employeeSnap.id, ...employeeSnap.data() });
         }
-
-        setWishlistEmployees(employees);
-      } catch (error) {
-        console.error("❌ Error fetching wishlist employees:", error);
       }
-    };
 
-    fetchWishlistEmployees();
+      setWishlistEmployees(employees);
+      setWishlistEmployeeIds(employeeIds);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -99,27 +97,27 @@ export default function ClientDashboard() {
   // Add this function to handle employee selection
   const handleEmployeeSelect = (employeeId) => {
     setSelectedEmployeeId(employeeId);
-    // You can add additional logic here if needed
     console.log("Selected employee:", employeeId);
   };
 
   // Add this function to handle menu item changes
   const handleMenuItemChange = (menuItem) => {
     setActiveMenuItem(menuItem);
-    // You can add navigation logic here if needed
   };
 
   // Save employee to wishlist in Firestore
   const handleAddToWishlist = async (employee) => {
     try {
-      if (!clientUser.email) {
+      const storedUser = JSON.parse(localStorage.getItem("clientUser"));
+      const clientId = storedUser?.clientId;
+      if (!clientId) {
         alert("You must be logged in to add to wishlist");
         return;
       }
 
-      await addDoc(collection(db, "wishlists"), {
-        clientEmail: clientUser.email,
-        employee: employee, // full employee object
+      const employeeRef = doc(db, "clients", clientId, "wishlist", employee.id);
+
+      await setDoc(employeeRef, {
         createdAt: new Date()
       });
 
@@ -134,14 +132,11 @@ export default function ClientDashboard() {
   // Remove employee from wishlist
   const handleRemoveFromWishlist = async (employeeId) => {
     try {
-      // Optimistically update UI first
-      setWishlistEmployees((prev) => prev.filter((emp) => emp.id !== employeeId));
-
       const storedUser = JSON.parse(localStorage.getItem("clientUser"));
       const clientId = storedUser?.clientId;
       if (!clientId) return;
 
-      // Delete from Firestore
+      // Delete from Firestore - the real-time listener will update the state
       const employeeRef = doc(db, "clients", clientId, "wishlist", employeeId);
       await deleteDoc(employeeRef);
 
@@ -255,7 +250,8 @@ export default function ClientDashboard() {
                 setSelectedEmployeeId={handleEmployeeSelect}
                 setActiveMenuItem={handleMenuItemChange}
                 visibilityFilter="client"
-                onAddToWishlist={handleAddToWishlist}   // ✅ new prop
+                onAddToWishlist={handleAddToWishlist}
+                isInWishlist={(employeeId) => wishlistEmployeeIds.has(employeeId)}
               />
             </div>
           )}
@@ -263,7 +259,7 @@ export default function ClientDashboard() {
           {activeTab === "wishlist" && (
             <div className="wishlist-section">
               {wishlistEmployees.length > 0 ? (
-                <div className="employees-list">
+                <div className="wishlist-grid">
                   {wishlistEmployees.map((employee) => (
                     <EmployeeCard
                       key={employee.id}
@@ -272,7 +268,8 @@ export default function ClientDashboard() {
                       setSelectedEmployeeId={handleEmployeeSelect}
                       setActiveMenuItem={handleMenuItemChange}
                       visibilityFilter="client"
-                      onRemoveFromWishlist={() => handleRemoveFromWishlist(employee.id)}  // ✅ new
+                      onRemoveFromWishlist={() => handleRemoveFromWishlist(employee.id)}
+                      showRemoveButton={true}
                     />
                   ))}
                 </div>
