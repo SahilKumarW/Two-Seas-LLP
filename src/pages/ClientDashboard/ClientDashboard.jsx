@@ -16,6 +16,7 @@ import {
 } from "react-icons/fi";
 import { doc, getDoc, getDocs, addDoc, collection, db, deleteDoc } from "../../firebase";
 import { onSnapshot, setDoc } from "firebase/firestore";
+import EmployeeDetail from "../../components/EmployeeDetail/EmployeeDetail";
 
 export default function ClientDashboard() {
   const { theme, changeTheme } = useTheme();
@@ -60,6 +61,14 @@ export default function ClientDashboard() {
       setWishlistEmployees(employees);
       setWishlistEmployeeIds(employeeIds);
     });
+
+    // Add this function to handle menu navigation
+    const handleMenuItemChange = (menuItem, employeeId = null) => {
+      setActiveMenuItem(menuItem);
+      if (employeeId) {
+        setSelectedEmployeeId(employeeId);
+      }
+    };
 
     return () => unsubscribe();
   }, []);
@@ -211,12 +220,12 @@ export default function ClientDashboard() {
                 Wishlist
               </button>
             </li>
-            <li className={activeTab === "schedule" ? "active" : ""}>
+            {/* <li className={activeTab === "schedule" ? "active" : ""}>
               <button onClick={() => setActiveTab("schedule")}>
                 <FiCalendar size={18} />
                 Schedule Interview
               </button>
-            </li>
+            </li> */}
           </ul>
         </nav>
 
@@ -244,16 +253,31 @@ export default function ClientDashboard() {
 
         <div className="dashboard-content">
           {activeTab === "employees" && (
-            <div className="employees-list">
-              <EmployeeCard
-                archived={false}
-                setSelectedEmployeeId={handleEmployeeSelect}
-                setActiveMenuItem={handleMenuItemChange}
-                visibilityFilter="client"
-                onAddToWishlist={handleAddToWishlist}
-                isInWishlist={(employeeId) => wishlistEmployeeIds.has(employeeId)}
-              />
-            </div>
+            <>
+              {activeMenuItem === "employees" && (
+                <div className="employees-list">
+                  <EmployeeCard
+                    archived={false}
+                    setSelectedEmployeeId={setSelectedEmployeeId}
+                    setActiveMenuItem={handleMenuItemChange}
+                    visibilityFilter="client"
+                    onAddToWishlist={handleAddToWishlist}
+                    isInWishlist={(employeeId) => wishlistEmployeeIds.has(employeeId)}
+                  />
+                </div>
+              )}
+
+              {activeMenuItem === "employee-details" && selectedEmployeeId && (
+                <div className="employee-details-section">
+                  <EmployeeDetail
+                    employeeId={selectedEmployeeId}
+                    onBack={() => handleMenuItemChange("employees")}
+                    setActiveTab={setActiveTab}   // ✅ add this
+                  />
+
+                </div>
+              )}
+            </>
           )}
 
           {activeTab === "wishlist" && (
@@ -265,7 +289,7 @@ export default function ClientDashboard() {
                       key={employee.id}
                       employee={employee}
                       archived={false}
-                      setSelectedEmployeeId={handleEmployeeSelect}
+                      setSelectedEmployeeId={setSelectedEmployeeId}
                       setActiveMenuItem={handleMenuItemChange}
                       visibilityFilter="client"
                       onRemoveFromWishlist={() => handleRemoveFromWishlist(employee.id)}
@@ -289,6 +313,7 @@ export default function ClientDashboard() {
             </div>
           )}
         </div>
+
       </main>
     </div>
   );

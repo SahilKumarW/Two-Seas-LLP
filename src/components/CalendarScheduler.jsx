@@ -300,6 +300,7 @@ const CalendarScheduler = ({
   primarySlot = null,
   isAlternateScheduler = false,
   onAlternateSlotSelect = null,
+  fromClientDashboard = false,
 }) => {
   const [selectedDate, setSelectedDate] = useState(null)
   const [selectedTime, setSelectedTime] = useState(null)
@@ -334,6 +335,62 @@ const CalendarScheduler = ({
   const [alternateSlot, setAlternateSlot] = useState(null);
   const [showAlternateScheduler, setShowAlternateScheduler] = useState(false);
   const [showAlternateModal, setShowAlternateModal] = useState(false);
+
+    // Add auto-submit effect for client dashboard
+  useEffect(() => {
+    if (fromClientDashboard && selectedDate && selectedTime && !isSuccess && !isSubmitting) {
+      handleAutoSubmit();
+    }
+  }, [fromClientDashboard, selectedDate, selectedTime, isSuccess, isSubmitting]);
+
+  // Add auto-submit function
+  const handleAutoSubmit = async () => {
+    if (!selectedDate || !selectedTime) return;
+    
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      // Get client data from localStorage
+      const storedUser = JSON.parse(localStorage.getItem("clientUser"));
+      
+      // Create interview data object for client dashboard
+      const interviewData = {
+        clientId: storedUser?.clientId || "882Fgk08q4e8HBYonUeI",
+        clientName: storedUser?.clientName || "HBL",
+        employeeId: selectedEmployee?.id || "",
+        employeeName: selectedEmployee?.name || storedUser?.clientName || 'Client',
+        employeeEmail: selectedEmployee?.email || storedUser?.email || '',
+        primaryDate: formatDateLocal(selectedDate),
+        primaryTime: selectedTime,
+        primaryTimeZone: selectedTimeZone,
+        alternateDate: alternateSlot ? formatDateLocal(new Date(alternateSlot.date)) : null,
+        alternateTime: alternateSlot ? alternateSlot.time : null,
+        alternateTimeZone: alternateSlot ? alternateSlot.timeZone : null,
+        status: "scheduled",
+        createdAt: serverTimestamp(),
+        scheduledBy: 'client',
+        clientUserId: storedUser?.clientId,
+        clientUserEmail: storedUser?.email,
+      };
+
+      // Add to Firestore
+      await addDoc(collection(db, "scheduledInterviews"), interviewData);
+
+      // Call the success callback if provided
+      if (onScheduleSubmit) {
+        onScheduleSubmit(interviewData);
+      }
+
+      setIsSuccess(true);
+      
+    } catch (error) {
+      console.error('Error scheduling interview:', error);
+      setError('Failed to schedule interview. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     if (prefillData?.name || prefillData?.email) {
@@ -1699,7 +1756,7 @@ const CalendarScheduler = ({
         .alternate-scheduler-modal {
           background: white;
           border-radius: 12px;
-          padding: 20px;
+          padding: 30px;
           max-width: 600px;
           width: 90%;
           max-height: 90vh;
@@ -2447,7 +2504,7 @@ const CalendarScheduler = ({
     .alternate-scheduler-modal {
       background: white;
       border-radius: 12px;
-      padding: 20px;
+      padding: 30px;
       max-width: 400px;
       width: 90%;
     }

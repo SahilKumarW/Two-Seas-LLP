@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { FaFileAlt, FaTimes, FaArrowLeft, FaExternalLinkAlt } from 'react-icons/fa';
 import { getEmployeeById } from '../../services/employeeService';
 import './EmployeeDetail.css';
 import defaultProfileImage from "../../assets/no image found.png";
+import SimplifiedCalendarScheduler from '../SimplifiedCalendarScheduler';
 
-const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) => {
+const EmployeeDetail = ({ employeeId, setActiveTab, setSelectedEmployee }) => {
   const [employee, setEmployee] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeDocument, setActiveDocument] = useState(null);
-  const [documentType, setDocumentType] = useState(null);
   const [viewerState, setViewerState] = useState({
     isOpen: false,
     document: null,
     type: '',
     isLoading: true
   });
+
+  const [showScheduler, setShowScheduler] = useState(false);
 
   const openDocument = (doc, type) => {
     setViewerState({
@@ -49,7 +49,7 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
         const employeeData = await getEmployeeById(employeeId);
         if (employeeData) {
           setEmployee(employeeData);
-          if (setSelectedEmployee) setSelectedEmployee(employeeData); // 👈 update parent
+          if (setSelectedEmployee) setSelectedEmployee(employeeData);
         } else {
           setError("Professional not found");
         }
@@ -60,7 +60,6 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
         setLoading(false);
       }
     };
-
     fetchEmployee();
   }, [employeeId, setSelectedEmployee]);
 
@@ -71,22 +70,11 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
     return (match && match[2].length === 11) ? match[2] : null;
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return 'N/A';
-    const date = timestamp.toDate();
-    return date.toLocaleString();
-  };
-
-  const getEmbedUrl = (url) => {
-    if (!url) return null;
-    // Convert Google Drive view URL to embed URL
-    if (url.includes('drive.google.com')) {
-      const fileId = url.match(/\/d\/([^\/]+)/)?.[1] || url.match(/id=([^&]+)/)?.[1];
-      if (fileId) {
-        return `https://drive.google.com/file/d/${fileId}/preview`;
-      }
-    }
-    return url;
+  const handleScheduleSubmit = (interviewData) => {
+    console.log("Interview scheduled successfully:", interviewData);
+    setShowScheduler(false);
+    // Optional: Show success message or redirect
+    alert('Interview scheduled successfully!');
   };
 
   if (loading) {
@@ -102,7 +90,10 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
     return (
       <div className="error-container">
         <p>{error}</p>
-        <button onClick={() => setActiveMenuItem("view-employees")} className="back-button">
+        <button
+          onClick={() => setActiveTab("employees")}
+          className="back-button"
+        >
           <FaArrowLeft /> Back to Employees
         </button>
       </div>
@@ -111,13 +102,6 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
 
   return (
     <div className="employee-detail-container">
-      {/* <div className="detail-header">
-        <div className="header-content">
-          <h1>Professional Profile</h1>
-          <p>Detailed information about {employee.name}</p>
-        </div>
-      </div> */}
-
       <div className="detail-card">
         <div className="profile-section">
           <div className="avatarcontainer">
@@ -125,48 +109,34 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
               src={employee.imageBase64 || defaultProfileImage}
               alt={employee.name}
               className="detail-avatar"
-              onError={(e) => {
-                e.target.src = defaultProfileImage;
-              }}
+              onError={(e) => { e.target.src = defaultProfileImage; }}
             />
           </div>
 
           <div className="profile-info">
             <h2 style={{ color: 'white' }}>{employee.name}</h2>
-            <p
-              className="position"
-              style={{ color: 'white', marginTop: '-10px' }}
-            >
+            <p className="position" style={{ color: 'white', marginTop: '-10px' }}>
               {employee.expertise}
             </p>
             <div className="meta-info">
               <span>{employee.experience} years experience</span>
-              {/* <span>{employee.currency} {employee.rate}/hr</span> */}
             </div>
           </div>
 
           <div className="top-actions">
             {employee.resume && (
-              <button
-                className="action-button"
-                onClick={() => openDocument(employee.resume, "resume")}
-              >
+              <button className="action-button" onClick={() => openDocument(employee.resume, "resume")}>
                 View Resume
               </button>
             )}
-
             {employee.assessment && (
-              <button
-                className="action-button"
-                onClick={() => openDocument(employee.assessment, "assessment")}
-              >
+              <button className="action-button" onClick={() => openDocument(employee.assessment, "assessment")}>
                 View Assessment
               </button>
             )}
-
             <button
               className="action-button schedule-button"
-              onClick={() => setActiveMenuItem("calendar-scheduler")}
+              onClick={() => setShowScheduler(true)}
             >
               Schedule Interview
             </button>
@@ -179,7 +149,6 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
             <p>{employee.intro}</p>
           </div>
 
-          {/* Updated Core Expertise section - styled like Professional Introduction */}
           <div className="intro-section">
             <h3>Core Expertise</h3>
             <div className="skills-container">
@@ -189,10 +158,7 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
             </div>
           </div>
 
-          {/* Removed Personality Traits section */}
-
           <div className="media-section">
-            {/* Updated Video sections - styled like Professional Introduction */}
             {employee.introductionVideoLink && (
               <div className="intro-section">
                 <h3>Introduction Video</h3>
@@ -205,7 +171,6 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
                 </div>
               </div>
             )}
-
             {employee.interviewVideoLink && (
               <div className="intro-section">
                 <h3>Interview Video</h3>
@@ -222,15 +187,12 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
         </div>
       </div>
 
-      {/* Enhanced Document Viewer Modal */}
       {viewerState.isOpen && (
         <div className="document-viewer">
           <div className="viewer-overlay" onClick={closeDocument}></div>
-
           <div className="viewer-container">
             <div className="viewer-header">
               <h3 style={{ color: "#2a2d7c" }}>{getDocumentTitle()}</h3>
-
               <div className="viewer-actions">
                 <a
                   href={viewerState.document.base64}
@@ -242,16 +204,11 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
                 >
                   <FaExternalLinkAlt />
                 </a>
-                <button
-                  onClick={closeDocument}
-                  className="close-button"
-                  aria-label="Close document viewer"
-                >
+                <button onClick={closeDocument} className="close-button" aria-label="Close document viewer">
                   <FaTimes />
                 </button>
               </div>
             </div>
-
             <div className="viewer-content">
               {viewerState.isLoading && (
                 <div className="viewer-loading">
@@ -259,7 +216,6 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
                   <p>Loading document...</p>
                 </div>
               )}
-
               <iframe
                 src={viewerState.document.base64}
                 title={getDocumentTitle()}
@@ -268,6 +224,25 @@ const EmployeeDetail = ({ employeeId, setActiveMenuItem, setSelectedEmployee }) 
                 onLoad={handleIframeLoad}
               />
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Calendar Scheduler Modal */}
+      {showScheduler && (
+        <div className="scheduler-modal-overlay">
+          <div className="scheduler-modal">
+            <button
+              className="close-scheduler-btn"
+              onClick={() => setShowScheduler(false)}
+            >
+              <FaTimes />
+            </button>
+            <SimplifiedCalendarScheduler
+              selectedEmployee={employee}
+              onScheduleSubmit={handleScheduleSubmit}
+              onClose={() => setShowScheduler(false)}
+            />
           </div>
         </div>
       )}

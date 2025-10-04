@@ -34,7 +34,8 @@ import {
   deleteDoc,
   setDoc,
   query,
-  where
+  where,
+  orderBy
 } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 
@@ -219,7 +220,7 @@ const ContactPersonCredentials = memo(({ contact, onPasswordGenerated, onSaveCre
           const usersRef = collection(db, "clients-login");
           const q = query(usersRef, where("email", "==", contact.email));
           const querySnapshot = await getDocs(q);
-          
+
           if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
             setExistingCredentials({
@@ -451,7 +452,7 @@ const ClientCredentialsModal = memo(({ client, isOpen, onClose }) => {
       const querySnapshot = await getDocs(usersRef);
       const usersData = [];
       const credentialsData = {};
-      
+
       querySnapshot.forEach((doc) => {
         const userData = doc.data();
         usersData.push(userData.email);
@@ -460,7 +461,7 @@ const ClientCredentialsModal = memo(({ client, isOpen, onClose }) => {
           password: userData.password
         };
       });
-      
+
       setExistingUsers(usersData);
       setExistingCredentials(credentialsData);
     } catch (error) {
@@ -2850,7 +2851,7 @@ export default function ModernAdminPanel() {
     { id: "generate-credentials", label: "Generate Credentials", icon: <FiKey size={18} /> },
     { id: "view-member", label: "View as Member", icon: <FiUser size={18} /> },
     { id: "archived", label: "Archived Employees", icon: <FiArchive size={18} /> },
-    { id: "view-interview-requests", label: "View Interview Requests", icon: <FiCalendar size={18} /> },
+    { id: "scheduled-interviews", label: "View Interview Requests", icon: <FiCalendar size={18} /> },
   ];
 
   const stats = [
@@ -3020,6 +3021,8 @@ export default function ModernAdminPanel() {
         return <GenerateCredentials />;
       case "archived":
         return <EmployeeCard archived />;
+      case "scheduled-interviews":
+        return <ScheduledInterviews />;
       case "dashboard":
       default:
         return (
@@ -3342,6 +3345,237 @@ export default function ModernAdminPanel() {
     }
   };
 
+  // Scheduled Interviews Component
+  const ScheduledInterviews = memo(() => {
+    const [interviews, setInterviews] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    useEffect(() => {
+      fetchScheduledInterviews();
+    }, []);
+
+    const fetchScheduledInterviews = async () => {
+      try {
+        const interviewsRef = collection(db, "scheduledInterviews");
+        const q = query(interviewsRef, orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+
+        const interviewsData = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          interviewsData.push({
+            id: doc.id,
+            ...data,
+            // Convert Firestore timestamp to Date object
+            createdAt: data.createdAt?.toDate?.() || new Date()
+          });
+        });
+
+        setInterviews(interviewsData);
+      } catch (error) {
+        console.error("Error fetching interviews:", error);
+        alert("Error loading scheduled interviews");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const formatDateTime = (date, time, timezone) => {
+      if (!date || !time) return "Not set";
+
+      // Format date
+      const dateObj = new Date(date);
+      const formattedDate = dateObj.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+
+      // Format time (remove seconds if present)
+      const formattedTime = time.includes(':') ? time.split(':').slice(0, 2).join(':') : time;
+
+      // Get timezone abbreviation
+      const timezoneAbbr = timezone?.split('/')?.pop()?.replace('_', ' ') || timezone;
+
+      return `${formattedDate} ${formattedTime} (${timezoneAbbr})`;
+    };
+
+    const filteredInterviews = useMemo(() => {
+      return interviews.filter(interview => {
+        return (
+          interview.clientName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          interview.employeeName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          interview.employeeEmail?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          interview.clientUserEmail?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      });
+    }, [interviews, searchTerm]);
+
+    if (loading) {
+      return (
+        <div style={{ padding: "40px", textAlign: "center" }}>
+          <div style={{ fontSize: "18px", color: "#64748b" }}>Loading interviews...</div>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ padding: "24px" }}>
+        {/* Header */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
+          <h2 style={{ fontSize: "24px", fontWeight: "700", color: "#06a3c2", margin: 0 }}>
+            Scheduled Interviews ({filteredInterviews.length})
+          </h2>
+          <button
+            onClick={fetchScheduledInterviews}
+            style={{
+              padding: "10px 16px",
+              backgroundColor: "#06a3c2",
+              border: "none",
+              borderRadius: "8px",
+              color: "white",
+              fontSize: "14px",
+              fontWeight: "600",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              transition: "all 0.2s",
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#1a8cbb")}
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#22A2D7")}
+          >
+            <FiRefreshCw size={16} />
+            Refresh
+          </button>
+        </div>
+
+        {/* Search */}
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{ position: "relative", maxWidth: "400px" }}>
+            <FiSearch
+              style={{
+                position: "absolute",
+                left: "12px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "#9ca3af",
+              }}
+            />
+            <input
+              type="text"
+              placeholder="Search by client, employee name, or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "12px 12px 12px 40px",
+                border: "2px solid #e5e7eb",
+                borderRadius: "12px",
+                fontSize: "14px",
+                transition: "all 0.2s",
+                outline: "none",
+              }}
+              onFocus={(e) => (e.target.style.borderColor = "#06a3c2")}
+              onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+            />
+          </div>
+        </div>
+
+        {/* Interviews Table */}
+        {filteredInterviews.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "60px 20px", color: "#64748b" }}>
+            <FiCalendar size={48} style={{ marginBottom: "16px", opacity: 0.5 }} />
+            <h3 style={{ margin: "0 0 8px 0", fontSize: "20px" }}>
+              {interviews.length === 0 ? "No interviews scheduled" : "No interviews found"}
+            </h3>
+            <p style={{ margin: 0 }}>
+              {interviews.length === 0
+                ? "Scheduled interviews will appear here once clients book interviews with employees."
+                : "No scheduled interviews match your search criteria."}
+            </p>
+          </div>
+        ) : (
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "16px",
+            overflow: "hidden",
+            boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
+          }}>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "700px" }}>
+                <thead>
+                  <tr style={{ backgroundColor: "#f8fafc" }}>
+                    <th style={{ padding: "16px", fontWeight: "600", borderBottom: "1px solid #e5e7eb" }}>
+                      Client
+                    </th>
+                    <th style={{ padding: "16px", fontWeight: "600", borderBottom: "1px solid #e5e7eb" }}>
+                      Employee
+                    </th>
+                    <th style={{ padding: "16px", fontWeight: "600", borderBottom: "1px solid #e5e7eb" }}>
+                      Primary Date & Time
+                    </th>
+                    <th style={{ padding: "16px", fontWeight: "600", borderBottom: "1px solid #e5e7eb" }}>
+                      Secondary Date & Time
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredInterviews.map((interview) => (
+                    <tr
+                      key={interview.id}
+                      style={{
+                        borderBottom: "1px solid #f1f5f9",
+                        transition: "all 0.2s",
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.backgroundColor = "#f8fafc";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.backgroundColor = "white";
+                      }}
+                    >
+                      <td style={{ padding: "16px" }}>
+                        <div>
+                          <div style={{ fontWeight: "600", color: "#374151", fontSize: "14px" }}>
+                            {interview.clientName}
+                          </div>
+                          <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "4px" }}>
+                            {interview.clientUserEmail}
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ padding: "16px" }}>
+                        <div>
+                          <div style={{ fontWeight: "500", color: "#374151", fontSize: "14px" }}>
+                            {interview.employeeName}
+                          </div>
+                          <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "4px" }}>
+                            {interview.employeeEmail}
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ padding: "16px", fontSize: "14px", color: "#374151" }}>
+                        {formatDateTime(interview.primaryDate, interview.primaryTime, interview.primaryTimeZone)}
+                      </td>
+                      <td style={{ padding: "16px", fontSize: "14px", color: "#374151" }}>
+                        {interview.alternateDate ?
+                          formatDateTime(interview.alternateDate, interview.alternateTime, interview.alternateTimeZone) :
+                          <span style={{ color: "#9ca3af", fontStyle: "italic" }}>Not provided</span>
+                        }
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  });
+
   const handleFinalSubmit = async () => {
     const body = {
       clientId: "882Fgk08q4e8HBYonUeI", // replace with real clientId
@@ -3470,7 +3704,7 @@ export default function ModernAdminPanel() {
                       'generate-credentials': '/admin/w1f5s9',
                       'view-member': '/admin/l2m7p4',
                       'archived': '/admin/g6t8k2',
-                      'view-interview-requests': '/admin/v3q9n5'
+                      'scheduled-interviews': '/admin/v3q9n5'
                     };
 
                     navigate(routeMap[item.id] || '/admin/x7k9p2');
