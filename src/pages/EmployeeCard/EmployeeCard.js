@@ -103,6 +103,13 @@ const EmployeeCard = ({
   const [editingEmployee, setEditingEmployee] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
+  // NEW STATE: For profile image modal
+  const [profileImageViewer, setProfileImageViewer] = useState({
+    isOpen: false,
+    imageUrl: null,
+    employeeName: ''
+  });
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -140,6 +147,25 @@ const EmployeeCard = ({
 
   const toggleCardExpand = (id) => {
     setExpandedCardId(prev => prev === id ? null : id);
+  };
+
+  // NEW FUNCTION: Open profile image in modal
+  const openProfileImage = (employee, e) => {
+    e.stopPropagation();
+    setProfileImageViewer({
+      isOpen: true,
+      imageUrl: employee.imageBase64 || defaultProfileImage,
+      employeeName: employee.name
+    });
+  };
+
+  // NEW FUNCTION: Close profile image modal
+  const closeProfileImage = () => {
+    setProfileImageViewer({
+      isOpen: false,
+      imageUrl: null,
+      employeeName: ''
+    });
   };
 
   // Use the props from parent for wishlist operations
@@ -392,10 +418,11 @@ const EmployeeCard = ({
                         <img
                           src={employee.imageBase64 || defaultProfileImage}
                           alt={employee.name}
-                          className="employee-avatar"
+                          className="employee-avatar clickable-avatar"
                           onError={(e) => {
                             e.target.src = defaultProfileImage;
                           }}
+                          onClick={(e) => openProfileImage(employee, e)}
                         />
 
                         {/* Wishlist Icon Overlay */}
@@ -541,6 +568,32 @@ const EmployeeCard = ({
           </div>
         )}
       </div>
+
+      {/* Profile Image Viewer Modal */}
+      {profileImageViewer.isOpen && (
+        <div className="profile-image-viewer">
+          <div className="viewer-overlay" onClick={closeProfileImage}></div>
+          <div className="profile-viewer-container">
+            <div className="profile-viewer-header">
+              <h3>{profileImageViewer.employeeName}'s Profile Picture</h3>
+              <button
+                onClick={closeProfileImage}
+                className="close-button"
+                aria-label="Close profile image viewer"
+              >
+                <FaTimes color="white" />
+              </button>
+            </div>
+            <div className="profile-viewer-content">
+              <img
+                src={profileImageViewer.imageUrl}
+                alt={`${profileImageViewer.employeeName}'s profile`}
+                className="profile-large-image"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {miniPlayerUrl && (
         <div className="mini-player-overlay" onClick={() => setMiniPlayerUrl(null)}>
